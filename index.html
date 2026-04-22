@@ -6,121 +6,169 @@
     <title>AERODYNE | Mission Control</title>
     <style>
         :root {
-            --primary: #00aaff; /* Space Blue */
-            --bg: #0b0e14; /* Deep Space Black */
-            --card: #161b22;
-            --text: #ffffff;
+            --primary: #00d2ff;
+            --accent: #9d50bb;
+            --bg: #05070a;
+            --glass: rgba(255, 255, 255, 0.05);
+            --border: rgba(255, 255, 255, 0.1);
         }
 
         body {
             background-color: var(--bg);
-            color: var(--text);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: white;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             margin: 0;
+            overflow-x: hidden;
+        }
+
+        /* --- Animated Starfield Background --- */
+        #starfield {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: radial-gradient(ellipse at bottom, #1B2735 0%, #090A0F 100%);
+        }
+
+        /* --- Hero Section --- */
+        header {
+            height: 80vh;
             display: flex;
             flex-direction: column;
+            justify-content: center;
             align-items: center;
             text-align: center;
-        }
-
-        header {
-            padding: 60px 20px;
-            background: linear-gradient(to bottom, #1e2631, var(--bg));
-            width: 100%;
-        }
-
-        .hero-title {
-            font-size: 3rem;
-            letter-spacing: 4px;
-            margin-bottom: 10px;
-            text-transform: uppercase;
+            padding: 0 20px;
         }
 
         .status-badge {
-            background: #238636;
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            font-weight: bold;
+            background: rgba(35, 134, 54, 0.2);
+            color: #3fb950;
+            border: 1px solid #3fb950;
+            padding: 6px 16px;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+            animation: pulse 2s infinite;
         }
 
+        @keyframes pulse {
+            0% { opacity: 0.6; }
+            50% { opacity: 1; }
+            100% { opacity: 0.6; }
+        }
+
+        .hero-title {
+            font-size: clamp(3rem, 10vw, 5rem);
+            font-weight: 900;
+            background: linear-gradient(to right, #fff, var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 0;
+            letter-spacing: -2px;
+        }
+
+        /* --- Glass Cards --- */
         .container {
-            max-width: 900px;
-            padding: 40px 20px;
+            max-width: 1100px;
+            margin: -100px auto 100px;
+            padding: 0 20px;
         }
 
         .features {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-top: 40px;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
         }
 
         .feature-card {
-            background: var(--card);
-            padding: 25px;
-            border-radius: 12px;
-            border: 1px solid #30363d;
-            transition: transform 0.3s;
+            background: var(--glass);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--border);
+            padding: 40px;
+            border-radius: 24px;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
         .feature-card:hover {
-            transform: translateY(-5px);
+            transform: translateY(-10px);
             border-color: var(--primary);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
         }
 
         .btn {
-            background: var(--primary);
-            color: white;
-            padding: 15px 30px;
+            background: white;
+            color: black;
+            padding: 16px 40px;
             text-decoration: none;
-            border-radius: 8px;
+            border-radius: 50px;
             font-weight: bold;
+            margin-top: 40px;
+            transition: transform 0.2s;
             display: inline-block;
-            margin-top: 30px;
+            cursor: pointer;
         }
 
-        footer {
-            margin-top: 60px;
-            padding: 20px;
-            font-size: 0.8rem;
-            color: #8b949e;
+        .btn:hover { 
+            transform: scale(1.05); 
+            background: var(--primary);
+            color: white;
         }
+
     </style>
 </head>
 <body>
 
+    <div id="starfield"></div>
+
     <header>
-        <div class="status-badge">AERODYNE SYSTEMS ONLINE</div>
+        <div class="status-badge">● Systems Nominal</div>
         <h1 class="hero-title">AERODYNE</h1>
-        <p>Advanced Productivity & Community Management for the Next Generation.</p>
-        <a href="https://discord.com/oauth2/authorize?client_id=1488701920452546691&permissions=8&integration_type=0&scope=bot" class="btn">Invite to Server</a>
+        <p style="font-size: 1.2rem; color: #8b949e; max-width: 600px;">The next evolution of community productivity and lunar-integrated mission intelligence.</p>
+        <a href="https://discord.com/oauth2/authorize?client_id=1488701920452546691&permissions=8&integration_type=0&scope=bot" class="btn" target="_blank">Add to Discord</a>
     </header>
 
     <div class="container">
-        <h2>System Capabilities</h2>
-        
         <div class="features">
             <div class="feature-card">
-                <h3>📝 The Invention</h3>
-                <p>An interactive, multi-use To-Do system that syncs manual handwritten lists with digital tracking and progress analytics.</p>
+                <h2 style="color: var(--primary)">📝 The Invention</h2>
+                <p style="color: #8b949e; line-height: 1.6;">Hybrid To-Do logic syncing physical progress with digital automation. Built for elite study environments.</p>
             </div>
-
             <div class="feature-card">
-                <h3>🚀 Artemis Intelligence</h3>
-                <p>Live telemetry and mission updates from the NASA Artemis III lunar program, keeping the crew informed in real-time.</p>
+                <h2 style="color: var(--primary)">🚀 Artemis Live</h2>
+                <p style="color: #8b949e; line-height: 1.6;">Direct data stream from the Artemis III program. Real-time telemetry and rollout updates for your crew.</p>
             </div>
-
             <div class="feature-card">
-                <h3>⚖️ Governance</h3>
-                <p>Advanced staff rating and ticket management systems designed to ensure top-tier community support.</p>
+                <h2 style="color: var(--primary)">🛡️ Staff Core</h2>
+                <p style="color: #8b949e; line-height: 1.6;">Advanced metrics-based promotion systems. Every ticket is a step toward your next rank.</p>
             </div>
         </div>
     </div>
 
-    <footer>
-        Made with precision by <strong>unaeron (Aeron)</strong> | April 2026
+    <footer style="text-align: center; padding: 40px; color: #444; font-size: 0.9rem;">
+        AERON SPAWN HERE // AERODYNE SYSTEMS © 2026 <br>
+        <span style="opacity: 0.4;">Aeron loves emmy</span>
     </footer>
 
+    <script>
+        const starfield = document.getElementById('starfield');
+        for (let i = 0; i < 150; i++) {
+            const star = document.createElement('div');
+            star.style.position = 'absolute';
+            star.style.width = Math.random() * 2 + 'px';
+            star.style.height = star.style.width;
+            star.style.background = 'white';
+            star.style.top = Math.random() * 100 + '%';
+            star.style.left = Math.random() * 100 + '%';
+            star.style.borderRadius = '50%';
+            star.style.opacity = Math.random();
+            starfield.appendChild(star);
+        }
+    </script>
 </body>
-</html>https://discord.com/oauth2/authorize?client_id=1488701920452546691&permissions=8&integration_type=0&scope=bot
+</html>
