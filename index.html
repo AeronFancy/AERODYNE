@@ -3,1223 +3,225 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="AERODYNE - The premier intelligence protocol for high-performance study communities and orbital mission tracking.">
-    <title>AERODYNE | Orbital Dashboard</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛰️</text></svg>">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <title>AERODYNE // COMMAND_DECK</title>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;500;700&family=Fira+Code:wght@300;500&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #00D2FF;
-            --danger: #FF3E3E;
-            --bg: #050505;
-            --surface: #0F0F0F;
-            --deep-charcoal: #0A0A0A;
-            --secondary: #888888;
-            --text: #E0E0E0;
-            --text-muted: #888888;
-            --glass-border: rgba(0, 210, 255, 0.15);
-            --cyan-30: rgba(0, 210, 255, 0.3);
-            --cyan-10: rgba(0, 210, 255, 0.1);
-            --cyan-05: rgba(0, 210, 255, 0.05);
+            --cyan: #00d2ff;
+            --dark-bg: #020205;
+            --panel-bg: rgba(11, 16, 21, 0.6);
+            --border-color: rgba(0, 210, 255, 0.25);
+            --font-main: 'Rajdhani', sans-serif;
+            --font-mono: 'Fira+Code', monospace;
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        html {
-            scroll-behavior: smooth;
-            scroll-padding-top: 80px;
-        }
+        * { box-sizing: border-box; }
 
         body {
-            background-color: var(--bg);
-            color: var(--text);
-            font-family: 'Inter', sans-serif;
-            overflow-x: hidden;
-            line-height: 1.6;
-            min-height: 100vh;
-            padding-bottom: 50px;
-            /* space for fixed footer */
+            background: var(--dark-bg);
+            /* Subtle star-field effect */
+            background-image: 
+                radial-gradient(circle at center, rgba(0, 210, 255, 0.05) 0%, transparent 70%),
+                url('https://www.transparenttextures.com/patterns/stardust.png');
+            color: white;
+            font-family: var(--font-main);
+            margin: 0;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            text-transform: uppercase;
         }
 
-        /* ──────────────────────────────────────
-           AURA BACKGROUND
-           ────────────────────────────────────── */
-        .aura {
-            position: fixed;
+        /* Tactical Glass Panels */
+        .glass-panel {
+            background: var(--panel-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 0.5px solid var(--border-color);
+            position: absolute;
+            z-index: 10;
+        }
+
+        /* Profile Left HUD */
+        .profile-hud {
+            top: 30px;
+            left: 30px;
+            width: 320px;
+            padding: 20px;
+        }
+
+        /* Fleet Right HUD */
+        .fleet-hud {
+            top: 30px;
+            right: 30px;
+            width: 280px;
+            padding: 20px;
+        }
+
+        .avatar-frame {
+            border: 1px solid var(--cyan);
+            padding: 4px;
+            position: relative;
+            width: 65px;
+            height: 65px;
+        }
+
+        .corner-dot {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: var(--cyan);
+        }
+
+        /* Center Display */
+        .center-console {
+            position: absolute;
             top: 50%;
             left: 50%;
-            width: 80vw;
-            height: 80vw;
-            background: radial-gradient(circle, rgba(0, 210, 255, 0.04) 0%, rgba(255, 62, 62, 0.02) 40%, transparent 65%);
             transform: translate(-50%, -50%);
-            z-index: -1;
-            filter: blur(90px);
-            animation: auraPulse 12s infinite alternate;
-            pointer-events: none;
-        }
-
-        @keyframes auraPulse {
-            from {
-                transform: translate(-50%, -50%) scale(1);
-                opacity: 0.6;
-            }
-            to {
-                transform: translate(-50%, -50%) scale(1.25);
-                opacity: 1;
-            }
-        }
-
-        /* ──────────────────────────────────────
-           HEADER / NAVIGATION
-           ────────────────────────────────────── */
-        header {
-            background: rgba(5, 5, 5, 0.85);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            border-bottom: 1px solid var(--glass-border);
-        }
-
-        .header-inner {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 24px;
-            height: 68px;
-        }
-
-        .logo {
-            font-weight: 900;
-            font-size: 1.3rem;
-            letter-spacing: -1px;
-            background: linear-gradient(135deg, var(--primary) 0%, #fff 80%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            flex-shrink: 0;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 6px;
-            list-style: none;
-            flex-shrink: 0;
-        }
-
-        .nav-links a {
-            background: transparent;
-            color: var(--text-muted);
-            border: none;
-            padding: 9px 18px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            cursor: pointer;
-            border-radius: 10px;
-            transition: all 0.3s ease;
-            font-family: inherit;
-            text-decoration: none;
-            display: inline-block;
-        }
-
-        .nav-links a:hover {
-            color: #fff;
-            background: var(--cyan-05);
-        }
-
-        .nav-links a.active {
-            background: rgba(255, 255, 255, 0.04);
-            color: var(--primary);
-            box-shadow: inset 0 0 12px rgba(0, 210, 255, 0.08);
-            border: 1px solid var(--glass-border);
-        }
-
-        .user-count-badge {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            background: rgba(0, 210, 255, 0.08);
-            border: 1px solid var(--cyan-30);
-            border-radius: 20px;
-            padding: 7px 16px;
-            font-size: 0.8rem;
-            font-weight: 700;
-            color: var(--primary);
-            flex-shrink: 0;
-            letter-spacing: 0.5px;
-            white-space: nowrap;
-        }
-
-        .user-count-badge .dot {
-            width: 8px;
-            height: 8px;
-            background: #00ff88;
-            border-radius: 50%;
-            animation: dotPulse 2s infinite;
-        }
-
-        @keyframes dotPulse {
-            0%,
-            100% {
-                box-shadow: 0 0 0 0 rgba(0, 255, 136, 0.7);
-            }
-            50% {
-                box-shadow: 0 0 0 10px rgba(0, 255, 136, 0);
-            }
-        }
-
-        .hamburger {
-            display: none;
-            background: none;
-            border: none;
-            color: #fff;
-            font-size: 1.7rem;
-            cursor: pointer;
-            padding: 6px;
-            flex-shrink: 0;
-        }
-
-        @media (max-width: 850px) {
-            .hamburger {
-                display: block;
-            }
-            .nav-links {
-                position: absolute;
-                top: 68px;
-                left: 0;
-                right: 0;
-                background: rgba(5, 5, 5, 0.96);
-                backdrop-filter: blur(20px);
-                -webkit-backdrop-filter: blur(20px);
-                flex-direction: column;
-                padding: 16px 20px;
-                gap: 2px;
-                display: none;
-                border-bottom: 1px solid var(--glass-border);
-            }
-            .nav-links.open {
-                display: flex;
-            }
-            .nav-links a {
-                width: 100%;
-                text-align: left;
-                padding: 12px 16px;
-            }
-            .user-count-badge {
-                font-size: 0.7rem;
-                padding: 6px 12px;
-            }
-        }
-
-        /* ──────────────────────────────────────
-           SECTIONS (all on one page, scrollable)
-           ────────────────────────────────────── */
-        .section {
-            padding: 60px 20px;
-            max-width: 1100px;
-            margin: 0 auto;
-            animation: fadeSlide 0.6s ease;
-        }
-
-        @keyframes fadeSlide {
-            from {
-                opacity: 0;
-                transform: translateY(24px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* ──────────────────────────────────────
-           HERO SECTION
-           ────────────────────────────────────── */
-        #home {
-            padding-top: 80px;
-            padding-bottom: 40px;
-            position: relative;
             text-align: center;
-            overflow: hidden;
+            width: 100%;
         }
 
-        .hero-moon {
-            position: absolute;
-            top: -60px;
-            right: -120px;
-            width: 420px;
-            height: 420px;
-            border-radius: 50%;
-            background:
-                radial-gradient(circle at 30% 30%, #f5f0e8 0%, #e0d8c8 25%, #c8bfa8 50%, #a89880 75%, #8a7a62 100%),
-                radial-gradient(circle at 40% 25%, rgba(255, 255, 255, 0.35) 0%, transparent 30%),
-                radial-gradient(circle at 55% 45%, rgba(180, 160, 140, 0.6) 0%, transparent 18%),
-                radial-gradient(circle at 32% 55%, rgba(160, 140, 120, 0.5) 0%, transparent 14%),
-                radial-gradient(circle at 60% 35%, rgba(150, 130, 110, 0.45) 0%, transparent 16%),
-                radial-gradient(circle at 48% 60%, rgba(170, 150, 130, 0.4) 0%, transparent 20%),
-                radial-gradient(circle at 25% 40%, rgba(140, 120, 100, 0.5) 0%, transparent 12%),
-                radial-gradient(circle at 65% 55%, rgba(155, 135, 115, 0.45) 0%, transparent 15%);
-            box-shadow:
-                0 0 120px rgba(200, 190, 170, 0.25),
-                0 0 300px rgba(180, 170, 150, 0.12),
-                inset 0 0 60px rgba(0, 0, 0, 0.15);
-            z-index: 0;
-            pointer-events: none;
+        .glitch-text {
+            font-size: 5rem;
+            letter-spacing: 20px;
+            margin: 0;
+            font-weight: 700;
             opacity: 0.9;
+            text-shadow: 0 0 20px rgba(0, 210, 255, 0.3);
         }
 
-        @media (max-width: 768px) {
-            .hero-moon {
-                width: 250px;
-                height: 250px;
-                top: -20px;
-                right: -60px;
-            }
-        }
-
-        .hero-content {
-            position: relative;
-            z-index: 1;
-        }
-
-        .hero-content h1 {
-            font-size: clamp(3.2rem, 9vw, 6rem);
-            font-weight: 900;
-            letter-spacing: -4px;
-            background: linear-gradient(180deg, #ffffff 25%, var(--primary) 90%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 10px;
-            line-height: 1.05;
-        }
-
-        .hero-sub {
-            color: var(--text-muted);
-            font-size: 1.15rem;
-            max-width: 580px;
-            margin: 0 auto 36px;
-            font-weight: 300;
-            letter-spacing: 0.3px;
-        }
-
-        .btn {
-            display: inline-block;
-            background: #fff;
-            color: #000;
-            padding: 17px 44px;
-            border-radius: 100px;
-            text-decoration: none;
-            font-weight: 800;
-            font-size: 0.95rem;
-            transition: all 0.3s;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-            letter-spacing: 0.5px;
-            position: relative;
-            z-index: 1;
-        }
-
-        .btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 16px 44px rgba(0, 210, 255, 0.3);
-            background: var(--primary);
-            color: #fff;
-        }
-
-        /* ──────────────────────────────────────
-           LEAD ARCHITECT CARD (About Section)
-           ────────────────────────────────────── */
-        #about {
+        .stat-box {
             display: flex;
+            gap: 60px;
             justify-content: center;
-            padding-top: 50px;
-            padding-bottom: 50px;
+            margin-top: 20px;
         }
 
-        .architect-card {
-            width: 100%;
-            max-width: 800px;
-            height: auto;
-            min-height: 350px;
-            background: var(--deep-charcoal);
-            border: 1px solid var(--cyan-30);
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            padding: 40px;
-            gap: 40px;
-            position: relative;
-            overflow: hidden;
-            transition: border-color 0.3s;
+        .stat-item h2 {
+            color: var(--cyan);
+            font-size: 2rem;
+            margin: 0;
         }
 
-        .architect-card:hover {
-            border-color: var(--primary);
+        .stat-item span {
+            font-size: 0.75rem;
+            letter-spacing: 3px;
+            opacity: 0.5;
         }
 
-        /* CLEARANCE Badge */
-        .clearance-badge {
-            position: absolute;
-            top: 20px;
-            right: 24px;
-            background: rgba(255, 62, 62, 0.1);
-            border: 1px solid rgba(255, 62, 62, 0.4);
-            color: var(--danger);
-            font-family: 'Share Tech Mono', 'Courier New', monospace;
-            font-size: 0.7rem;
-            font-weight: 700;
-            letter-spacing: 2px;
-            padding: 6px 14px;
-            border-radius: 6px;
-            pointer-events: none;
-        }
-
-        /* Avatar with bracket frame */
-        .avatar-frame {
-            width: 180px;
-            height: 180px;
-            flex-shrink: 0;
-            position: relative;
-            border-left: 3px solid var(--primary);
-            border-right: 3px solid var(--primary);
-            border-radius: 6px;
-            overflow: hidden;
-            background: #0d0d0d;
-        }
-
-        .avatar-frame::before,
-        .avatar-frame::after {
-            content: '';
-            position: absolute;
-            left: -3px;
-            right: -3px;
-            height: 3px;
-            background: var(--primary);
-            z-index: 2;
-            border-radius: 1px;
-        }
-
-        .avatar-frame::before {
-            top: 0;
-        }
-        .avatar-frame::after {
-            bottom: 0;
-        }
-
-        /* Horizontal bracket arms */
-        .bracket-arm-top,
-        .bracket-arm-bottom {
-            position: absolute;
-            width: 14px;
-            height: 3px;
-            background: var(--primary);
-            z-index: 3;
-            border-radius: 1px;
-        }
-
-        .bracket-arm-top {
-            top: 0;
-            left: -3px;
-        }
-        .bracket-arm-top.right {
-            left: auto;
-            right: -3px;
-        }
-        .bracket-arm-bottom {
-            bottom: 0;
-            left: -3px;
-        }
-        .bracket-arm-bottom.right {
-            left: auto;
-            right: -3px;
-        }
-
-        .avatar-frame img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
-            position: relative;
-            z-index: 1;
-        }
-
-        /* Scanline effect */
-        .scanline {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: rgba(255, 255, 255, 0.06);
-            z-index: 4;
-            pointer-events: none;
-            animation: scanlineMove 4s linear infinite;
-        }
-
-        @keyframes scanlineMove {
-            0% {
-                top: -5%;
-            }
-            100% {
-                top: 105%;
-            }
-        }
-
-        /* Architect data */
-        .architect-data {
-            font-family: 'Share Tech Mono', 'Courier New', monospace;
-            color: var(--text);
-            font-size: 0.9rem;
-            line-height: 2;
-            flex: 1;
-        }
-
-        .architect-data .prompt {
-            color: var(--primary);
-        }
-        .architect-data .label {
-            color: var(--text-muted);
-            margin-right: 4px;
-        }
-        .architect-data .value {
-            color: #E0E0E0;
-            font-weight: 700;
-        }
-        .architect-data .online-dot {
-            display: inline-block;
-            width: 9px;
-            height: 9px;
-            background: #00ff88;
-            border-radius: 50%;
-            margin-left: 6px;
-            animation: dotPulse 2s infinite;
-            vertical-align: middle;
-        }
-
-        @media (max-width: 700px) {
-            .architect-card {
-                flex-direction: column;
-                align-items: center;
-                text-align: center;
-                padding: 30px 20px;
-                gap: 24px;
-            }
-            .avatar-frame {
-                width: 140px;
-                height: 140px;
-            }
-            .architect-data {
-                font-size: 0.8rem;
-            }
-            .clearance-badge {
-                top: 12px;
-                right: 12px;
-                font-size: 0.65rem;
-                padding: 4px 10px;
-            }
-        }
-
-        /* ──────────────────────────────────────
-           ACTIVE STATIONS (Fleet Section)
-           ────────────────────────────────────── */
-        #fleet {
-            padding-top: 40px;
-            padding-bottom: 50px;
-        }
-        .section-title {
-            font-size: 2.2rem;
-            font-weight: 900;
-            letter-spacing: -1px;
-            margin-bottom: 10px;
-            color: #fff;
-        }
-        .section-subtitle {
-            color: var(--text-muted);
-            margin-bottom: 36px;
-            font-size: 0.95rem;
-            letter-spacing: 0.3px;
-        }
-
-        .stations-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 20px;
-            max-width: 1100px;
-        }
-
-        .station-card {
-            width: 100%;
-            max-width: 250px;
-            height: 150px;
-            background: transparent;
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 14px;
-            position: relative;
-            overflow: hidden;
-            cursor: pointer;
-            transition: all 0.35s ease;
-            display: flex;
-            flex-direction: column;
-            padding: 0;
-            margin: 0 auto;
-        }
-
-        .station-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 5px;
-            background: var(--primary);
-            z-index: 2;
-            border-radius: 14px 14px 0 0;
-        }
-
-        .station-card .card-bg-grid {
-            position: absolute;
-            inset: 0;
-            background-image:
-                linear-gradient(rgba(0, 210, 255, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 210, 255, 0.03) 1px, transparent 1px);
-            background-size: 18px 18px;
-            pointer-events: none;
-            z-index: 0;
-            border-radius: 14px;
-        }
-
-        .station-card .card-content {
-            position: relative;
-            z-index: 1;
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            padding: 18px 16px 14px;
-            transition: transform 0.35s ease;
-        }
-
-        .station-card:hover {
-            border-color: var(--primary);
-            box-shadow: 0 0 30px rgba(0, 210, 255, 0.15), 0 8px 24px rgba(0, 0, 0, 0.6);
-        }
-
-        .station-card:hover .card-content {
-            transform: translateX(3px);
-        }
-
-        .station-card .card-top {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: auto;
-        }
-
-        .station-card .server-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: var(--cyan-10);
-            border: 1px solid var(--cyan-30);
-            flex-shrink: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 900;
-            font-size: 0.9rem;
-            color: var(--primary);
-            letter-spacing: -1px;
-        }
-
-        .station-card .server-name {
-            font-weight: 700;
-            font-size: 0.9rem;
-            letter-spacing: 0.5px;
-            color: #fff;
-            text-transform: uppercase;
-            line-height: 1.2;
-        }
-
-        .station-card .card-bottom {
-            display: flex;
-            justify-content: space-between;
-            gap: 10px;
-            font-size: 0.7rem;
-            color: var(--text-muted);
-            letter-spacing: 0.5px;
-            margin-top: 10px;
-            font-family: 'Share Tech Mono', 'Courier New', monospace;
-        }
-
-        .station-card .card-bottom span {
-            display: block;
-        }
-        .station-card .card-bottom .data-val {
-            color: #ccc;
-            font-weight: 600;
-        }
-
-        /* ──────────────────────────────────────
-           COMMANDS SECTION
-           ────────────────────────────────────── */
-        #commands .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
-            margin-top: 10px;
-        }
-
-        .card-generic {
-            background: var(--surface);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 22px;
-            padding: 32px 28px;
-            transition: all 0.3s;
-        }
-
-        .card-generic:hover {
-            border-color: var(--cyan-30);
-            box-shadow: 0 0 20px rgba(0, 210, 255, 0.06);
-        }
-        .card-generic h3 {
-            margin-bottom: 14px;
-            font-size: 1.3rem;
-            font-weight: 700;
-        }
-        .cmd-list {
-            list-style: none;
-        }
-        .cmd-list li {
-            padding: 10px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-            font-family: 'Share Tech Mono', 'Courier New', monospace;
-            font-size: 0.9rem;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-        .cmd-list li span {
-            color: var(--primary);
-            font-weight: 700;
-            background: var(--cyan-10);
-            padding: 3px 9px;
-            border-radius: 5px;
-            font-size: 0.8rem;
-        }
-
-        /* ──────────────────────────────────────
-           STATUS SECTION
-           ────────────────────────────────────── */
-        #status .card-generic {
-            text-align: center;
-            max-width: 500px;
-            margin: 0 auto;
-        }
-        .status-indicator {
-            display: inline-block;
-            width: 12px;
-            height: 12px;
-            background: #00ff88;
-            border-radius: 50%;
-            margin-right: 8px;
-            animation: dotPulse 2s infinite;
-            vertical-align: middle;
-        }
-        .stat-mini-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-            gap: 14px;
-            margin-top: 24px;
-            max-width: 500px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-        .stat-mini-item {
-            background: var(--surface);
-            border-radius: 16px;
-            padding: 18px 12px;
-            text-align: center;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-        .stat-mini-item .val {
-            font-size: 1.6rem;
-            font-weight: 900;
-            color: var(--primary);
-        }
-        .stat-mini-item .lbl {
-            color: var(--text-muted);
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-top: 4px;
-        }
-
-        /* ──────────────────────────────────────
-           SYSTEM PULSE FOOTER (Fixed)
-           ────────────────────────────────────── */
-        .system-pulse {
+        /* Footer System Pulse */
+        .footer-pulse {
             position: fixed;
             bottom: 0;
-            left: 0;
-            right: 0;
+            width: 100%;
             height: 40px;
-            background: #000000;
-            border-top: 1px solid var(--cyan-30);
-            z-index: 200;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0 20px;
-            font-family: 'Share Tech Mono', 'Courier New', monospace;
-            font-size: 11px;
-            letter-spacing: 0.5px;
-            color: var(--text-muted);
-            gap: 16px;
+            padding: 0 30px;
+            font-size: 0.7rem;
+            font-family: var(--font-mono);
+            background: rgba(0,0,0,0.8);
+            border-top: 0.5px solid var(--border-color);
         }
 
-        .pulse-left {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            flex-shrink: 0;
-            white-space: nowrap;
-        }
-        .pulse-dot {
+        .status-dot {
             width: 8px;
             height: 8px;
             background: #00ff88;
             border-radius: 50%;
-            animation: dotPulse 2s infinite;
-            flex-shrink: 0;
-        }
-        .pulse-left span {
-            color: #aaa;
-        }
-
-        .pulse-center {
-            flex: 1;
-            overflow: hidden;
-            position: relative;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            mask-image: linear-gradient(to right, transparent 0%, #000 8%, #000 92%, transparent 100%);
-            -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 8%, #000 92%, transparent 100%);
+            display: inline-block;
+            margin-right: 10px;
+            box-shadow: 0 0 10px #00ff88;
+            animation: pulse 2s infinite;
         }
 
-        .ticker-track {
-            display: flex;
-            gap: 50px;
-            white-space: nowrap;
-            animation: tickerScroll 30s linear infinite;
-            color: #666;
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.4; }
+            100% { opacity: 1; }
         }
 
-        .ticker-track span {
-            color: #555;
-        }
-        .ticker-track .log-highlight {
-            color: var(--primary);
+        .signal-bar {
+            color: var(--cyan);
+            font-weight: bold;
         }
 
-        @keyframes tickerScroll {
-            0% {
-                transform: translateX(0);
-            }
-            100% {
-                transform: translateX(-50%);
-            }
-        }
-
-        .pulse-right {
-            display: flex;
-            align-items: center;
-            gap: 18px;
-            flex-shrink: 0;
-            white-space: nowrap;
-            color: #777;
-        }
-        .pulse-right .clock {
-            color: #aaa;
-        }
-        .pulse-right .latency {
-            color: var(--primary);
-        }
-
-        @media (max-width: 600px) {
-            .system-pulse {
-                font-size: 9px;
-                padding: 0 10px;
-                gap: 8px;
-                height: 36px;
-            }
-            .pulse-left span {
-                display: none;
-            }
-            .pulse-right {
-                gap: 8px;
-            }
-            .ticker-track {
-                gap: 30px;
-                font-size: 9px;
-            }
-        }
-
-        /* ──────────────────────────────────────
-           UTILITY
-           ────────────────────────────────────── */
-        .text-center {
-            text-align: center;
-        }
+        /* Utility */
+        .cyan-text { color: var(--cyan); }
     </style>
 </head>
 <body>
 
-    <div class="aura"></div>
-
-    <!-- ────────────────────────────────────
-         HEADER
-         ──────────────────────────────────── -->
-    <header>
-        <div class="header-inner">
-            <div class="logo">AERODYNE</div>
-            <button class="hamburger" aria-label="Toggle menu" aria-expanded="false">☰</button>
-            <nav class="nav-links" role="navigation">
-                <a href="#home" class="active" data-nav="home">Home</a>
-                <a href="#about" data-nav="about">About</a>
-                <a href="#fleet" data-nav="fleet">Fleet</a>
-                <a href="#commands" data-nav="commands">Commands</a>
-                <a href="#status" data-nav="status">Status</a>
-            </nav>
-            <div class="user-count-badge">
-                <span class="dot"></span> 1,247 ACTIVE
-            </div>
-        </div>
-    </header>
-
-    <!-- ────────────────────────────────────
-         HOME / HERO SECTION
-         ──────────────────────────────────── -->
-    <section id="home" class="section">
-        <div class="hero-moon" aria-hidden="true"></div>
-        <div class="hero-content">
-            <h1>AERODYNE</h1>
-            <p class="hero-sub">The premier intelligence protocol for high-performance study communities and orbital mission tracking.</p>
-            <a href="https://discord.com/oauth2/authorize?client_id=1488701920452546691&permissions=8&integration_type=0&scope=bot"
-            class="btn" target="_blank" rel="noopener noreferrer">Add to Discord</a>
-        </div>
-    </section>
-
-    <!-- ────────────────────────────────────
-         ABOUT / LEAD ARCHITECT CARD
-         ──────────────────────────────────── -->
-    <section id="about" class="section">
-        <div class="architect-card">
-            <div class="clearance-badge">CLEARANCE: OMNI</div>
-            <!-- Avatar with bracket frame -->
+    <div class="glass-panel profile-hud">
+        <div style="display: flex; align-items: center; gap: 20px;">
             <div class="avatar-frame">
-                <div class="bracket-arm-top"></div>
-                <div class="bracket-arm-top right"></div>
-                <div class="bracket-arm-bottom"></div>
-                <div class="bracket-arm-bottom right"></div>
-                <div class="scanline"></div>
-                <!-- Replace the src below with your actual avatar image URL -->
-                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect fill='%23111111' width='180' height='180'/%3E%3Ccircle cx='90' cy='68' r='30' fill='%23333'/%3E%3Cellipse cx='90' cy='140' rx='55' ry='35' fill='%23222'/%3E%3Ctext x='90' y='100' text-anchor='middle' fill='%2300D2FF' font-family='Inter,sans-serif' font-weight='900' font-size='28'%3EA%3C/text%3E%3C/svg%3E"
-                alt="Lead Architect Avatar">
+                <div class="corner-dot" style="top:-2px; left:-2px;"></div>
+                <div class="corner-dot" style="top:-2px; right:-2px;"></div>
+                <img src="https://via.placeholder.com/60" alt="Aeron" style="width: 100%; height: 100%; object-fit: cover; opacity: 0.8;">
             </div>
-            <!-- Terminal data -->
-            <div class="architect-data">
-                <div><span class="prompt">&gt;</span> <span class="label">NAME:</span> <span class="value">AERON</span></div>
-                <div><span class="prompt">&gt;</span> <span class="label">DEPT:</span> <span class="value">CORE_ENGINEERING</span></div>
-                <div><span class="prompt">&gt;</span> <span class="label">STATUS:</span> <span class="value">ONLINE</span><span class="online-dot"></span></div>
-                <div style="margin-top:8px;color:var(--text-muted);font-size:0.75rem;">// LEAD_ARCHITECT // AERODYNE_SYSTEMS</div>
+            <div>
+                <h2 style="margin: 0; font-size: 1.6rem; letter-spacing: 2px;">AERON</h2>
+                <div style="font-family: var(--font-mono); font-size: 0.65rem; color: var(--cyan);">LEAD_ARCHITECT // OMNI</div>
             </div>
         </div>
-    </section>
-
-    <!-- ────────────────────────────────────
-         FLEET / ACTIVE STATIONS
-         ──────────────────────────────────── -->
-    <section id="fleet" class="section">
-        <h2 class="section-title">[ ACTIVE_STATIONS ]</h2>
-        <p class="section-subtitle">Live fleet telemetry — connected servers across the network.</p>
-        <div class="stations-grid">
-            <!-- Station Card 1 -->
-            <div class="station-card">
-                <div class="card-bg-grid"></div>
-                <div class="card-content">
-                    <div class="card-top">
-                        <div class="server-icon">NX</div>
-                        <div class="server-name">NEXUS_ALPHA</div>
-                    </div>
-                    <div class="card-bottom">
-                        <span>POP: <span class="data-val">342</span> UNITS</span>
-                        <span>CLASS: <span class="data-val">COMMAND</span></span>
-                    </div>
-                </div>
+        
+        <div style="margin-top: 20px; border-top: 0.5px solid var(--border-color); padding-top: 15px;">
+            <div style="display: flex; justify-content: space-between; font-size: 0.65rem; font-family: var(--font-mono); margin-bottom: 5px;">
+                <span>STABILITY</span>
+                <span>99.9%</span>
             </div>
-            <!-- Station Card 2 -->
-            <div class="station-card">
-                <div class="card-bg-grid"></div>
-                <div class="card-content">
-                    <div class="card-top">
-                        <div class="server-icon">VR</div>
-                        <div class="server-name">VERTEX_RESEARCH</div>
-                    </div>
-                    <div class="card-bottom">
-                        <span>POP: <span class="data-val">218</span> UNITS</span>
-                        <span>CLASS: <span class="data-val">RESEARCH</span></span>
-                    </div>
-                </div>
-            </div>
-            <!-- Station Card 3 -->
-            <div class="station-card">
-                <div class="card-bg-grid"></div>
-                <div class="card-content">
-                    <div class="card-top">
-                        <div class="server-icon">PH</div>
-                        <div class="server-name">PHANTOM_OPS</div>
-                    </div>
-                    <div class="card-bottom">
-                        <span>POP: <span class="data-val">156</span> UNITS</span>
-                        <span>CLASS: <span class="data-val">COMBAT</span></span>
-                    </div>
-                </div>
-            </div>
-            <!-- Station Card 4 -->
-            <div class="station-card">
-                <div class="card-bg-grid"></div>
-                <div class="card-content">
-                    <div class="card-top">
-                        <div class="server-icon">SL</div>
-                        <div class="server-name">SOLACE_STATION</div>
-                    </div>
-                    <div class="card-bottom">
-                        <span>POP: <span class="data-val">489</span> UNITS</span>
-                        <span>CLASS: <span class="data-val">SUPPORT</span></span>
-                    </div>
-                </div>
-            </div>
-            <!-- Station Card 5 -->
-            <div class="station-card">
-                <div class="card-bg-grid"></div>
-                <div class="card-content">
-                    <div class="card-top">
-                        <div class="server-icon">OR</div>
-                        <div class="server-name">ORACLE_VAULT</div>
-                    </div>
-                    <div class="card-bottom">
-                        <span>POP: <span class="data-val">97</span> UNITS</span>
-                        <span>CLASS: <span class="data-val">ELITE</span></span>
-                    </div>
-                </div>
-            </div>
-            <!-- Station Card 6 -->
-            <div class="station-card">
-                <div class="card-bg-grid"></div>
-                <div class="card-content">
-                    <div class="card-top">
-                        <div class="server-icon">TD</div>
-                        <div class="server-name">TIDAL_DRIFT</div>
-                    </div>
-                    <div class="card-bottom">
-                        <span>POP: <span class="data-val">203</span> UNITS</span>
-                        <span>CLASS: <span class="data-val">EXPLORATION</span></span>
-                    </div>
-                </div>
+            <div style="width: 100%; height: 2px; background: rgba(255,255,255,0.1);">
+                <div style="width: 99%; height: 100%; background: var(--cyan); box-shadow: 0 0 10px var(--cyan);"></div>
             </div>
         </div>
-    </section>
+    </div>
 
-    <!-- ────────────────────────────────────
-         COMMANDS SECTION
-         ──────────────────────────────────── -->
-    <section id="commands" class="section">
-        <h2 class="section-title">Bot Protocols</h2>
-        <p class="section-subtitle">Core command framework for server operations.</p>
-        <div class="grid">
-            <div class="card-generic">
-                <h3 style="color:var(--danger);">🛡️ Moderation</h3>
-                <ul class="cmd-list">
-                    <li><span>-ban</span> [user]</li>
-                    <li><span>-kick</span> [user]</li>
-                    <li><span>-timeout</span> [user]</li>
-                    <li><span>-clear</span> [amount]</li>
-                    <li><span>-giverole</span> [role]</li>
-                </ul>
+    <div class="glass-panel fleet-hud">
+        <h3 style="font-size: 0.8rem; margin: 0 0 15px 0; letter-spacing: 2px; color: var(--cyan);">[ ACTIVE_UNITS ]</h3>
+        <div style="font-family: var(--font-mono); font-size: 0.75rem;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
+                <span>STATION_ALPHA</span>
+                <span class="signal-bar">[|||||]</span>
             </div>
-            <div class="card-generic">
-                <h3>💰 Economy</h3>
-                <ul class="cmd-list">
-                    <li><span>-daily</span> / <span>-bal</span></li>
-                    <li><span>-rob</span> / <span>-forge</span></li>
-                    <li><span>-shop</span> / <span>-buy</span></li>
-                    <li><span>-crash</span> / <span>-slots</span></li>
-                </ul>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
+                <span>STATION_BETA</span>
+                <span class="signal-bar">[||||.]</span>
             </div>
-            <div class="card-generic">
-                <h3 style="color:var(--primary);">⚡ Specialized</h3>
-                <ul class="cmd-list">
-                    <li><span>-studymode</span> (VC Lock)</li>
-                    <li><span>/rank</span> (Level Stats)</li>
-                    <li><span>/todo</span> (Invention)</li>
-                </ul>
+            <div style="display: flex; justify-content: space-between;">
+                <span>STATION_GAMMA</span>
+                <span class="signal-bar">[||...]</span>
             </div>
         </div>
-    </section>
+    </div>
 
-    <!-- ────────────────────────────────────
-         STATUS SECTION
-         ──────────────────────────────────── -->
-    <section id="status" class="section">
-        <div class="card-generic text-center">
-            <h2 style="margin-bottom:16px;">System Health</h2>
-            <p style="font-size:1.1rem;">
-                <span class="status-indicator"></span> Uplink Status: <span style="color:var(--primary);font-weight:700;">CONNECTED</span>
-            </p>
-            <p style="color:var(--text-muted);margin-top:8px;">Latency: 24ms &nbsp;|&nbsp; Database: Stable</p>
-            <div class="stat-mini-grid">
-                <div class="stat-mini-item"><div class="val">99.9%</div><div class="lbl">Uptime</div></div>
-                <div class="stat-mini-item"><div class="val">1.2k+</div><div class="lbl">Servers</div></div>
-                <div class="stat-mini-item"><div class="val">45k+</div><div class="lbl">Users</div></div>
-                <div class="stat-mini-item"><div class="val">v2.4.1</div><div class="lbl">Version</div></div>
+    <div class="center-console">
+        <h1 class="glitch-text">AERODYNE</h1>
+        <div class="stat-box">
+            <div class="stat-item">
+                <h2>100+</h2>
+                <span>STATIONS</span>
+            </div>
+            <div class="stat-item">
+                <h2>150K+</h2>
+                <span>SUBJECTS</span>
             </div>
         </div>
-    </section>
+    </div>
 
-    <!-- ────────────────────────────────────
-         SYSTEM PULSE FOOTER
-         ──────────────────────────────────── -->
-    <footer class="system-pulse">
-        <div class="pulse-left">
-            <span class="pulse-dot"></span> <span>SYSTEM_STABLE</span>
+    <div class="footer-pulse">
+        <div>
+            <span class="status-dot"></span>
+            <span>SYSTEM_STATUS: OPERATIONAL</span>
         </div>
-        <div class="pulse-center">
-            <div class="ticker-track" id="tickerTrack">
-                <span>[LOG]:</span> <span class="log-highlight">XP_ENGINE_v2.0_DEPLOYED</span>
-                <span>[LOG]:</span> NEW_UNIT_CONNECTED
-                <span>[LOG]:</span> <span class="log-highlight">ARTEMIS_TELEMETRY_SYNCED</span>
-                <span>[LOG]:</span> DB_BACKUP_COMPLETE
-                <span>[LOG]:</span> <span class="log-highlight">SECURITY_SCAN_PASSED</span>
-                <span>[LOG]:</span> NODE_04_ONLINE
-                <!-- Duplicated for seamless loop -->
-                <span>[LOG]:</span> <span class="log-highlight">XP_ENGINE_v2.0_DEPLOYED</span>
-                <span>[LOG]:</span> NEW_UNIT_CONNECTED
-                <span>[LOG]:</span> <span class="log-highlight">ARTEMIS_TELEMETRY_SYNCED</span>
-                <span>[LOG]:</span> DB_BACKUP_COMPLETE
-                <span>[LOG]:</span> <span class="log-highlight">SECURITY_SCAN_PASSED</span>
-                <span>[LOG]:</span> NODE_04_ONLINE
-            </div>
+        <div style="opacity: 0.4;">[LOG]: DATA_SYNC_SUCCESSFUL // ENCRYPTED_LINK_ACTIVE</div>
+        <div style="letter-spacing: 2px;">
+            <span class="cyan-text">LOC:</span> LUNAR_ORBIT
         </div>
-        <div class="pulse-right">
-            <span class="clock" id="liveClock">00:00:00 UTC</span>
-            <span class="latency" id="liveLatency">LATENCY: 14MS</span>
-        </div>
-    </footer>
+    </div>
 
-    <!-- ────────────────────────────────────
-         SCRIPTS
-         ──────────────────────────────────── -->
-    <script>
-        (function() {
-            // ── Navigation: smooth scroll + active state ──
-            const navLinks = document.querySelectorAll('.nav-links a');
-            const hamburger = document.querySelector('.hamburger');
-            const navMenu = document.querySelector('.nav-links');
-            const sections = document.querySelectorAll('.section');
-
-            function setActiveNav(id) {
-                navLinks.forEach(link => {
-                    link.classList.toggle('active', link.dataset.nav === id);
-                });
-            }
-
-            // Click handler for nav links
-            navLinks.forEach(link => {
-                link.addEventListener('click', function(e) {
-                    const targetId = this.dataset.nav;
-                    if (targetId) {
-                        // Smooth scroll handled by CSS scroll-behavior
-                        setActiveNav(targetId);
-                        // Close mobile menu
-                        navMenu.classList.remove('open');
-                        hamburger.setAttribute('aria-expanded', 'false');
-                    }
-                });
-            });
-
-            // Hamburger toggle
-            hamburger.addEventListener('click', () => {
-                const expanded = navMenu.classList.toggle('open');
-                hamburger.setAttribute('aria-expanded', expanded);
-            });
-
-            // Close mobile menu when clicking outside
-            document.addEventListener('click', (e) => {
-                if (!e.target.closest('header') && navMenu.classList.contains('open')) {
-                    navMenu.classList.remove('open');
-                    hamburger.setAttribute('aria-expanded', 'false');
-                }
-            });
-
-            // Update active nav on scroll
-            let scrollTicking = false;
-            window.addEventListener('scroll', () => {
-                if (!scrollTicking) {
-                    requestAnimationFrame(() => {
-                        let currentId = 'home';
-                        sections.forEach(section => {
-                            const rect = section.getBoundingClientRect();
-                            if (rect.top <= 120) {
-                                currentId = section.id;
-                            }
-                        });
-                        setActiveNav(currentId);
-                        scrollTicking = false;
-                    });
-                    scrollTicking = true;
-                }
-            });
-
-            // ── Real-time clock ──
-            function updateClock() {
-                const now = new Date();
-                const utc = now.toISOString().replace('T', ' ').slice(11, 19);
-                document.getElementById('liveClock').textContent = utc + ' UTC';
-            }
-            updateClock();
-            setInterval(updateClock, 1000);
-
-            // ── Dynamic latency ──
-            function updateLatency() {
-                const ms = Math.floor(Math.random() * 5) + 12; // 12–16ms
-                document.getElementById('liveLatency').textContent = 'LATENCY: ' + ms + 'MS';
-            }
-            setInterval(updateLatency, 3000);
-            updateLatency();
-
-            // ── Ticker hover pause ──
-            const ticker = document.getElementById('tickerTrack');
-            if (ticker) {
-                ticker.addEventListener('mouseenter', () => {
-                    ticker.style.animationPlayState = 'paused';
-                });
-                ticker.addEventListener('mouseleave', () => {
-                    ticker.style.animationPlayState = 'running';
-                });
-            }
-
-            console.log('%c AERODYNE %c SYSTEMS ONLINE ',
-                'background:#00D2FF;color:#000;font-weight:900;padding:4px 8px;border-radius:4px;',
-                'color:#888;');
-        })();
-    </script>
 </body>
 </html>
