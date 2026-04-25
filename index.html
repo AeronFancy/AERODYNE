@@ -3,224 +3,132 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AERODYNE // COMMAND_DECK</title>
+    <title>AERODYNE // MISSION_CONTROL</title>
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;500;700&family=Fira+Code:wght@300;500&display=swap" rel="stylesheet">
     <style>
         :root {
             --cyan: #00d2ff;
             --dark-bg: #020205;
-            --panel-bg: rgba(11, 16, 21, 0.6);
-            --border-color: rgba(0, 210, 255, 0.25);
+            --panel-bg: rgba(11, 16, 21, 0.8);
+            --border-color: rgba(0, 210, 255, 0.3);
             --font-main: 'Rajdhani', sans-serif;
-            --font-mono: 'Fira+Code', monospace;
+            --font-mono: 'Fira Code', monospace;
         }
 
-        * { box-sizing: border-box; }
-
+        * { box-sizing: border-box; transition: all 0.3s ease; }
         body {
             background: var(--dark-bg);
-            /* Subtle star-field effect */
-            background-image: 
-                radial-gradient(circle at center, rgba(0, 210, 255, 0.05) 0%, transparent 70%),
-                url('https://www.transparenttextures.com/patterns/stardust.png');
-            color: white;
-            font-family: var(--font-main);
-            margin: 0;
-            height: 100vh;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            text-transform: uppercase;
+            background-image: radial-gradient(circle at center, rgba(0, 210, 255, 0.05) 0%, transparent 70%);
+            color: white; font-family: var(--font-main); margin: 0; height: 100vh; overflow: hidden; text-transform: uppercase;
         }
 
-        /* Tactical Glass Panels */
         .glass-panel {
             background: var(--panel-bg);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
+            backdrop-filter: blur(15px);
             border: 0.5px solid var(--border-color);
-            position: absolute;
-            z-index: 10;
+            position: absolute; z-index: 10;
         }
 
-        /* Profile Left HUD */
-        .profile-hud {
-            top: 30px;
-            left: 30px;
-            width: 320px;
-            padding: 20px;
+        /* --- NAVIGATION TABS --- */
+        .nav-sidebar {
+            top: 120px; left: 30px; width: 200px; display: flex; flex-direction: column; gap: 5px;
+        }
+        .nav-item {
+            padding: 12px 20px; cursor: pointer; font-family: var(--font-mono); font-size: 0.8rem;
+            border-left: 2px solid transparent; color: rgba(255,255,255,0.5);
+        }
+        .nav-item:hover, .nav-item.active {
+            color: var(--cyan); border-left: 2px solid var(--cyan); background: rgba(0, 210, 255, 0.05);
         }
 
-        /* Fleet Right HUD */
-        .fleet-hud {
-            top: 30px;
-            right: 30px;
-            width: 280px;
-            padding: 20px;
+        /* --- MAIN CONTENT AREA --- */
+        .content-display {
+            top: 120px; left: 250px; right: 330px; bottom: 80px; padding: 30px;
+            overflow-y: auto; scrollbar-width: none;
         }
 
-        .avatar-frame {
-            border: 1px solid var(--cyan);
-            padding: 4px;
-            position: relative;
-            width: 65px;
-            height: 65px;
+        /* --- THE INVITE BUTTON (CRITICAL) --- */
+        .deploy-btn {
+            position: fixed; bottom: 80px; right: 30px;
+            background: transparent; border: 1px solid var(--cyan);
+            color: var(--cyan); padding: 15px 40px; font-family: var(--font-mono);
+            font-weight: bold; cursor: pointer; letter-spacing: 2px;
+            box-shadow: 0 0 15px rgba(0, 210, 255, 0.2);
+        }
+        .deploy-btn:hover {
+            background: var(--cyan); color: black; box-shadow: 0 0 30px var(--cyan);
         }
 
-        .corner-dot {
-            position: absolute;
-            width: 4px;
-            height: 4px;
-            background: var(--cyan);
-        }
+        /* --- UI ELEMENTS --- */
+        .category-header { color: var(--cyan); border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 20px; letter-spacing: 3px; }
+        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; font-family: var(--font-mono); font-size: 0.85rem; }
+        .data-label { color: rgba(255,255,255,0.4); }
 
-        /* Center Display */
-        .center-console {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            text-align: center;
-            width: 100%;
-        }
-
-        .glitch-text {
-            font-size: 5rem;
-            letter-spacing: 20px;
-            margin: 0;
-            font-weight: 700;
-            opacity: 0.9;
-            text-shadow: 0 0 20px rgba(0, 210, 255, 0.3);
-        }
-
-        .stat-box {
-            display: flex;
-            gap: 60px;
-            justify-content: center;
-            margin-top: 20px;
-        }
-
-        .stat-item h2 {
-            color: var(--cyan);
-            font-size: 2rem;
-            margin: 0;
-        }
-
-        .stat-item span {
-            font-size: 0.75rem;
-            letter-spacing: 3px;
-            opacity: 0.5;
-        }
-
-        /* Footer System Pulse */
-        .footer-pulse {
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 30px;
-            font-size: 0.7rem;
-            font-family: var(--font-mono);
-            background: rgba(0,0,0,0.8);
-            border-top: 0.5px solid var(--border-color);
-        }
-
-        .status-dot {
-            width: 8px;
-            height: 8px;
-            background: #00ff88;
-            border-radius: 50%;
-            display: inline-block;
-            margin-right: 10px;
-            box-shadow: 0 0 10px #00ff88;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.4; }
-            100% { opacity: 1; }
-        }
-
-        .signal-bar {
-            color: var(--cyan);
-            font-weight: bold;
-        }
-
-        /* Utility */
-        .cyan-text { color: var(--cyan); }
+        /* Existing HUDs */
+        .profile-hud { top: 30px; left: 30px; width: 320px; padding: 15px; }
+        .fleet-hud { top: 30px; right: 30px; width: 280px; padding: 15px; }
     </style>
 </head>
 <body>
 
     <div class="glass-panel profile-hud">
-        <div style="display: flex; align-items: center; gap: 20px;">
-            <div class="avatar-frame">
-                <div class="corner-dot" style="top:-2px; left:-2px;"></div>
-                <div class="corner-dot" style="top:-2px; right:-2px;"></div>
-                <img src="https://via.placeholder.com/60" alt="Aeron" style="width: 100%; height: 100%; object-fit: cover; opacity: 0.8;">
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <div style="border: 1px solid var(--cyan); width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;">
+                <span style="font-size: 1.5rem;">A</span>
             </div>
             <div>
-                <h2 style="margin: 0; font-size: 1.6rem; letter-spacing: 2px;">AERON</h2>
-                <div style="font-family: var(--font-mono); font-size: 0.65rem; color: var(--cyan);">LEAD_ARCHITECT // OMNI</div>
-            </div>
-        </div>
-        
-        <div style="margin-top: 20px; border-top: 0.5px solid var(--border-color); padding-top: 15px;">
-            <div style="display: flex; justify-content: space-between; font-size: 0.65rem; font-family: var(--font-mono); margin-bottom: 5px;">
-                <span>STABILITY</span>
-                <span>99.9%</span>
-            </div>
-            <div style="width: 100%; height: 2px; background: rgba(255,255,255,0.1);">
-                <div style="width: 99%; height: 100%; background: var(--cyan); box-shadow: 0 0 10px var(--cyan);"></div>
+                <h2 style="margin: 0; font-size: 1.2rem;">AERON</h2>
+                <div style="font-family: var(--font-mono); font-size: 0.6rem; color: var(--cyan);">ARCHITECT // OMNI_LEVEL</div>
             </div>
         </div>
     </div>
 
     <div class="glass-panel fleet-hud">
-        <h3 style="font-size: 0.8rem; margin: 0 0 15px 0; letter-spacing: 2px; color: var(--cyan);">[ ACTIVE_UNITS ]</h3>
-        <div style="font-family: var(--font-mono); font-size: 0.75rem;">
-            <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
-                <span>STATION_ALPHA</span>
-                <span class="signal-bar">[|||||]</span>
-            </div>
-            <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
-                <span>STATION_BETA</span>
-                <span class="signal-bar">[||||.]</span>
-            </div>
-            <div style="display: flex; justify-content: space-between;">
-                <span>STATION_GAMMA</span>
-                <span class="signal-bar">[||...]</span>
-            </div>
+        <div style="display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 0.7rem;">
+            <span>TOTAL_STATIONS: <span class="cyan-text">100+</span></span>
+            <span style="color: #00ff88;">ONLINE</span>
         </div>
     </div>
 
-    <div class="center-console">
-        <h1 class="glitch-text">AERODYNE</h1>
-        <div class="stat-box">
-            <div class="stat-item">
-                <h2>100+</h2>
-                <span>STATIONS</span>
+    <div class="nav-sidebar">
+        <div class="nav-item active">[01] MISSION_INFO</div>
+        <div class="nav-item">[02] INVENTIONS</div>
+        <div class="nav-item">[03] COMMAND_LIST</div>
+        <div class="nav-item">[04] SYSTEM_LOGS</div>
+    </div>
+
+    <div class="glass-panel content-display">
+        <h2 class="category-header">MISSION_SPECIFICATIONS</h2>
+        
+        <div class="info-grid">
+            <div>
+                <p><span class="data-label">DESIGNATION:</span> AERODYNE_CORE</p>
+                <p><span class="data-label">PURPOSE:</span> SERVER_AUTOMATION & LEVELING</p>
+                <p><span class="data-label">CORE_ENGINE:</span> NODE_JS_V20</p>
             </div>
-            <div class="stat-item">
-                <h2>150K+</h2>
-                <span>SUBJECTS</span>
+            <div>
+                <p><span class="data-label">XP_PROTOCOL:</span> EXPONENTIAL_GRIND</p>
+                <p><span class="data-label">SECURITY:</span> AUTOMOD_INTEGRATION</p>
+                <p><span class="data-label">DATABASE:</span> QUICK_DB_SQLITE</p>
             </div>
+        </div>
+
+        <h2 class="category-header" style="margin-top: 40px;">CORE_INVENTIONS</h2>
+        <div style="font-family: var(--font-mono); font-size: 0.8rem; line-height: 1.6;">
+            > TACTICAL_LEVELING: ADVANCED XP CALCULATIONS WITH LUNAR CARD GENERATION.<br>
+            > AUTOMOD_SHIELD: HIGH-SPEED MESSAGE FILTERING & ANTI-SPAM.<br>
+            > TICKET_SYSTEM: INTEGRATED SUPPORT INTERFACE FOR STATION MANAGEMENT.
         </div>
     </div>
 
-    <div class="footer-pulse">
-        <div>
-            <span class="status-dot"></span>
-            <span>SYSTEM_STATUS: OPERATIONAL</span>
-        </div>
-        <div style="opacity: 0.4;">[LOG]: DATA_SYNC_SUCCESSFUL // ENCRYPTED_LINK_ACTIVE</div>
-        <div style="letter-spacing: 2px;">
-            <span class="cyan-text">LOC:</span> LUNAR_ORBIT
-        </div>
+    <button class="deploy-btn" onclick="window.open('YOUR_INVITE_LINK_HERE')">
+        [ DEPLOY_UNIT_TO_DISCORD ]
+    </button>
+
+    <div class="glass-panel" style="bottom: 0; width: 100%; height: 40px; display: flex; align-items: center; justify-content: space-between; padding: 0 30px; font-size: 0.7rem; font-family: var(--font-mono);">
+        <div><span style="color:#00ff88;">●</span> SYSTEM_STABLE</div>
+        <div style="opacity: 0.3;">SECURE_HANDSHAKE_ESTABLISHED...</div>
+        <div>STATION_TIME: 2026-04-26 01:03</div>
     </div>
 
 </body>
