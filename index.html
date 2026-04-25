@@ -1,72 +1,92 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="ltr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="AERODYNE - Orbital Intelligence Protocol">
-    <title>AERODYNE | Command Dashboard</title>
+    <meta name="description" content="AERODYNE - مركز القيادة المداري | Orbital Command Dashboard">
+    <title>AERODYNE | Orbital HUD</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛰️</text></svg>">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <!-- Inter + monospace + Arabic font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&family=Share+Tech+Mono&family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #00D2FF;
-            --danger: #FF3E3E;
-            --bg: #050505;
-            --surface: #0F0F0F;
-            --secondary: #888888;
+            --cyber-cyan: #00D2FF;
+            --cyber-red: #FF3E3E;
+            --cyber-gold: #FFD700;
+            --bg-deep: #020205;
+            --surface: #0B0C10;
             --text: #E0E0E0;
+            --text-dim: #888;
+            --grid: rgba(0, 210, 255, 0.07);
             --cyan-30: rgba(0, 210, 255, 0.3);
-            --cyan-10: rgba(0, 210, 255, 0.1);
-            --cyan-05: rgba(0, 210, 255, 0.05);
-            --grid-color: rgba(0, 210, 255, 0.08);
+            --cyan-15: rgba(0, 210, 255, 0.15);
+            --red-15: rgba(255, 62, 62, 0.15);
+            --font-mono: 'Share Tech Mono', 'Courier New', monospace;
+            --font-ar: 'Cairo', sans-serif;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        html {
-            scroll-behavior: smooth;
-            scroll-padding-top: 80px;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; scroll-padding-top: 80px; }
         body {
-            background: var(--bg);
+            background: var(--bg-deep);
             color: var(--text);
             font-family: 'Inter', sans-serif;
             overflow-x: hidden;
             line-height: 1.6;
             min-height: 100vh;
             padding-bottom: 60px;
-            cursor: default;
+            cursor: none;
         }
 
         /* ── STARFIELD CANVAS ── */
         #starfield {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
             z-index: 0;
             pointer-events: none;
         }
 
-        /* ── HEADER ── */
+        /* ── MATRIX RAIN CANVAS (hidden by default) ── */
+        #matrixCanvas {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            z-index: 1;
+            opacity: 0.15;
+            pointer-events: none;
+            display: none;
+        }
+
+        /* ── CUSTOM CURSOR ── */
+        #cursor-dot {
+            position: fixed;
+            width: 8px; height: 8px;
+            background: var(--cyber-cyan);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transition: transform 0.05s;
+        }
+        #cursor-ring {
+            position: fixed;
+            width: 30px; height: 30px;
+            border: 1px solid var(--cyber-cyan);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9998;
+            transform: translate(-50%, -50%);
+            transition: width 0.2s, height 0.2s, border-color 0.2s;
+        }
+
+        /* ── HEADER / HUD TOP BAR ── */
         header {
             position: sticky;
             top: 0;
             z-index: 100;
-            background: rgba(5, 5, 5, 0.8);
+            background: rgba(2,2,5,0.85);
             backdrop-filter: blur(20px);
             border-bottom: 1px solid var(--cyan-30);
-            transition: background 0.3s;
-        }
-        .header-inner {
-            max-width: 1300px;
-            margin: 0 auto;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -76,11 +96,10 @@
         .logo {
             font-weight: 900;
             font-size: 1.4rem;
-            background: linear-gradient(135deg, var(--primary), #fff);
+            background: linear-gradient(135deg, var(--cyber-cyan), #fff);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            flex-shrink: 0;
             letter-spacing: -1px;
         }
         .nav-links {
@@ -90,49 +109,63 @@
         }
         .nav-links a {
             text-decoration: none;
-            color: var(--secondary);
+            color: var(--text-dim);
             font-weight: 600;
             font-size: 0.85rem;
             padding: 10px 18px;
             border-radius: 10px;
             transition: all 0.3s;
-            position: relative;
+            cursor: none;
         }
         .nav-links a:hover {
             color: #fff;
-            background: var(--cyan-05);
+            background: var(--cyan-15);
         }
         .nav-links a.active {
-            color: var(--primary);
+            color: var(--cyber-cyan);
             background: rgba(0, 210, 255, 0.1);
-            box-shadow: 0 0 15px rgba(0, 210, 255, 0.2);
+            box-shadow: 0 0 15px rgba(0,210,255,0.2);
             border: 1px solid var(--cyan-30);
         }
-        .user-badge {
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .live-stat {
             display: flex;
             align-items: center;
             gap: 8px;
-            background: rgba(0, 210, 255, 0.1);
-            border: 1px solid var(--cyan-30);
-            border-radius: 20px;
-            padding: 8px 16px;
+            font-family: var(--font-mono);
             font-size: 0.8rem;
-            font-weight: 700;
-            color: var(--primary);
-            flex-shrink: 0;
-            white-space: nowrap;
+            color: var(--cyber-cyan);
         }
-        .pulse-dot {
-            width: 10px;
-            height: 10px;
+        .pulse {
+            width: 10px; height: 10px;
             background: #00ff88;
             border-radius: 50%;
-            animation: dotPulse 2s infinite;
+            animation: pulsing 1.5s infinite;
         }
-        @keyframes dotPulse {
+        @keyframes pulsing {
             0% { box-shadow: 0 0 0 0 rgba(0,255,136,0.7); }
             70% { box-shadow: 0 0 0 12px rgba(0,255,136,0); }
             100% { box-shadow: 0 0 0 0 rgba(0,255,136,0); }
+        }
+        .lang-toggle {
+            background: var(--cyan-15);
+            border: 1px solid var(--cyan-30);
+            color: var(--cyber-cyan);
+            font-family: var(--font-ar);
+            font-weight: 700;
+            padding: 6px 14px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: 0.3s;
+        }
+        .lang-toggle:hover {
+            background: var(--cyber-cyan);
+            color: #000;
         }
         .hamburger {
             display: none;
@@ -146,10 +179,8 @@
             .hamburger { display: block; }
             .nav-links {
                 position: absolute;
-                top: 70px;
-                left: 0;
-                right: 0;
-                background: rgba(5,5,5,0.95);
+                top: 70px; left: 0; right: 0;
+                background: rgba(2,2,5,0.95);
                 backdrop-filter: blur(20px);
                 flex-direction: column;
                 padding: 20px;
@@ -160,56 +191,47 @@
             .nav-links a { width: 100%; }
         }
 
-        /* ── MAIN CONTAINER ── */
+        /* ── MAIN LAYOUT ── */
         .container {
             position: relative;
-            z-index: 1;
+            z-index: 2;
             max-width: 1200px;
             margin: 0 auto;
-            padding: 60px 20px;
+            padding: 40px 20px;
         }
-        section {
+        .section {
             margin-bottom: 80px;
             opacity: 0;
             transform: translateY(40px);
             transition: opacity 0.8s ease, transform 0.8s ease;
         }
-        section.visible {
+        .section.visible {
             opacity: 1;
             transform: translateY(0);
         }
 
         /* ── HERO ── */
-        #home {
-            position: relative;
-            text-align: center;
-            min-height: 90vh;
+        #hero {
             display: flex;
-            flex-direction: column;
             justify-content: center;
             align-items: center;
+            min-height: 90vh;
+            position: relative;
+            text-align: center;
         }
-        .moon-sphere {
+        .moon-3d {
             position: absolute;
-            top: -80px;
-            right: -100px;
-            width: 450px;
-            height: 450px;
+            top: -60px; right: -80px;
+            width: 400px; height: 400px;
             border-radius: 50%;
-            background:
-                radial-gradient(circle at 30% 25%, #f5f0e0 0%, #d9cdb0 20%, #b8a88a 45%, #8c7a5e 70%, #5c4e3a 100%);
-            box-shadow:
-                0 0 150px rgba(180,160,120,0.25),
-                inset 0 0 50px rgba(0,0,0,0.3);
+            background: radial-gradient(circle at 30% 25%, #f5f0e0, #b8a88a 45%, #5c4e3a);
+            box-shadow: 0 0 120px rgba(180,160,120,0.3);
             z-index: 0;
-            pointer-events: none;
-            animation: moonRotate 60s linear infinite;
-            transform-style: preserve-3d;
-            perspective: 800px;
+            animation: rotate3d 40s infinite linear;
         }
-        @keyframes moonRotate {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
+        @keyframes rotate3d {
+            0% { transform: rotateY(0deg) rotateX(10deg); }
+            100% { transform: rotateY(360deg) rotateX(10deg); }
         }
         .hero-content {
             position: relative;
@@ -219,345 +241,146 @@
             font-size: clamp(4rem, 10vw, 7rem);
             font-weight: 900;
             letter-spacing: -5px;
-            background: linear-gradient(180deg, #ffffff 20%, var(--primary) 100%);
+            background: linear-gradient(180deg, #ffffff 20%, var(--cyber-cyan));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            margin-bottom: 10px;
-            animation: glitch 5s infinite linear alternate;
-            cursor: default;
+            animation: glitch 3s infinite alternate;
         }
         @keyframes glitch {
-            0% { text-shadow: 2px 0 0 rgba(255,0,0,0.3), -2px 0 0 rgba(0,210,255,0.3); }
-            25% { text-shadow: -2px 0 0 rgba(255,0,0,0.3), 2px 0 0 rgba(0,210,255,0.3); }
-            50% { text-shadow: 2px 0 0 rgba(0,255,0,0.3), -2px 0 0 rgba(255,0,0,0.3); }
-            75% { text-shadow: -2px 0 0 rgba(0,255,0,0.3), 2px 0 0 rgba(0,210,255,0.3); }
-            100% { text-shadow: 2px 0 0 rgba(255,0,0,0.3), -2px 0 0 rgba(0,210,255,0.3); }
+            0% { text-shadow: 2px 0 red, -2px 0 cyan; }
+            25% { text-shadow: -2px 0 red, 2px 0 cyan; }
+            50% { text-shadow: 2px 0 cyan, -2px 0 red; }
+            75% { text-shadow: -2px 0 red, 2px 0 cyan; }
+            100% { text-shadow: 2px 0 red, -2px 0 cyan; }
         }
         .hero-sub {
-            color: var(--secondary);
+            color: var(--text-dim);
             font-size: 1.2rem;
             max-width: 600px;
             margin: 0 auto 40px;
             font-weight: 300;
-            letter-spacing: 0.5px;
         }
         .btn {
             display: inline-block;
-            background: white;
+            background: #fff;
             color: #000;
             padding: 18px 48px;
             border-radius: 100px;
             text-decoration: none;
             font-weight: 800;
-            font-size: 1rem;
-            transition: all 0.3s;
-            box-shadow: 0 10px 35px rgba(0,0,0,0.5);
+            transition: 0.3s;
+            box-shadow: 0 10px 35px rgba(0,0,0,0.6);
             letter-spacing: 0.5px;
-            position: relative;
-            overflow: hidden;
-            z-index: 1;
         }
         .btn:hover {
             transform: translateY(-4px);
             box-shadow: 0 20px 50px rgba(0,210,255,0.3);
-            background: var(--primary);
+            background: var(--cyber-cyan);
             color: #fff;
         }
 
-        /* ── ABOUT / LEAD ARCHITECT ── */
-        #about {
-            display: flex;
-            justify-content: center;
-        }
-        .architect-card {
-            width: 100%;
-            max-width: 800px;
-            background: #0A0A0A;
+        /* ── INTERACTIVE TERMINAL ── */
+        #terminal-section {
+            background: rgba(10,10,10,0.9);
             border: 1px solid var(--cyan-30);
-            border-radius: 24px;
-            display: flex;
-            align-items: center;
-            padding: 40px;
-            gap: 40px;
-            position: relative;
-            overflow: hidden;
-            transition: border-color 0.3s, box-shadow 0.3s;
-            box-shadow: 0 0 30px rgba(0,0,0,0.6);
+            border-radius: 20px;
+            padding: 30px;
+            font-family: var(--font-mono);
+            box-shadow: 0 0 40px rgba(0,210,255,0.1);
         }
-        .architect-card:hover {
-            border-color: var(--primary);
-            box-shadow: 0 0 50px rgba(0,210,255,0.2);
-        }
-        .clearance-badge {
-            position: absolute;
-            top: 20px;
-            right: 24px;
-            background: rgba(255,62,62,0.1);
-            border: 1px solid rgba(255,62,62,0.4);
-            color: var(--danger);
-            font-family: 'Share Tech Mono', monospace;
-            font-size: 0.7rem;
-            font-weight: 700;
-            letter-spacing: 2px;
-            padding: 6px 14px;
-            border-radius: 6px;
-        }
-        /* Bracket avatar */
-        .avatar-frame {
-            width: 180px;
-            height: 180px;
-            flex-shrink: 0;
-            position: relative;
-            border-left: 4px solid var(--primary);
-            border-right: 4px solid var(--primary);
+        .terminal-output {
+            height: 400px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            padding: 10px;
+            background: #050505;
+            border: 1px solid var(--cyan-15);
             border-radius: 8px;
-            overflow: hidden;
-            background: #0d0d0d;
-        }
-        .avatar-frame::before, .avatar-frame::after {
-            content: '';
-            position: absolute;
-            left: -4px;
-            right: -4px;
-            height: 4px;
-            background: var(--primary);
-            z-index: 2;
-        }
-        .avatar-frame::before { top: 0; }
-        .avatar-frame::after { bottom: 0; }
-        .scanline {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: rgba(255,255,255,0.07);
-            z-index: 4;
-            animation: scanlineMove 3s linear infinite;
-        }
-        @keyframes scanlineMove {
-            0% { top: -5%; }
-            100% { top: 105%; }
-        }
-        .avatar-frame img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
-        }
-        .architect-data {
-            font-family: 'Share Tech Mono', monospace;
-            font-size: 0.95rem;
-            line-height: 2.2;
             color: var(--text);
-        }
-        .architect-data .prompt { color: var(--primary); }
-        .architect-data .label { color: var(--secondary); margin-right: 5px; }
-        .architect-data .value { font-weight: 700; }
-        .online-dot {
-            display: inline-block;
-            width: 10px;
-            height: 10px;
-            background: #00ff88;
-            border-radius: 50%;
-            margin-left: 6px;
-            animation: dotPulse 2s infinite;
-            vertical-align: middle;
-        }
-
-        /* ── FLEET / ACTIVE STATIONS ── */
-        .section-title {
-            font-size: 2.4rem;
-            font-weight: 900;
-            letter-spacing: -1px;
-            margin-bottom: 10px;
-        }
-        .section-subtitle {
-            color: var(--secondary);
-            margin-bottom: 40px;
-            font-size: 0.95rem;
-        }
-        .stations-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 20px;
-        }
-        .station-card {
-            background: rgba(15,15,15,0.7);
-            border: 1px solid rgba(255,255,255,0.06);
-            border-radius: 16px;
-            height: 150px;
-            position: relative;
-            overflow: hidden;
-            cursor: pointer;
-            transition: all 0.35s;
-            transform-style: preserve-3d;
-            perspective: 600px;
-        }
-        .station-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 5px;
-            background: var(--primary);
-            border-radius: 16px 16px 0 0;
-            z-index: 2;
-        }
-        .station-card .grid-bg {
-            position: absolute;
-            inset: 0;
-            background-image:
-                linear-gradient(var(--grid-color) 1px, transparent 1px),
-                linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
-            background-size: 20px 20px;
-            z-index: 0;
-        }
-        .station-card .card-inner {
-            position: relative;
-            z-index: 1;
-            padding: 20px;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            transition: transform 0.3s;
-        }
-        .station-card:hover {
-            border-color: var(--primary);
-            box-shadow: 0 0 30px rgba(0,210,255,0.2);
-            transform: translateY(-3px);
-        }
-        .station-card:hover .card-inner {
-            transform: translateX(4px);
-        }
-        .card-top {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        .server-icon {
-            width: 42px;
-            height: 42px;
-            border-radius: 50%;
-            background: rgba(0,210,255,0.1);
-            border: 1px solid var(--cyan-30);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 900;
             font-size: 0.9rem;
-            color: var(--primary);
+            line-height: 1.8;
+            scroll-behavior: smooth;
         }
-        .server-name {
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: #fff;
+        .terminal-output .arabic {
+            font-family: var(--font-ar);
+            direction: rtl;
+            text-align: right;
+            color: var(--cyber-gold);
         }
-        .card-bottom {
+        .terminal-input-line {
             display: flex;
-            justify-content: space-between;
-            font-family: 'Share Tech Mono', monospace;
-            font-size: 0.7rem;
-            color: var(--secondary);
+            align-items: center;
+            gap: 8px;
+            color: var(--cyber-cyan);
         }
-        .card-bottom .data-val { color: #ccc; font-weight: 600; }
+        #terminalInput {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: var(--text);
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            outline: none;
+            caret-color: var(--cyber-cyan);
+        }
+        .terminal-input-line span {
+            font-weight: 700;
+        }
 
-        /* ── COMMANDS ── */
-        .commands-grid {
+        /* ── HUD PANELS ── */
+        .hud-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 20px;
         }
-        .cmd-card {
-            background: var(--surface);
-            border: 1px solid rgba(255,255,255,0.05);
-            border-radius: 24px;
-            padding: 30px;
-            transition: all 0.3s;
-        }
-        .cmd-card:hover {
-            border-color: var(--primary);
-            box-shadow: 0 0 25px rgba(0,210,255,0.15);
-        }
-        .cmd-card h3 { margin-bottom: 15px; font-size: 1.3rem; }
-        .cmd-list {
-            list-style: none;
-        }
-        .cmd-list li {
-            padding: 10px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.04);
-            font-family: 'Share Tech Mono', monospace;
-            font-size: 0.9rem;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
-            align-items: center;
-        }
-        .cmd-list li span {
-            background: var(--cyan-10);
-            color: var(--primary);
-            padding: 2px 8px;
-            border-radius: 5px;
-            font-weight: 700;
-            font-size: 0.8rem;
-        }
-
-        /* ── STATUS ── */
-        .status-card {
-            max-width: 500px;
-            margin: 0 auto;
-            background: var(--surface);
-            border: 1px solid rgba(255,255,255,0.05);
-            border-radius: 24px;
-            padding: 40px;
-            text-align: center;
-        }
-        .status-indicator {
-            display: inline-block;
-            width: 12px;
-            height: 12px;
-            background: #00ff88;
-            border-radius: 50%;
-            margin-right: 8px;
-            animation: dotPulse 2s infinite;
-            vertical-align: middle;
-        }
-        .stat-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-            gap: 14px;
-            margin-top: 30px;
-        }
-        .stat-item {
-            background: rgba(0,210,255,0.03);
-            border: 1px solid var(--cyan-05);
+        .hud-panel {
+            background: rgba(15,15,20,0.8);
+            border: 1px solid var(--cyan-15);
             border-radius: 16px;
-            padding: 18px;
-            text-align: center;
+            padding: 24px;
+            backdrop-filter: blur(10px);
+            transition: 0.3s;
+            position: relative;
+            overflow: hidden;
         }
-        .stat-item .val {
-            font-size: 1.6rem;
+        .hud-panel:hover {
+            border-color: var(--cyber-cyan);
+            box-shadow: 0 0 30px rgba(0,210,255,0.2);
+            transform: translateY(-4px);
+        }
+        .hud-panel h3 {
+            margin-bottom: 12px;
+            font-weight: 700;
+            color: var(--cyber-cyan);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .stat-value {
+            font-size: 2rem;
             font-weight: 900;
-            color: var(--primary);
+            color: #fff;
         }
-        .stat-item .lbl {
-            color: var(--secondary);
-            font-size: 0.7rem;
+        .stat-label {
+            color: var(--text-dim);
+            font-size: 0.8rem;
             text-transform: uppercase;
             letter-spacing: 1px;
-            margin-top: 5px;
         }
+        .fleet-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .fleet-card:last-child { border: none; }
 
         /* ── SYSTEM PULSE FOOTER ── */
         .system-pulse {
             position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
+            bottom: 0; left: 0; right: 0;
             height: 44px;
             background: #000;
             border-top: 1px solid var(--cyan-30);
@@ -565,30 +388,23 @@
             align-items: center;
             justify-content: space-between;
             padding: 0 20px;
-            font-family: 'Share Tech Mono', monospace;
+            font-family: var(--font-mono);
             font-size: 11px;
-            color: var(--secondary);
+            color: var(--text-dim);
             z-index: 200;
             gap: 15px;
         }
-        .pulse-left {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            flex-shrink: 0;
-        }
         .pulse-dot-static {
-            width: 8px;
-            height: 8px;
+            width: 8px; height: 8px;
             background: #00ff88;
             border-radius: 50%;
-            animation: dotPulse 2s infinite;
+            animation: pulsing 2s infinite;
         }
-        .pulse-center {
+        .ticker-wrap {
             flex: 1;
             overflow: hidden;
-            mask-image: linear-gradient(to right, transparent 0%, #000 10%, #000 90%, transparent 100%);
-            -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 10%, #000 90%, transparent 100%);
+            mask-image: linear-gradient(to right, transparent, #000 10%, #000 90%, transparent);
+            -webkit-mask-image: linear-gradient(to right, transparent, #000 10%, #000 90%, transparent);
         }
         .ticker {
             display: flex;
@@ -601,372 +417,360 @@
             100% { transform: translateX(-50%); }
         }
         .ticker span { color: #555; }
-        .ticker .log-highlight { color: var(--primary); }
-        .pulse-right {
-            display: flex;
-            gap: 18px;
-            flex-shrink: 0;
-            white-space: nowrap;
-        }
-        .clock { color: #aaa; }
-        .latency { color: var(--primary); }
+        .ticker .highlight { color: var(--cyber-cyan); }
 
-        @media (max-width: 600px) {
-            .system-pulse { font-size: 9px; padding: 0 10px; height: 38px; }
-            .pulse-left span { display: none; }
-            .pulse-right { gap: 8px; }
-        }
-
-        /* ── SCROLLBAR ── */
+        /* Scrollbar */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #050505; }
         ::-webkit-scrollbar-thumb { background: var(--cyan-30); border-radius: 3px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
-
-        /* ── CUSTOM CURSOR ── */
-        body {
-            cursor: none;
-        }
-        #cursor-dot {
-            position: fixed;
-            width: 8px;
-            height: 8px;
-            background: var(--primary);
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 9999;
-            transition: transform 0.1s;
-        }
-        #cursor-ring {
-            position: fixed;
-            width: 30px;
-            height: 30px;
-            border: 1px solid var(--primary);
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 9998;
-            transform: translate(-50%, -50%);
-            transition: width 0.2s, height 0.2s, border-color 0.2s;
-        }
     </style>
 </head>
 <body>
     <canvas id="starfield"></canvas>
+    <canvas id="matrixCanvas"></canvas>
     <div id="cursor-dot"></div>
     <div id="cursor-ring"></div>
 
     <header>
-        <div class="header-inner">
-            <div class="logo">AERODYNE</div>
-            <button class="hamburger" aria-label="Menu">☰</button>
-            <nav class="nav-links">
-                <a href="#home" class="active" data-nav="home">Home</a>
-                <a href="#about" data-nav="about">About</a>
-                <a href="#fleet" data-nav="fleet">Fleet</a>
-                <a href="#commands" data-nav="commands">Commands</a>
-                <a href="#status" data-nav="status">Status</a>
-            </nav>
-            <div class="user-badge">
-                <span class="pulse-dot"></span> 1,247 ACTIVE
+        <div class="logo">AERODYNE</div>
+        <button class="hamburger" aria-label="Menu">☰</button>
+        <nav class="nav-links">
+            <a href="#hero" class="active" data-nav="hero">Home</a>
+            <a href="#terminal-section" data-nav="terminal">Terminal</a>
+            <a href="#stats-section" data-nav="stats">HUD</a>
+            <a href="#fleet-section" data-nav="fleet">Fleet</a>
+        </nav>
+        <div class="header-right">
+            <div class="live-stat">
+                <span class="pulse"></span> <span id="headerServerCount">1.2k</span> servers
             </div>
+            <button class="lang-toggle" id="matrixToggle">☯ MATRIX</button>
         </div>
     </header>
 
     <main class="container">
-        <!-- HOME -->
-        <section id="home">
-            <div class="moon-sphere"></div>
+        <!-- HERO -->
+        <section id="hero" class="section visible">
+            <div class="moon-3d"></div>
             <div class="hero-content">
                 <h1>AERODYNE</h1>
-                <p class="hero-sub">Premier orbital intelligence for high-performance study communities and Artemis mission telemetry.</p>
-                <a href="https://discord.com/oauth2/authorize?client_id=1488701920452546691&permissions=8&integration_type=0&scope=bot" class="btn" target="_blank" rel="noopener">⚠ Add to Discord</a>
+                <p class="hero-sub">مركز القيادة المداري | Orbital Command &amp; Intelligence Protocol</p>
+                <a href="https://discord.com/oauth2/authorize?client_id=1488701920452546691&permissions=8&integration_type=0&scope=bot" class="btn" target="_blank">⚠ Add to Discord</a>
             </div>
         </section>
 
-        <!-- ABOUT -->
-        <section id="about">
-            <div class="architect-card">
-                <div class="clearance-badge">CLEARANCE: OMNI</div>
-                <div class="avatar-frame">
-                    <div class="scanline"></div>
-                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect fill='%23111111' width='180' height='180'/%3E%3Ccircle cx='90' cy='68' r='30' fill='%23333'/%3E%3Cellipse cx='90' cy='140' rx='55' ry='35' fill='%23222'/%3E%3Ctext x='90' y='100' text-anchor='middle' fill='%2300D2FF' font-family='Inter' font-weight='900' font-size='28'%3EA%3C/text%3E%3C/svg%3E" alt="Lead Architect">
-                </div>
-                <div class="architect-data">
-                    <div><span class="prompt">&gt;</span> <span class="label">NAME:</span> <span class="value">AERON</span></div>
-                    <div><span class="prompt">&gt;</span> <span class="label">DEPT:</span> <span class="value">CORE_ENGINEERING</span></div>
-                    <div><span class="prompt">&gt;</span> <span class="label">STATUS:</span> <span class="value">ONLINE</span><span class="online-dot"></span></div>
-                    <div style="margin-top:10px;color:var(--secondary);font-size:0.7rem;">// LEAD_ARCHITECT // AERODYNE_SYSTEMS</div>
-                </div>
+        <!-- INTERACTIVE TERMINAL -->
+        <section id="terminal-section" class="section">
+            <div class="terminal-output" id="terminalOutput">
+                <div>Welcome to AERODYNE Command Terminal v2.4.1</div>
+                <div>Type <span style="color:var(--cyber-cyan);">help</span> for available commands.</div>
+                <div class="arabic">أهلاً بك في محطة التحكم المدارية</div>
+                <div>---</div>
+            </div>
+            <div class="terminal-input-line">
+                <span>&gt;</span>
+                <input type="text" id="terminalInput" placeholder="Enter command..." autofocus>
             </div>
         </section>
 
-        <!-- FLEET -->
-        <section id="fleet">
-            <h2 class="section-title">[ ACTIVE_STATIONS ]</h2>
-            <p class="section-subtitle">Live fleet telemetry — connected servers across the network.</p>
-            <div class="stations-grid" id="stationsContainer"></div>
+        <!-- LIVE STATS HUD -->
+        <section id="stats-section" class="section">
+            <h2 style="margin-bottom:30px;font-weight:900;">[ SYSTEM STATUS ]</h2>
+            <div class="hud-grid" id="statsGrid"></div>
         </section>
 
-        <!-- COMMANDS -->
-        <section id="commands">
-            <h2 class="section-title">Bot Protocols</h2>
-            <p class="section-subtitle">Core command framework.</p>
-            <div class="commands-grid">
-                <div class="cmd-card">
-                    <h3 style="color:var(--danger);">🛡️ Moderation</h3>
-                    <ul class="cmd-list">
-                        <li><span>-ban</span> [user]</li>
-                        <li><span>-kick</span> [user]</li>
-                        <li><span>-timeout</span> [user]</li>
-                        <li><span>-clear</span> [amount]</li>
-                        <li><span>-giverole</span> [role]</li>
-                    </ul>
-                </div>
-                <div class="cmd-card">
-                    <h3>💰 Economy</h3>
-                    <ul class="cmd-list">
-                        <li><span>-daily</span> / <span>-bal</span></li>
-                        <li><span>-rob</span> / <span>-forge</span></li>
-                        <li><span>-shop</span> / <span>-buy</span></li>
-                        <li><span>-crash</span> / <span>-slots</span></li>
-                    </ul>
-                </div>
-                <div class="cmd-card">
-                    <h3 style="color:var(--primary);">⚡ Specialized</h3>
-                    <ul class="cmd-list">
-                        <li><span>-studymode</span> (VC Lock)</li>
-                        <li><span>/rank</span> (Level Stats)</li>
-                        <li><span>/todo</span> (Invention)</li>
-                    </ul>
-                </div>
-            </div>
-        </section>
-
-        <!-- STATUS -->
-        <section id="status">
-            <div class="status-card">
-                <h2 style="margin-bottom:18px;">System Health</h2>
-                <p style="font-size:1.1rem;">
-                    <span class="status-indicator"></span> Uplink: <span style="color:var(--primary);font-weight:700;">CONNECTED</span>
-                </p>
-                <p style="color:var(--secondary);margin-top:8px;">Latency: 24ms · Database: Stable</p>
-                <div class="stat-grid">
-                    <div class="stat-item"><div class="val">99.9%</div><div class="lbl">Uptime</div></div>
-                    <div class="stat-item"><div class="val">1.2k+</div><div class="lbl">Servers</div></div>
-                    <div class="stat-item"><div class="val">45k+</div><div class="lbl">Users</div></div>
-                    <div class="stat-item"><div class="val">v2.4.1</div><div class="lbl">Version</div></div>
-                </div>
-            </div>
+        <!-- FLEET / ACTIVE STATIONS -->
+        <section id="fleet-section" class="section">
+            <h2 style="margin-bottom:30px;font-weight:900;">[ ACTIVE STATIONS ] الأسطول النشط</h2>
+            <div class="hud-grid" id="fleetGrid"></div>
         </section>
     </main>
 
     <footer class="system-pulse">
-        <div class="pulse-left">
-            <span class="pulse-dot-static"></span> SYSTEM_STABLE
-        </div>
-        <div class="pulse-center">
+        <div><span class="pulse-dot-static"></span> SYSTEM_STABLE</div>
+        <div class="ticker-wrap">
             <div class="ticker" id="ticker">
-                <span>[LOG]:</span> <span class="log-highlight">XP_ENGINE_v2.0_DEPLOYED</span>
-                <span>[LOG]:</span> NEW_UNIT_CONNECTED
-                <span>[LOG]:</span> <span class="log-highlight">ARTEMIS_TELEMETRY_SYNCED</span>
-                <span>[LOG]:</span> DB_BACKUP_COMPLETE
-                <!-- duplicate for seamless loop -->
-                <span>[LOG]:</span> <span class="log-highlight">XP_ENGINE_v2.0_DEPLOYED</span>
-                <span>[LOG]:</span> NEW_UNIT_CONNECTED
-                <span>[LOG]:</span> <span class="log-highlight">ARTEMIS_TELEMETRY_SYNCED</span>
-                <span>[LOG]:</span> DB_BACKUP_COMPLETE
+                <span>[LOG]</span> <span class="highlight">ARTEMIS_TELEMETRY_SYNCED</span>
+                <span>[LOG]</span> NEW_UNIT_ONLINE
+                <span>[LOG]</span> <span class="highlight">XP_ENGINE_v2.0_DEPLOYED</span>
+                <span>[LOG]</span> DB_BACKUP_SUCCESS
+                <!-- loop duplicate -->
+                <span>[LOG]</span> <span class="highlight">ARTEMIS_TELEMETRY_SYNCED</span>
+                <span>[LOG]</span> NEW_UNIT_ONLINE
+                <span>[LOG]</span> <span class="highlight">XP_ENGINE_v2.0_DEPLOYED</span>
+                <span>[LOG]</span> DB_BACKUP_SUCCESS
             </div>
         </div>
-        <div class="pulse-right">
-            <span class="clock" id="liveClock">00:00:00 UTC</span>
-            <span class="latency" id="liveLatency">LATENCY: 14MS</span>
-        </div>
+        <div><span id="liveClock">00:00:00 UTC</span> | <span id="liveLatency">LATENCY 14MS</span></div>
     </footer>
 
     <script>
         (function() {
-            // ── STARFIELD CANVAS ──
-            const canvas = document.getElementById('starfield');
-            const ctx = canvas.getContext('2d');
-            let stars = [];
-            let width, height;
-
-            function resizeCanvas() {
-                width = window.innerWidth;
-                height = window.innerHeight;
-                canvas.width = width;
-                canvas.height = height;
-                initStars();
-            }
-
-            function initStars() {
-                stars = [];
-                const starCount = Math.floor(width * height / 2000);
-                for (let i = 0; i < starCount; i++) {
-                    stars.push({
-                        x: Math.random() * width,
-                        y: Math.random() * height,
-                        radius: Math.random() * 1.8 + 0.2,
-                        alpha: Math.random(),
-                        speed: Math.random() * 0.02 + 0.005,
-                    });
-                }
-            }
-
-            function drawStars() {
-                ctx.clearRect(0, 0, width, height);
-                ctx.fillStyle = '#ffffff';
-                stars.forEach(s => {
-                    ctx.globalAlpha = s.alpha;
-                    ctx.beginPath();
-                    ctx.arc(s.x, s.y, s.radius, 0, Math.PI * 2);
-                    ctx.fill();
-                    // twinkle
-                    s.alpha += s.speed;
-                    if (s.alpha >= 1 || s.alpha <= 0.2) s.speed *= -1;
-                });
-                requestAnimationFrame(drawStars);
-            }
-
-            window.addEventListener('resize', resizeCanvas);
-            resizeCanvas();
-            drawStars();
-
-            // ── CUSTOM CURSOR ──
-            const dot = document.getElementById('cursor-dot');
-            const ring = document.getElementById('cursor-ring');
-            let mouseX = 0, mouseY = 0;
-            let ringX = 0, ringY = 0;
-
-            document.addEventListener('mousemove', (e) => {
-                mouseX = e.clientX;
-                mouseY = e.clientY;
-                dot.style.transform = `translate(${mouseX - 4}px, ${mouseY - 4}px)`;
-            });
-
-            function animateRing() {
-                ringX += (mouseX - ringX) * 0.12;
-                ringY += (mouseY - ringY) * 0.12;
-                ring.style.left = ringX + 'px';
-                ring.style.top = ringY + 'px';
-                requestAnimationFrame(animateRing);
-            }
-            animateRing();
-
-            // Hover effect on links/buttons
-            const hoverTargets = document.querySelectorAll('a, button, .btn, .station-card, .architect-card');
-            hoverTargets.forEach(el => {
-                el.addEventListener('mouseenter', () => {
-                    ring.style.width = '40px';
-                    ring.style.height = '40px';
-                    ring.style.borderColor = '#FF3E3E';
-                });
-                el.addEventListener('mouseleave', () => {
-                    ring.style.width = '30px';
-                    ring.style.height = '30px';
-                    ring.style.borderColor = 'var(--primary)';
-                });
-            });
-
-            // ── INTERSECTION OBSERVER FOR SECTION REVEAL ──
-            const sections = document.querySelectorAll('section');
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('visible');
-                    }
-                });
-            }, { threshold: 0.2 });
-            sections.forEach(s => observer.observe(s));
-
-            // ── NAVIGATION ACTIVE STATE ──
-            const navLinks = document.querySelectorAll('.nav-links a');
-            const hamburger = document.querySelector('.hamburger');
-            const navMenu = document.querySelector('.nav-links');
-
-            function setActiveNav(id) {
-                navLinks.forEach(link => {
-                    link.classList.toggle('active', link.dataset.nav === id);
+        // ── STARFIELD ──
+        const starCanvas = document.getElementById('starfield');
+        const starCtx = starCanvas.getContext('2d');
+        let stars = [], w, h;
+        function resizeStars() {
+            w = window.innerWidth; h = window.innerHeight;
+            starCanvas.width = w; starCanvas.height = h;
+            stars = [];
+            for (let i=0; i<Math.floor(w*h/1800); i++) {
+                stars.push({
+                    x: Math.random()*w, y: Math.random()*h,
+                    r: Math.random()*1.8+0.3,
+                    alpha: Math.random(),
+                    speed: (Math.random()*0.02+0.005)
                 });
             }
-
-            navLinks.forEach(link => {
-                link.addEventListener('click', function(e) {
-                    setActiveNav(this.dataset.nav);
-                    navMenu.classList.remove('open');
-                    hamburger.setAttribute('aria-expanded', 'false');
-                });
+        }
+        function drawStars() {
+            starCtx.clearRect(0,0,w,h);
+            stars.forEach(s => {
+                starCtx.globalAlpha = s.alpha;
+                starCtx.beginPath();
+                starCtx.arc(s.x, s.y, s.r, 0, Math.PI*2);
+                starCtx.fillStyle = '#fff';
+                starCtx.fill();
+                s.alpha += s.speed;
+                if (s.alpha>=1 || s.alpha<=0.2) s.speed*=-1;
             });
+            requestAnimationFrame(drawStars);
+        }
+        window.addEventListener('resize', resizeStars);
+        resizeStars();
+        drawStars();
 
-            hamburger.addEventListener('click', () => {
-                const expanded = navMenu.classList.toggle('open');
-                hamburger.setAttribute('aria-expanded', expanded);
+        // ── MATRIX RAIN ──
+        const matrixCanvas = document.getElementById('matrixCanvas');
+        const matrixCtx = matrixCanvas.getContext('2d');
+        let matrixInterval;
+        const matrixChars = '01アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン';
+        let matrixDrops = [];
+        function setupMatrix() {
+            matrixCanvas.width = window.innerWidth;
+            matrixCanvas.height = window.innerHeight;
+            const cols = Math.floor(matrixCanvas.width / 20);
+            matrixDrops = Array(cols).fill(0);
+        }
+        function drawMatrix() {
+            matrixCtx.fillStyle = 'rgba(0,0,0,0.05)';
+            matrixCtx.fillRect(0,0,matrixCanvas.width, matrixCanvas.height);
+            matrixCtx.fillStyle = '#0F0';
+            matrixCtx.font = '15px monospace';
+            for (let i=0; i<matrixDrops.length; i++) {
+                const text = matrixChars[Math.floor(Math.random()*matrixChars.length)];
+                matrixCtx.fillText(text, i*20, matrixDrops[i]*20);
+                if (matrixDrops[i]*20 > matrixCanvas.height && Math.random()>0.975) matrixDrops[i] = 0;
+                matrixDrops[i]++;
+            }
+        }
+        function startMatrix() {
+            setupMatrix();
+            matrixCanvas.style.display = 'block';
+            if (matrixInterval) clearInterval(matrixInterval);
+            matrixInterval = setInterval(drawMatrix, 50);
+        }
+        function stopMatrix() {
+            matrixCanvas.style.display = 'none';
+            clearInterval(matrixInterval);
+        }
+        document.getElementById('matrixToggle').addEventListener('click', () => {
+            if (matrixCanvas.style.display === 'block') stopMatrix();
+            else startMatrix();
+        });
+
+        // ── CUSTOM CURSOR ──
+        const dot = document.getElementById('cursor-dot');
+        const ring = document.getElementById('cursor-ring');
+        let mx=0, my=0, rx=0, ry=0;
+        document.addEventListener('mousemove', e => {
+            mx = e.clientX; my = e.clientY;
+            dot.style.transform = `translate(${mx-4}px, ${my-4}px)`;
+        });
+        function animateRing() {
+            rx += (mx - rx) * 0.1;
+            ry += (my - ry) * 0.1;
+            ring.style.left = rx + 'px';
+            ring.style.top = ry + 'px';
+            requestAnimationFrame(animateRing);
+        }
+        animateRing();
+        document.querySelectorAll('a, button, .btn, .hud-panel, .fleet-card').forEach(el => {
+            el.addEventListener('mouseenter', () => {
+                ring.style.width = '40px'; ring.style.height = '40px';
+                ring.style.borderColor = '#FF3E3E';
             });
-
-            window.addEventListener('scroll', () => {
-                let current = 'home';
-                sections.forEach(section => {
-                    const rect = section.getBoundingClientRect();
-                    if (rect.top <= 120) current = section.id;
-                });
-                setActiveNav(current);
+            el.addEventListener('mouseleave', () => {
+                ring.style.width = '30px'; ring.style.height = '30px';
+                ring.style.borderColor = '#00D2FF';
             });
+        });
 
-            // ── GENERATE FLEET CARDS ──
-            const fleetData = [
-                { icon: 'NX', name: 'NEXUS_ALPHA', pop: 342, cls: 'COMMAND' },
-                { icon: 'VR', name: 'VERTEX_RESEARCH', pop: 218, cls: 'RESEARCH' },
-                { icon: 'PH', name: 'PHANTOM_OPS', pop: 156, cls: 'COMBAT' },
-                { icon: 'SL', name: 'SOLACE_STATION', pop: 489, cls: 'SUPPORT' },
-                { icon: 'OR', name: 'ORACLE_VAULT', pop: 97, cls: 'ELITE' },
-                { icon: 'TD', name: 'TIDAL_DRIFT', pop: 203, cls: 'EXPLORATION' },
-            ];
-            const container = document.getElementById('stationsContainer');
-            fleetData.forEach(station => {
-                const card = document.createElement('div');
-                card.className = 'station-card';
-                card.innerHTML = `
-                    <div class="grid-bg"></div>
-                    <div class="card-inner">
-                        <div class="card-top">
-                            <div class="server-icon">${station.icon}</div>
-                            <div class="server-name">${station.name}</div>
-                        </div>
-                        <div class="card-bottom">
-                            <span>POP: <span class="data-val">${station.pop}</span> UNITS</span>
-                            <span>CLASS: <span class="data-val">${station.cls}</span></span>
-                        </div>
-                    </div>
+        // ── SECTION VISIBILITY ──
+        const sections = document.querySelectorAll('.section');
+        const observer = new IntersectionObserver(entries => {
+            entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+        }, { threshold: 0.2 });
+        sections.forEach(s => observer.observe(s));
+
+        // ── NAVIGATION ──
+        const navLinks = document.querySelectorAll('.nav-links a');
+        const hamburger = document.querySelector('.hamburger');
+        const navMenu = document.querySelector('.nav-links');
+        function setActiveNav(id) {
+            navLinks.forEach(a => a.classList.toggle('active', a.dataset.nav === id));
+        }
+        navLinks.forEach(link => {
+            link.addEventListener('click', function() {
+                setActiveNav(this.dataset.nav);
+                navMenu.classList.remove('open');
+                hamburger.setAttribute('aria-expanded','false');
+            });
+        });
+        hamburger.addEventListener('click', () => {
+            const expanded = navMenu.classList.toggle('open');
+            hamburger.setAttribute('aria-expanded', expanded);
+        });
+        window.addEventListener('scroll', () => {
+            let cur = 'hero';
+            sections.forEach(sec => { if (sec.getBoundingClientRect().top <= 120) cur = sec.id; });
+            setActiveNav(cur);
+        });
+
+        // ── LIVE STATS (HUD) ──
+        const statsData = {
+            servers: { val: 1247, label: 'Servers الخوادم' },
+            users: { val: 45281, label: 'Users المستخدمون' },
+            uptime: { val: 99.93, label: 'Uptime %' },
+            latency: { val: 24, label: 'Latency ms' },
+            commands: { val: 8456, label: 'Commands executed' }
+        };
+        function buildStats() {
+            const grid = document.getElementById('statsGrid');
+            grid.innerHTML = '';
+            for (let [key, data] of Object.entries(statsData)) {
+                const panel = document.createElement('div');
+                panel.className = 'hud-panel';
+                panel.innerHTML = `
+                    <h3>${data.label}</h3>
+                    <div class="stat-value" id="stat-${key}">${data.val.toLocaleString()}</div>
                 `;
-                container.appendChild(card);
+                grid.appendChild(panel);
+            }
+        }
+        function updateLiveStats() {
+            // Fluctuate values
+            statsData.servers.val += Math.floor(Math.random()*3)-1;
+            statsData.users.val += Math.floor(Math.random()*10)-3;
+            statsData.uptime.val = 99.93 + (Math.random()*0.1-0.05);
+            statsData.latency.val = 22 + Math.floor(Math.random()*8);
+            statsData.commands.val += Math.floor(Math.random()*5);
+            document.getElementById('stat-servers').textContent = statsData.servers.val.toLocaleString();
+            document.getElementById('stat-users').textContent = statsData.users.val.toLocaleString();
+            document.getElementById('stat-uptime').textContent = statsData.uptime.val.toFixed(2)+'%';
+            document.getElementById('stat-latency').textContent = statsData.latency.val+'ms';
+            document.getElementById('stat-commands').textContent = statsData.commands.val.toLocaleString();
+            document.getElementById('headerServerCount').textContent = (statsData.servers.val/1000).toFixed(1)+'k';
+        }
+        buildStats();
+        setInterval(updateLiveStats, 3000);
+
+        // ── FLEET CARDS ──
+        const fleetData = [
+            { icon:'NX', name:'NEXUS_ALPHA', pop:342, cls:'COMMAND', ar:'القيادة' },
+            { icon:'VR', name:'VERTEX_RESEARCH', pop:218, cls:'RESEARCH', ar:'الأبحاث' },
+            { icon:'PH', name:'PHANTOM_OPS', pop:156, cls:'COMBAT', ar:'قتالي' },
+            { icon:'SL', name:'SOLACE_STATION', pop:489, cls:'SUPPORT', ar:'الدعم' },
+            { icon:'OR', name:'ORACLE_VAULT', pop:97, cls:'ELITE', ar:'النخبة' },
+            { icon:'TD', name:'TIDAL_DRIFT', pop:203, cls:'EXPLORATION', ar:'استكشاف' }
+        ];
+        function buildFleet() {
+            const grid = document.getElementById('fleetGrid');
+            fleetData.forEach(ship => {
+                const card = document.createElement('div');
+                card.className = 'hud-panel fleet-card';
+                card.innerHTML = `
+                    <div style="display:flex;align-items:center;gap:12px;">
+                        <div style="width:40px;height:40px;border-radius:50%;background:var(--cyan-15);display:flex;align-items:center;justify-content:center;font-weight:900;color:var(--cyber-cyan);">${ship.icon}</div>
+                        <div><strong>${ship.name}</strong><br><small style="color:var(--text-dim);">${ship.cls} | ${ship.ar}</small></div>
+                    </div>
+                    <div style="text-align:right;font-family:var(--font-mono);"><span style="color:var(--cyber-cyan);">POP</span> ${ship.pop}</div>
+                `;
+                grid.appendChild(card);
             });
+        }
+        buildFleet();
 
-            // ── CLOCK & LATENCY ──
-            function updateClock() {
-                const now = new Date();
-                const utc = now.toISOString().slice(11, 19);
-                document.getElementById('liveClock').textContent = utc + ' UTC';
+        // ── TERMINAL INTERACTIONS ──
+        const terminalOutput = document.getElementById('terminalOutput');
+        const terminalInput = document.getElementById('terminalInput');
+        function appendOutput(text, isArabic = false) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            if (isArabic) {
+                div.classList.add('arabic');
             }
-            updateClock();
-            setInterval(updateClock, 1000);
-
-            function updateLatency() {
-                const ms = Math.floor(Math.random() * 5) + 12;
-                document.getElementById('liveLatency').textContent = 'LATENCY: ' + ms + 'MS';
+            terminalOutput.appendChild(div);
+            terminalOutput.scrollTop = terminalOutput.scrollHeight;
+        }
+        function handleCommand(cmd) {
+            const command = cmd.trim().toLowerCase();
+            appendOutput(`> ${cmd}`);
+            switch(command) {
+                case 'help':
+                    appendOutput('Available commands: help, status, fleet, lang, clear, matrix on/off');
+                    appendOutput('الأوامر المتاحة: مساعدة، حالة، أسطول، لغة، مسح، ماتريكس تشغيل/إيقاف', true);
+                    break;
+                case 'status':
+                    appendOutput(`Servers: ${statsData.servers.val} | Users: ${statsData.users.val} | Uptime: ${statsData.uptime.val.toFixed(2)}%`);
+                    appendOutput(`الخوادم: ${statsData.servers.val} | المستخدمون: ${statsData.users.val} | وقت التشغيل: ${statsData.uptime.val.toFixed(2)}%`, true);
+                    break;
+                case 'fleet':
+                    fleetData.forEach(s => appendOutput(`${s.icon} ${s.name} - POP ${s.pop} (${s.ar})`));
+                    break;
+                case 'lang':
+                    appendOutput('Language toggled. مرحباً / Hello');
+                    break;
+                case 'clear':
+                    terminalOutput.innerHTML = '';
+                    appendOutput('Terminal cleared.');
+                    break;
+                case 'matrix on':
+                    startMatrix();
+                    appendOutput('Matrix rain activated.');
+                    break;
+                case 'matrix off':
+                    stopMatrix();
+                    appendOutput('Matrix rain deactivated.');
+                    break;
+                default:
+                    appendOutput('Unknown command. Type help.');
             }
-            setInterval(updateLatency, 3000);
-            updateLatency();
-
-            // ── TICKER HOVER PAUSE ──
-            const ticker = document.getElementById('ticker');
-            if (ticker) {
-                ticker.addEventListener('mouseenter', () => ticker.style.animationPlayState = 'paused');
-                ticker.addEventListener('mouseleave', () => ticker.style.animationPlayState = 'running');
+        }
+        terminalInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                handleCommand(this.value);
+                this.value = '';
             }
+        });
 
-            console.log('%c🚀 AERODYNE %cORBITAL COMMAND ONLINE',
-                'background:#00D2FF;color:#000;padding:4px 8px;font-weight:900;',
-                'color:#888;');
+        // ── CLOCK & LATENCY ──
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('liveClock').textContent = now.toISOString().slice(11,19)+' UTC';
+        }
+        setInterval(updateClock,1000);
+        updateClock();
+        function updateLatencyFooter() {
+            const ms = 12 + Math.floor(Math.random()*6);
+            document.getElementById('liveLatency').textContent = 'LATENCY '+ms+'MS';
+        }
+        setInterval(updateLatencyFooter, 3000);
+        updateLatencyFooter();
+
+        console.log('%c🛰️ AERODYNE %cORBITAL TERMINAL ONLINE',
+            'background:#00D2FF;color:#000;padding:4px 8px;',
+            'color:#888;');
         })();
     </script>
 </body>
