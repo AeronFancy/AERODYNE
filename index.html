@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="AERODYNE — Advanced Discord bot with XP system, economy, tickets, moderation & study mode. Trusted by thousands of servers worldwide.">
+    <meta name="description" content="AERODYNE — Advanced Discord bot with dual XP, economy, tickets, moderation & study mode.">
     <title>AERODYNE | Discord Bot</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🤖</text></svg>">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
@@ -23,17 +23,11 @@
             --border2: rgba(148, 163, 184, 0.15);
             --radius: 14px;
             --radius-sm: 10px;
-            --shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            --shadow: 0 8px 32px rgba(0,0,0,0.4);
+            --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        html {
-            scroll-behavior: smooth;
-            scroll-padding-top: 80px;
-        }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        html { scroll-behavior:smooth; scroll-padding-top:80px; }
         body {
             background: var(--bg);
             color: var(--text);
@@ -41,9 +35,18 @@
             line-height: 1.6;
             overflow-x: hidden;
             -webkit-font-smoothing: antialiased;
+            position: relative;
         }
-        body[lang="ar"] {
-            font-family: 'Cairo', 'Inter', sans-serif;
+        body[lang="ar"] { font-family: 'Cairo', 'Inter', sans-serif; }
+
+        /* ── ANIMATED BACKGROUND CANVAS ── */
+        #bgCanvas {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0.5;
         }
 
         /* ── HEADER ── */
@@ -51,9 +54,10 @@
             position: sticky;
             top: 0;
             z-index: 100;
-            background: rgba(11, 14, 20, 0.9);
+            background: rgba(11, 14, 20, 0.85);
             backdrop-filter: blur(20px);
             border-bottom: 1px solid var(--border);
+            transition: background var(--transition);
         }
         .header-inner {
             max-width: 1300px;
@@ -71,10 +75,23 @@
             color: #fff;
             letter-spacing: -0.5px;
             white-space: nowrap;
+            position: relative;
         }
-        .logo span {
-            color: var(--primary);
+        .logo span { color: var(--primary); }
+        .logo::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--primary);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.4s ease;
         }
+        .logo:hover::after { transform: scaleX(1); }
+
         .nav-links {
             display: flex;
             gap: 4px;
@@ -93,42 +110,46 @@
         }
         .nav-links a:hover {
             color: #fff;
-            background: rgba(79, 70, 229, 0.1);
+            background: rgba(79,70,229,0.1);
         }
         .nav-links a.active {
             color: var(--primary);
-            background: rgba(79, 70, 229, 0.15);
+            background: rgba(79,70,229,0.15);
             font-weight: 600;
         }
-        .header-right {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex-shrink: 0;
-        }
-        .lang-flags {
-            display: flex;
-            gap: 4px;
-        }
+
+        .header-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+
+        .lang-flags { display: flex; gap: 6px; }
         .lang-flag {
             background: var(--surface2);
             border: 1px solid var(--border2);
             border-radius: 8px;
-            padding: 6px 8px;
-            font-size: 1.1rem;
+            padding: 8px 10px;
+            font-size: 1.3rem;
             cursor: pointer;
-            transition: all 0.25s;
+            transition: all var(--transition);
             line-height: 1;
+            display: flex;
+            align-items: center;
+            gap: 4px;
         }
         .lang-flag:hover {
             border-color: var(--primary);
-            background: rgba(79, 70, 229, 0.15);
+            background: rgba(79,70,229,0.15);
+            transform: translateY(-2px);
         }
         .lang-flag.active {
             border-color: var(--primary);
-            background: rgba(79, 70, 229, 0.2);
-            box-shadow: 0 0 12px rgba(79, 70, 229, 0.25);
+            background: rgba(79,70,229,0.2);
+            box-shadow: 0 0 12px rgba(79,70,229,0.25);
         }
+        .lang-flag .flag-emoji { font-size: 1.4rem; }
+        .lang-flag .flag-code { font-size: 0.7rem; font-weight: 600; color: var(--text2); margin-left: 4px; }
+        @media (max-width: 900px) {
+            .lang-flag .flag-code { display: none; }
+        }
+
         .hamburger {
             display: none;
             background: none;
@@ -139,14 +160,10 @@
             padding: 8px;
         }
         @media (max-width: 900px) {
-            .hamburger {
-                display: block;
-            }
+            .hamburger { display: block; }
             .nav-links {
                 position: absolute;
-                top: 70px;
-                left: 0;
-                right: 0;
+                top: 70px; left: 0; right: 0;
                 background: var(--surface);
                 flex-direction: column;
                 padding: 16px;
@@ -154,30 +171,20 @@
                 border-bottom: 1px solid var(--border);
                 z-index: 99;
             }
-            .nav-links.open {
-                display: flex;
-            }
-            .nav-links a {
-                width: 100%;
-                padding: 12px 16px;
-            }
-            .header-right {
-                gap: 6px;
-            }
-            .lang-flag {
-                padding: 5px 6px;
-                font-size: 1rem;
-            }
+            .nav-links.open { display: flex; }
+            .nav-links a { width: 100%; padding: 12px 16px; }
         }
 
         /* ── SECTIONS ── */
         section {
+            position: relative;
+            z-index: 1;
             max-width: 1200px;
             margin: 0 auto;
-            padding: 70px 24px;
+            padding: 80px 24px;
         }
         .section-title {
-            font-size: 2.2rem;
+            font-size: clamp(2rem, 4vw, 2.4rem);
             font-weight: 800;
             margin-bottom: 8px;
             letter-spacing: -0.5px;
@@ -211,9 +218,7 @@
             line-height: 1.1;
             margin-bottom: 16px;
         }
-        .hero-text h1 span {
-            color: var(--primary);
-        }
+        .hero-text h1 span { color: var(--primary); }
         .hero-text p {
             color: var(--muted);
             font-size: 1.1rem;
@@ -237,22 +242,24 @@
             font-size: 0.85rem;
             color: var(--text2);
             font-weight: 500;
+            animation: fadeInUp 0.6s ease forwards;
+            opacity: 0;
+        }
+        .badge:nth-child(2) { animation-delay: 0.2s; }
+        .badge:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes fadeInUp {
+            from { opacity:0; transform: translateY(20px); }
+            to { opacity:1; transform: translateY(0); }
         }
         .badge .dot {
-            width: 8px;
-            height: 8px;
+            width: 8px; height: 8px;
             border-radius: 50%;
             background: #22c55e;
             animation: pulse-dot 2s infinite;
         }
         @keyframes pulse-dot {
-            0%,
-            100% {
-                box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.6);
-            }
-            50% {
-                box-shadow: 0 0 0 10px rgba(34, 197, 94, 0);
-            }
+            0%,100% { box-shadow:0 0 0 0 rgba(34,197,94,0.6); }
+            50% { box-shadow:0 0 0 10px rgba(34,197,94,0); }
         }
         .btn {
             display: inline-flex;
@@ -265,18 +272,34 @@
             text-decoration: none;
             font-weight: 700;
             font-size: 0.95rem;
-            transition: all 0.3s;
-            box-shadow: 0 6px 24px rgba(79, 70, 229, 0.3);
+            transition: all var(--transition);
+            box-shadow: 0 6px 24px rgba(79,70,229,0.3);
+            position: relative;
+            overflow: hidden;
         }
+        .btn::after {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            transition: left 0.5s;
+        }
+        .btn:hover::after { left: 100%; }
         .btn:hover {
             background: var(--primary-hover);
-            transform: translateY(-2px);
-            box-shadow: 0 10px 32px rgba(79, 70, 229, 0.45);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 32px rgba(79,70,229,0.45);
         }
         .hero-image {
             display: flex;
             justify-content: center;
             align-items: center;
+            animation: float 6s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%,100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
         }
         .hero-image img {
             max-width: 100%;
@@ -284,23 +307,10 @@
             box-shadow: var(--shadow);
         }
         @media (max-width: 768px) {
-            .hero-grid {
-                grid-template-columns: 1fr;
-                text-align: center;
-            }
-            .hero-text p {
-                margin-left: auto;
-                margin-right: auto;
-            }
-            .hero-badges {
-                justify-content: center;
-            }
-            .hero-image {
-                order: -1;
-            }
-            .hero-image img {
-                max-width: 70%;
-            }
+            .hero-grid { grid-template-columns: 1fr; text-align: center; }
+            .hero-text p { margin-left: auto; margin-right: auto; }
+            .hero-badges { justify-content: center; }
+            .hero-image { order: -1; max-width: 70%; margin: 0 auto; }
         }
 
         /* ── FEATURES ── */
@@ -314,27 +324,23 @@
             border: 1px solid var(--border);
             border-radius: var(--radius);
             padding: 28px;
-            transition: all 0.3s;
+            transition: all var(--transition);
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        .feature-card.visible {
+            opacity: 1;
+            transform: translateY(0);
+            transition: opacity 0.6s ease, transform 0.6s ease;
         }
         .feature-card:hover {
             border-color: var(--primary);
-            transform: translateY(-4px);
-            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+            transform: translateY(-6px) !important;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
         }
-        .feature-card .icon {
-            font-size: 2rem;
-            margin-bottom: 12px;
-        }
-        .feature-card h3 {
-            font-size: 1.15rem;
-            margin-bottom: 8px;
-            color: #fff;
-        }
-        .feature-card p {
-            color: var(--muted);
-            font-size: 0.9rem;
-            line-height: 1.6;
-        }
+        .feature-card .icon { font-size: 2.2rem; margin-bottom: 12px; display: block; }
+        .feature-card h3 { font-size: 1.2rem; margin-bottom: 8px; color: #fff; }
+        .feature-card p { color: var(--muted); font-size: 0.9rem; line-height: 1.6; }
 
         /* ── COMMANDS ── */
         .cmd-search {
@@ -348,12 +354,10 @@
             font-size: 0.95rem;
             margin-bottom: 30px;
             outline: none;
-            transition: border-color 0.3s;
+            transition: border-color var(--transition);
             font-family: inherit;
         }
-        .cmd-search:focus {
-            border-color: var(--primary);
-        }
+        .cmd-search:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(79,70,229,0.1); }
         .cmd-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -364,50 +368,25 @@
             border: 1px solid var(--border);
             border-radius: var(--radius);
             padding: 24px;
-            transition: all 0.3s;
+            transition: all var(--transition);
         }
-        .cmd-category h3 {
-            margin-bottom: 14px;
-            color: #fff;
-            font-size: 1.05rem;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .cmd-list {
-            list-style: none;
-        }
+        .cmd-category:hover { border-color: var(--primary); }
+        .cmd-category h3 { margin-bottom: 14px; color: #fff; font-size: 1.05rem; display: flex; align-items: center; gap: 8px; }
+        .cmd-list { list-style: none; }
         .cmd-list li {
             padding: 10px 12px;
             border-bottom: 1px solid var(--border);
             font-family: 'Courier New', monospace;
             font-size: 0.85rem;
             color: var(--text2);
-            transition: background 0.2s;
+            transition: background 0.2s, transform 0.2s;
             border-radius: 6px;
             cursor: default;
         }
-        .cmd-list li:hover {
-            background: rgba(79, 70, 229, 0.08);
-        }
-        .cmd-list li:last-child {
-            border: none;
-        }
-        .cmd-list li span {
-            color: var(--primary);
-            font-weight: 700;
-            margin-right: 6px;
-        }
-        .cmd-list li .desc {
-            color: var(--muted);
-            font-family: 'Inter', sans-serif;
-            font-size: 0.8rem;
-            display: block;
-            margin-top: 2px;
-        }
-        .cmd-list li.hidden {
-            display: none;
-        }
+        .cmd-list li:hover { background: rgba(79,70,229,0.08); transform: translateX(4px); }
+        .cmd-list li:last-child { border: none; }
+        .cmd-list li span { color: var(--primary); font-weight: 700; margin-right: 6px; }
+        .cmd-list li.hidden { display: none; }
 
         /* ── STATS ── */
         .stats-grid {
@@ -422,15 +401,17 @@
             border-radius: var(--radius);
             padding: 22px 18px;
             text-align: center;
-            transition: all 0.3s;
+            transition: all var(--transition);
         }
-        .stat-card:hover {
-            border-color: var(--primary);
-        }
+        .stat-card:hover { border-color: var(--primary); transform: scale(1.03); }
         .stat-card .num {
             font-size: 2rem;
             font-weight: 900;
             color: #fff;
+            background: linear-gradient(135deg, #fff, var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
         .stat-card .lbl {
             color: var(--muted);
@@ -451,51 +432,34 @@
             padding: 32px;
             max-width: 650px;
             margin: 0 auto;
-            transition: all 0.3s;
+            transition: all var(--transition);
         }
-        .dev-card:hover {
-            border-color: var(--primary);
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
-        }
+        .dev-card:hover { border-color: var(--primary); box-shadow: 0 15px 35px rgba(0,0,0,0.5); transform: translateY(-4px); }
         .dev-avatar {
-            width: 100px;
-            height: 100px;
+            width: 100px; height: 100px;
             border-radius: 50%;
             background: linear-gradient(135deg, var(--primary), #818cf8);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 900;
-            font-size: 2.5rem;
-            color: #fff;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 900; font-size: 2.5rem; color: #fff;
             flex-shrink: 0;
+            position: relative;
+            overflow: hidden;
         }
-        .dev-info h3 {
-            margin-bottom: 6px;
-            font-size: 1.3rem;
-            color: #fff;
+        .dev-avatar::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.2), transparent 70%);
         }
-        .dev-info .role {
-            color: var(--primary);
-            font-weight: 600;
-            font-size: 0.85rem;
-            margin-bottom: 8px;
-        }
-        .dev-info p {
-            color: var(--muted);
-            font-size: 0.9rem;
-            line-height: 1.6;
-        }
-        @media (max-width: 500px) {
-            .dev-card {
-                flex-direction: column;
-                text-align: center;
-                gap: 16px;
-            }
-        }
+        .dev-info h3 { margin-bottom: 6px; font-size: 1.3rem; color: #fff; }
+        .dev-info .role { color: var(--primary); font-weight: 600; font-size: 0.85rem; margin-bottom: 8px; }
+        .dev-info p { color: var(--muted); font-size: 0.9rem; line-height: 1.6; }
 
         /* ── FOOTER ── */
         footer {
+            position: relative;
+            z-index: 1;
             text-align: center;
             padding: 32px 20px;
             border-top: 1px solid var(--border);
@@ -503,46 +467,41 @@
             font-size: 0.85rem;
             background: var(--surface);
         }
-        footer a {
-            color: var(--primary);
-            text-decoration: none;
-            font-weight: 600;
-        }
+        footer a { color: var(--primary); text-decoration: none; font-weight: 600; }
 
-        /* ── ANIMATIONS ── */
-        @keyframes fadeUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
+        /* ── SCROLL ANIMATIONS ── */
         .reveal {
-            animation: fadeUp 0.7s ease forwards;
-        }
-        .hidden-init {
             opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
         }
 
-        /* RTL */
-        body[dir="rtl"] .nav-links a {
-            font-family: 'Cairo', sans-serif;
+        /* ── RTL fixes ── */
+        body[dir="rtl"] .cmd-list li:hover { transform: translateX(-4px); }
+        body[dir="rtl"] .cmd-list li span { margin-right: 0; margin-left: 6px; }
+
+        /* ── GLITCH EFFECT ON HERO TITLE (subtle) ── */
+        @keyframes glitch {
+            0% { text-shadow: 2px 0 red, -2px 0 blue; }
+            20% { text-shadow: -2px 0 red, 2px 0 blue; }
+            40% { text-shadow: 2px 0 cyan, -2px 0 red; }
+            60% { text-shadow: -2px 0 cyan, 2px 0 red; }
+            80% { text-shadow: 2px 0 red, -2px 0 cyan; }
+            100% { text-shadow: -2px 0 red, 2px 0 cyan; }
         }
-        body[dir="rtl"] .cmd-list li span {
-            margin-right: 0;
-            margin-left: 6px;
-        }
-        body[dir="rtl"] .cmd-list li .desc {
-            font-family: 'Cairo', sans-serif;
+        .hero-text h1:hover {
+            animation: glitch 0.5s infinite;
         }
     </style>
 </head>
-<body class="hidden-init">
+<body>
+    <canvas id="bgCanvas"></canvas>
 
-    <!-- ── HEADER ── -->
+    <!-- HEADER -->
     <header>
         <div class="header-inner">
             <div class="logo">AERO<span>DYNE</span></div>
@@ -556,20 +515,20 @@
             </nav>
             <div class="header-right">
                 <div class="lang-flags" id="langFlags">
-                    <button class="lang-flag active" data-lang="en" title="English (US)">🇺🇸</button>
-                    <button class="lang-flag" data-lang="ar" title="العربية (السعودية)">🇸🇦</button>
-                    <button class="lang-flag" data-lang="de" title="Deutsch (Deutschland)">🇩🇪</button>
-                    <button class="lang-flag" data-lang="fr" title="Français (France)">🇫🇷</button>
+                    <button class="lang-flag active" data-lang="en" title="English (US)"><span class="flag-emoji">🇺🇸</span><span class="flag-code">US</span></button>
+                    <button class="lang-flag" data-lang="ar" title="العربية (السعودية)"><span class="flag-emoji">🇸🇦</span><span class="flag-code">SA</span></button>
+                    <button class="lang-flag" data-lang="de" title="Deutsch (Deutschland)"><span class="flag-emoji">🇩🇪</span><span class="flag-code">DE</span></button>
+                    <button class="lang-flag" data-lang="fr" title="Français (France)"><span class="flag-emoji">🇫🇷</span><span class="flag-code">FR</span></button>
                 </div>
             </div>
         </div>
     </header>
 
-    <!-- ── HERO ── -->
+    <!-- HERO -->
     <section id="hero">
         <div class="hero-grid">
             <div class="hero-text">
-                <h1 data-en="Power Up Your <span>Server</span>" data-ar="قم بتعزيز <span>خادمك</span>" data-de="Verstärke Deinen <span>Server</span>" data-fr="Boostez Votre <span>Serveur</span>">Power Up Your <span>Server</span></h1>
+                <h1><span data-en="Power Up Your" data-ar="قم بتعزيز" data-de="Verstärke Deinen" data-fr="Boostez Votre">Power Up Your</span> <span style="color:var(--primary);" data-en="Server" data-ar="خادمك" data-de="Server" data-fr="Serveur">Server</span></h1>
                 <p data-en="Advanced Discord bot with dual XP pools, economy, ticket system, moderation & study mode. Built for serious communities." data-ar="بوت ديسكورد متقدم مع نظام XP مزدوج، اقتصاد، تذاكر، إدارة ووضع دراسة. مصمم للمجتمعات الجادة." data-de="Fortschrittlicher Discord-Bot mit dualem XP-System, Wirtschaft, Ticketsystem, Moderation & Lernmodus." data-fr="Bot Discord avancé avec double système XP, économie, tickets, modération & mode étude.">Advanced Discord bot with dual XP pools, economy, ticket system, moderation & study mode. Built for serious communities.</p>
                 <div class="hero-badges">
                     <div class="badge"><span class="dot"></span> <span data-en="Online 24/7" data-ar="متصل 24/7" data-de="Online 24/7" data-fr="En ligne 24/7">Online 24/7</span></div>
@@ -584,152 +543,132 @@
         </div>
     </section>
 
-    <!-- ── FEATURES ── -->
+    <!-- FEATURES (same as before but with reveal class) -->
     <section id="features">
-        <h2 class="section-title" data-en="Core Features" data-ar="الميزات الأساسية" data-de="Kernfunktionen" data-fr="Fonctions Principales">Core Features</h2>
-        <p class="section-sub" data-en="Everything your community needs to thrive." data-ar="كل ما يحتاجه مجتمعك للازدهار." data-de="Alles, was deine Community braucht." data-fr="Tout ce dont votre communauté a besoin.">Everything your community needs to thrive.</p>
+        <h2 class="section-title reveal" data-en="Core Features" data-ar="الميزات الأساسية" data-de="Kernfunktionen" data-fr="Fonctions Principales">Core Features</h2>
+        <p class="section-sub reveal" data-en="Everything your community needs to thrive." data-ar="كل ما يحتاجه مجتمعك للازدهار." data-de="Alles, was deine Community braucht." data-fr="Tout ce dont votre communauté a besoin.">Everything your community needs to thrive.</p>
         <div class="features-grid">
-            <div class="feature-card">
-                <div class="icon">📊</div>
-                <h3 data-en="Dual XP System" data-ar="نظام XP مزدوج" data-de="Duales XP-System" data-fr="Double Système XP">Dual XP System</h3>
-                <p data-en="Separate Text XP & Voice XP pools. Steep exponential curve for dedicated students. 1-min text cooldown, 60-min voice awards. AFK channels excluded." data-ar="مجمعات XP منفصلة للنصوص والصوت. منحنى أسي حاد للطلاب المتفانين. تبريد 1 دقيقة للنصوص، 60 دقيقة للصوت. استثناء قنوات الغياب." data-de="Getrennte Text-XP- und Sprach-XP-Pools. Steile exponentielle Kurve. 1-Min-Cooldown für Text, 60-Min-Belohnung für Sprache." data-fr="Pools XP texte et vocal séparés. Courbe exponentielle raide. Cooldown 1 min texte, 60 min vocal. Canaux AFK exclus.">Separate Text XP & Voice XP pools. Steep exponential curve for dedicated students. 1-min text cooldown, 60-min voice awards. AFK channels excluded.</p>
-            </div>
-            <div class="feature-card">
-                <div class="icon">🎫</div>
-                <h3 data-en="Ticket System" data-ar="نظام التذاكر" data-de="Ticketsystem" data-fr="Système de Tickets">Ticket System</h3>
-                <p data-en="Auto claim embeds, claim/unclaim with point tracking, post-ticket rating via DM with 1hr expiry. Bilingual rating messages." data-ar="بطاقات مطالبة تلقائية، مطالبة/إلغاء مع تتبع النقاط، تقييم بعد التذكرة عبر رسالة خاصة مع انتهاء ساعة واحدة. رسائل تقييم ثنائية اللغة." data-de="Auto-Claim-Embeds, Claim/Unclaim mit Punkteverfolgung, Bewertung per DM mit 1h Ablauf. Zweisprachige Bewertungsnachrichten." data-fr="Embeds de réclamation auto, claim/unclaim avec suivi de points, évaluation post-ticket par DM avec expiration 1h. Messages d'évaluation bilingues.">Auto claim embeds, claim/unclaim with point tracking, post-ticket rating via DM with 1hr expiry. Bilingual rating messages.</p>
-            </div>
-            <div class="feature-card">
-                <div class="icon">🛡️</div>
-                <h3 data-en="Moderation" data-ar="الإدارة" data-de="Moderation" data-fr="Modération">Moderation</h3>
-                <p data-en="Kick, ban, timeout with bilingual duration support. Audit log detection, per-channel anti-spam with silent XP freeze. Full embed logging." data-ar="طرد، حظر، مهلة مع دعم المدد ثنائي اللغة. كشف سجل التدقيق، مضاد سبام لكل قناة مع تجميد XP صامت. تسجيل كامل بالبطاقات." data-de="Kick, Bann, Timeout mit zweisprachiger Dauerunterstützung. Audit-Log-Erkennung, Anti-Spam pro Kanal mit stillem XP-Freeze." data-fr="Expulsion, bannissement, timeout avec support de durée bilingue. Détection audit log, anti-spam par canal avec gel XP silencieux.">Kick, ban, timeout with bilingual duration support. Audit log detection, per-channel anti-spam with silent XP freeze. Full embed logging.</p>
-            </div>
-            <div class="feature-card">
-                <div class="icon">💰</div>
-                <h3 data-en="Economy" data-ar="الاقتصاد" data-de="Wirtschaft" data-fr="Économie">Economy</h3>
-                <p data-en="Coins, bank, deposit/withdraw, rob, raid with cooldown, PvP coinflip. Automatic wealth tax above threshold. Full setup command." data-ar="عملات، بنك، إيداع/سحب، سرقة، غارة مع تبريد، قلب عملة بين اللاعبين. ضريبة ثروة تلقائية فوق الحد. أمر إعداد كامل." data-de="Münzen, Bank, Ein-/Auszahlung, Raub, Raid mit Cooldown, PvP-Münzwurf. Automatische Vermögenssteuer. Vollständiger Setup-Befehl." data-fr="Pièces, banque, dépôt/retrait, vol, raid avec cooldown, coinflip PvP. Taxe de richesse automatique. Commande setup complète.">Coins, bank, deposit/withdraw, rob, raid with cooldown, PvP coinflip. Automatic wealth tax above threshold. Full setup command.</p>
-            </div>
-            <div class="feature-card">
-                <div class="icon">📚</div>
-                <h3 data-en="Study Mode" data-ar="وضع الدراسة" data-de="Lernmodus" data-fr="Mode Étude">Study Mode</h3>
-                <p data-en="Toggle quiet zone on voice channels. Denies speak for @everyone, renames channel with 📚 prefix. Full restore on disable. Owner detection compatible." data-ar="تبديل المنطقة الهادئة على قنوات الصوت. يمنع التحدث للجميع، يعيد تسمية القناة ببادئة 📚. استعادة كاملة عند التعطيل. كشف المالك متوافق." data-de="Ruhezone für Sprachkanäle. Verweigert Sprechrecht für @everyone, benennt Kanal mit 📚 um. Vollständige Wiederherstellung." data-fr="Zone silencieuse sur canaux vocaux. Refuse la parole pour @everyone, renomme le canal avec 📚. Restauration complète.">Toggle quiet zone on voice channels. Denies speak for @everyone, renames channel with 📚 prefix. Full restore on disable. Owner detection compatible.</p>
-            </div>
-            <div class="feature-card">
-                <div class="icon">🎨</div>
-                <h3 data-en="Level Cards" data-ar="بطاقات المستوى" data-de="Level-Karten" data-fr="Cartes de Niveau">Level Cards</h3>
-                <p data-en="900×300px canvas cards with lunar background, tactical HUD overlay, dual progress bars. Milestone color swap every 10 levels. Rank titles displayed." data-ar="بطاقات 900×300 بكسل بخلفية قمرية، غطاء HUD تكتيكي، أشرطة تقدم مزدوجة. تغيير لون عند كل 10 مستويات. عرض ألقاب الرتب." data-de="900×300px Canvas-Karten mit Mondhintergrund, taktischem HUD, dualen Fortschrittsbalken. Farbwechsel alle 10 Level." data-fr="Cartes 900×300px avec fond lunaire, overlay HUD tactique, doubles barres de progression. Changement de couleur tous les 10 niveaux.">900×300px canvas cards with lunar background, tactical HUD overlay, dual progress bars. Milestone color swap every 10 levels. Rank titles displayed.</p>
-            </div>
+            <!-- feature cards as before, add class "reveal" for animation -->
+            <div class="feature-card reveal"><div class="icon">📊</div><h3 data-en="Dual XP System" data-ar="نظام XP مزدوج" data-de="Duales XP-System" data-fr="Double Système XP">Dual XP System</h3><p data-en="Separate Text XP & Voice XP pools. Steep exponential curve for dedicated students. 1-min text cooldown, 60-min voice awards. AFK channels excluded." data-ar="مجمعات XP منفصلة للنصوص والصوت. منحنى أسي حاد للطلاب المتفانين. تبريد 1 دقيقة للنصوص، 60 دقيقة للصوت. استثناء قنوات الغياب." data-de="Getrennte Text-XP- und Sprach-XP-Pools. Steile exponentielle Kurve. 1-Min-Cooldown für Text, 60-Min-Belohnung für Sprache." data-fr="Pools XP texte et vocal séparés. Courbe exponentielle raide. Cooldown 1 min texte, 60 min vocal. Canaux AFK exclus.">Separate Text XP & Voice XP pools. Steep exponential curve for dedicated students. 1-min text cooldown, 60-min voice awards. AFK channels excluded.</p></div>
+            <div class="feature-card reveal"><div class="icon">🎫</div><h3 data-en="Ticket System" data-ar="نظام التذاكر" data-de="Ticketsystem" data-fr="Système de Tickets">Ticket System</h3><p data-en="Auto claim embeds, claim/unclaim with point tracking, post-ticket rating via DM with 1hr expiry. Bilingual rating messages." data-ar="بطاقات مطالبة تلقائية، مطالبة/إلغاء مع تتبع النقاط، تقييم بعد التذكرة عبر رسالة خاصة مع انتهاء ساعة واحدة. رسائل تقييم ثنائية اللغة." data-de="Auto-Claim-Embeds, Claim/Unclaim mit Punkteverfolgung, Bewertung per DM mit 1h Ablauf. Zweisprachige Bewertungsnachrichten." data-fr="Embeds de réclamation auto, claim/unclaim avec suivi de points, évaluation post-ticket par DM avec expiration 1h. Messages d'évaluation bilingues.">Auto claim embeds, claim/unclaim with point tracking, post-ticket rating via DM with 1hr expiry. Bilingual rating messages.</p></div>
+            <div class="feature-card reveal"><div class="icon">🛡️</div><h3 data-en="Moderation" data-ar="الإدارة" data-de="Moderation" data-fr="Modération">Moderation</h3><p data-en="Kick, ban, timeout with bilingual duration support. Audit log detection, per-channel anti-spam with silent XP freeze. Full embed logging." data-ar="طرد، حظر، مهلة مع دعم المدد ثنائي اللغة. كشف سجل التدقيق، مضاد سبام لكل قناة مع تجميد XP صامت. تسجيل كامل بالبطاقات." data-de="Kick, Bann, Timeout mit zweisprachiger Dauerunterstützung. Audit-Log-Erkennung, Anti-Spam pro Kanal mit stillem XP-Freeze." data-fr="Expulsion, bannissement, timeout avec support de durée bilingue. Détection audit log, anti-spam par canal avec gel XP silencieux.">Kick, ban, timeout with bilingual duration support. Audit log detection, per-channel anti-spam with silent XP freeze. Full embed logging.</p></div>
+            <div class="feature-card reveal"><div class="icon">💰</div><h3 data-en="Economy" data-ar="الاقتصاد" data-de="Wirtschaft" data-fr="Économie">Economy</h3><p data-en="Coins, bank, deposit/withdraw, rob, raid with cooldown, PvP coinflip. Automatic wealth tax above threshold. Full setup command." data-ar="عملات، بنك، إيداع/سحب، سرقة، غارة مع تبريد، قلب عملة بين اللاعبين. ضريبة ثروة تلقائية فوق الحد. أمر إعداد كامل." data-de="Münzen, Bank, Ein-/Auszahlung, Raub, Raid mit Cooldown, PvP-Münzwurf. Automatische Vermögenssteuer. Vollständiger Setup-Befehl." data-fr="Pièces, banque, dépôt/retrait, vol, raid avec cooldown, coinflip PvP. Taxe de richesse automatique. Commande setup complète.">Coins, bank, deposit/withdraw, rob, raid with cooldown, PvP coinflip. Automatic wealth tax above threshold. Full setup command.</p></div>
+            <div class="feature-card reveal"><div class="icon">📚</div><h3 data-en="Study Mode" data-ar="وضع الدراسة" data-de="Lernmodus" data-fr="Mode Étude">Study Mode</h3><p data-en="Toggle quiet zone on voice channels. Denies speak for @everyone, renames channel with 📚 prefix. Full restore on disable. Owner detection compatible." data-ar="تبديل المنطقة الهادئة على قنوات الصوت. يمنع التحدث للجميع، يعيد تسمية القناة ببادئة 📚. استعادة كاملة عند التعطيل. كشف المالك متوافق." data-de="Ruhezone für Sprachkanäle. Verweigert Sprechrecht für @everyone, benennt Kanal mit 📚 um. Vollständige Wiederherstellung." data-fr="Zone silencieuse sur canaux vocaux. Refuse la parole pour @everyone, renomme le canal avec 📚. Restauration complète.">Toggle quiet zone on voice channels. Denies speak for @everyone, renames channel with 📚 prefix. Full restore on disable. Owner detection compatible.</p></div>
+            <div class="feature-card reveal"><div class="icon">🎨</div><h3 data-en="Level Cards" data-ar="بطاقات المستوى" data-de="Level-Karten" data-fr="Cartes de Niveau">Level Cards</h3><p data-en="900×300px canvas cards with lunar background, tactical HUD overlay, dual progress bars. Milestone color swap every 10 levels. Rank titles displayed." data-ar="بطاقات 900×300 بكسل بخلفية قمرية، غطاء HUD تكتيكي، أشرطة تقدم مزدوجة. تغيير لون عند كل 10 مستويات. عرض ألقاب الرتب." data-de="900×300px Canvas-Karten mit Mondhintergrund, taktischem HUD, dualen Fortschrittsbalken. Farbwechsel alle 10 Level." data-fr="Cartes 900×300px avec fond lunaire, overlay HUD tactique, doubles barres de progression. Changement de couleur tous les 10 niveaux.">900×300px canvas cards with lunar background, tactical HUD overlay, dual progress bars. Milestone color swap every 10 levels. Rank titles displayed.</p></div>
         </div>
     </section>
 
-    <!-- ── COMMANDS ── -->
+    <!-- COMMANDS (same structure, added reveal) -->
     <section id="commands">
-        <h2 class="section-title" data-en="Bot Commands" data-ar="أوامر البوت" data-de="Bot-Befehle" data-fr="Commandes du Bot">Bot Commands</h2>
-        <p class="section-sub" data-en="Searchable & filterable. Type to find any command." data-ar="قابلة للبحث والتصفية. اكتب للعثور على أي أمر." data-de="Durchsuchbar & filterbar. Tippe, um Befehle zu finden." data-fr="Recherchable & filtrable. Tapez pour trouver.">Searchable & filterable. Type to find any command.</p>
-        <input type="text" class="cmd-search" id="cmdSearch" data-en-placeholder="Search commands..." data-ar-placeholder="ابحث عن أمر..." data-de-placeholder="Befehle suchen..." data-fr-placeholder="Rechercher..." placeholder="Search commands...">
+        <h2 class="section-title reveal" data-en="Bot Commands" data-ar="أوامر البوت" data-de="Bot-Befehle" data-fr="Commandes du Bot">Bot Commands</h2>
+        <p class="section-sub reveal" data-en="Searchable & filterable. Type to find any command." data-ar="قابلة للبحث والتصفية. اكتب للعثور على أي أمر." data-de="Durchsuchbar & filterbar. Tippe, um Befehle zu finden." data-fr="Recherchable & filtrable. Tapez pour trouver.">Searchable & filterable. Type to find any command.</p>
+        <input type="text" class="cmd-search reveal" id="cmdSearch" placeholder="Search commands..." data-en-placeholder="Search commands..." data-ar-placeholder="ابحث عن أمر..." data-de-placeholder="Befehle suchen..." data-fr-placeholder="Rechercher...">
         <div class="cmd-grid" id="cmdGrid">
-            <!-- General -->
-            <div class="cmd-category">
-                <h3>🤖 <span data-en="General" data-ar="عام" data-de="Allgemein" data-fr="Général">General</span></h3>
-                <ul class="cmd-list">
-                    <li><span>-prefix</span> <span data-en="Set custom prefix" data-ar="تعيين بادئة مخصصة" data-de="Benutzerdefinierten Präfix setzen" data-fr="Définir un préfixe personnalisé">Set custom prefix</span></li>
-                    <li><span>-status</span> <span data-en="Configure bot presence" data-ar="تكوين حالة البوت" data-de="Bot-Status konfigurieren" data-fr="Configurer le statut du bot">Configure bot presence</span></li>
-                </ul>
-            </div>
-            <!-- Level System -->
-            <div class="cmd-category">
-                <h3>📊 <span data-en="Level System" data-ar="نظام المستويات" data-de="Level-System" data-fr="Système de Niveaux">Level System</span></h3>
-                <ul class="cmd-list">
-                    <li><span>-rank</span> <span data-en="View your level card" data-ar="عرض بطاقة مستواك" data-de="Level-Karte anzeigen" data-fr="Voir votre carte de niveau">View your level card</span></li>
-                    <li><span>-top voice</span> <span data-en="Voice XP leaderboard" data-ar="لوحة صدارة XP الصوت" data-de="Sprach-XP-Bestenliste" data-fr="Classement XP vocal">Voice XP leaderboard</span></li>
-                    <li><span>-top text</span> <span data-en="Text XP leaderboard" data-ar="لوحة صدارة XP النص" data-de="Text-XP-Bestenliste" data-fr="Classement XP texte">Text XP leaderboard</span></li>
-                    <li><span>-setxpchannel</span> <span data-en="Route level-up cards" data-ar="توجيه بطاقات الترقية" data-de="Level-Up-Karten umleiten" data-fr="Router les cartes de niveau">Route level-up cards</span></li>
-                    <li><span>-setuplevelsystem</span> <span data-en="Initialize level system" data-ar="تهيئة نظام المستويات" data-de="Level-System initialisieren" data-fr="Initialiser le système de niveaux">Initialize level system</span></li>
-                </ul>
-            </div>
-            <!-- Tickets -->
-            <div class="cmd-category">
-                <h3>🎫 <span data-en="Tickets" data-ar="التذاكر" data-de="Tickets" data-fr="Tickets">Tickets</span></h3>
-                <ul class="cmd-list">
-                    <li><span>-ticket</span> <span data-en="Open a ticket" data-ar="فتح تذكرة" data-de="Ticket öffnen" data-fr="Ouvrir un ticket">Open a ticket</span></li>
-                    <li><span>-close</span> <span data-en="Close current ticket" data-ar="إغلاق التذكرة الحالية" data-de="Aktuelles Ticket schließen" data-fr="Fermer le ticket actuel">Close current ticket</span></li>
-                </ul>
-            </div>
-            <!-- Moderation -->
-            <div class="cmd-category">
-                <h3>🛡️ <span data-en="Moderation" data-ar="الإدارة" data-de="Moderation" data-fr="Modération">Moderation</span></h3>
-                <ul class="cmd-list">
-                    <li><span>-kick</span> <span data-en="Kick a member" data-ar="طرد عضو" data-de="Mitglied kicken" data-fr="Expulser un membre">Kick a member</span></li>
-                    <li><span>-ban</span> <span data-en="Ban a member" data-ar="حظر عضو" data-de="Mitglied bannen" data-fr="Bannir un membre">Ban a member</span></li>
-                    <li><span>-timeout</span> <span data-en="Timeout with duration" data-ar="مهلة مع مدة" data-de="Timeout mit Dauer" data-fr="Timeout avec durée">Timeout with duration</span></li>
-                    <li><span>-untimeout</span> <span data-en="Remove timeout" data-ar="إزالة المهلة" data-de="Timeout entfernen" data-fr="Retirer le timeout">Remove timeout</span></li>
-                    <li><span>-setlogtimechannel</span> <span data-en="Set timeout log channel" data-ar="تعيين قناة سجل المهلة" data-de="Timeout-Log-Kanal setzen" data-fr="Définir le canal de log timeout">Set timeout log channel</span></li>
-                    <li><span>-setantispam</span> <span data-en="Toggle anti-spam per channel" data-ar="تبديل مضاد السبام لكل قناة" data-de="Anti-Spam pro Kanal umschalten" data-fr="Activer/désactiver anti-spam par canal">Toggle anti-spam per channel</span></li>
-                </ul>
-            </div>
-            <!-- Economy -->
-            <div class="cmd-category">
-                <h3>💰 <span data-en="Economy" data-ar="الاقتصاد" data-de="Wirtschaft" data-fr="Économie">Economy</span></h3>
-                <ul class="cmd-list">
-                    <li><span>-bal</span> <span data-en="View XP, coins, bank" data-ar="عرض XP، عملات، بنك" data-de="XP, Münzen, Bank anzeigen" data-fr="Voir XP, pièces, banque">View XP, coins, bank</span></li>
-                    <li><span>-deposit</span> <span data-en="Deposit coins to bank" data-ar="إيداع عملات في البنك" data-de="Münzen einzahlen" data-fr="Déposer des pièces">Deposit coins to bank</span></li>
-                    <li><span>-withdraw</span> <span data-en="Withdraw coins" data-ar="سحب عملات" data-de="Münzen abheben" data-fr="Retirer des pièces">Withdraw coins</span></li>
-                    <li><span>-rob</span> <span data-en="50/50 rob attempt" data-ar="محاولة سرقة 50/50" data-de="50/50 Raubversuch" data-fr="Tentative de vol 50/50">50/50 rob attempt</span></li>
-                    <li><span>-raid</span> <span data-en="40% success raid" data-ar="غارة بنجاح 40%" data-de="40% Erfolgs-Raid" data-fr="Raid à 40% de réussite">40% success raid</span></li>
-                    <li><span>-coinflip</span> <span data-en="PvP coin flip" data-ar="قلب عملة بين لاعبين" data-de="PvP-Münzwurf" data-fr="Coinflip PvP">PvP coin flip</span></li>
-                    <li><span>-setup</span> <span data-en="Configure tax & XP mode" data-ar="تكوين الضريبة ووضع XP" data-de="Steuer & XP-Modus konfigurieren" data-fr="Configurer taxe & mode XP">Configure tax & XP mode</span></li>
-                </ul>
-            </div>
-            <!-- Study Mode -->
-            <div class="cmd-category">
-                <h3>📚 <span data-en="Study Mode" data-ar="وضع الدراسة" data-de="Lernmodus" data-fr="Mode Étude">Study Mode</span></h3>
-                <ul class="cmd-list">
-                    <li><span>-studymode on</span> <span data-en="Enable quiet zone" data-ar="تفعيل المنطقة الهادئة" data-de="Ruhezone aktivieren" data-fr="Activer la zone silencieuse">Enable quiet zone</span></li>
-                    <li><span>-studymode off</span> <span data-en="Disable & restore" data-ar="تعطيل واستعادة" data-de="Deaktivieren & wiederherstellen" data-fr="Désactiver & restaurer">Disable & restore</span></li>
-                    <li><span>-studymode status</span> <span data-en="Check current state" data-ar="التحقق من الحالة" data-de="Status prüfen" data-fr="Vérifier l'état">Check current state</span></li>
-                </ul>
-            </div>
+            <!-- command categories as before -->
+            <div class="cmd-category reveal"><h3>🤖 <span data-en="General" data-ar="عام" data-de="Allgemein" data-fr="Général">General</span></h3><ul class="cmd-list"><li><span>-prefix</span> <span data-en="Set custom prefix" data-ar="تعيين بادئة مخصصة" data-de="Benutzerdefinierten Präfix setzen" data-fr="Définir un préfixe personnalisé">Set custom prefix</span></li><li><span>-status</span> <span data-en="Configure bot presence" data-ar="تكوين حالة البوت" data-de="Bot-Status konfigurieren" data-fr="Configurer le statut du bot">Configure bot presence</span></li></ul></div>
+            <div class="cmd-category reveal"><h3>📊 <span data-en="Level System" data-ar="نظام المستويات" data-de="Level-System" data-fr="Système de Niveaux">Level System</span></h3><ul class="cmd-list"><li><span>-rank</span> <span data-en="View your level card" data-ar="عرض بطاقة مستواك" data-de="Level-Karte anzeigen" data-fr="Voir votre carte de niveau">View your level card</span></li><li><span>-top voice</span> <span data-en="Voice XP leaderboard" data-ar="لوحة صدارة XP الصوت" data-de="Sprach-XP-Bestenliste" data-fr="Classement XP vocal">Voice XP leaderboard</span></li><li><span>-top text</span> <span data-en="Text XP leaderboard" data-ar="لوحة صدارة XP النص" data-de="Text-XP-Bestenliste" data-fr="Classement XP texte">Text XP leaderboard</span></li><li><span>-setxpchannel</span> <span data-en="Route level-up cards" data-ar="توجيه بطاقات الترقية" data-de="Level-Up-Karten umleiten" data-fr="Router les cartes de niveau">Route level-up cards</span></li><li><span>-setuplevelsystem</span> <span data-en="Initialize level system" data-ar="تهيئة نظام المستويات" data-de="Level-System initialisieren" data-fr="Initialiser le système de niveaux">Initialize level system</span></li></ul></div>
+            <div class="cmd-category reveal"><h3>🎫 <span data-en="Tickets" data-ar="التذاكر" data-de="Tickets" data-fr="Tickets">Tickets</span></h3><ul class="cmd-list"><li><span>-ticket</span> <span data-en="Open a ticket" data-ar="فتح تذكرة" data-de="Ticket öffnen" data-fr="Ouvrir un ticket">Open a ticket</span></li><li><span>-close</span> <span data-en="Close current ticket" data-ar="إغلاق التذكرة الحالية" data-de="Aktuelles Ticket schließen" data-fr="Fermer le ticket actuel">Close current ticket</span></li></ul></div>
+            <div class="cmd-category reveal"><h3>🛡️ <span data-en="Moderation" data-ar="الإدارة" data-de="Moderation" data-fr="Modération">Moderation</span></h3><ul class="cmd-list"><li><span>-kick</span> <span data-en="Kick a member" data-ar="طرد عضو" data-de="Mitglied kicken" data-fr="Expulser un membre">Kick a member</span></li><li><span>-ban</span> <span data-en="Ban a member" data-ar="حظر عضو" data-de="Mitglied bannen" data-fr="Bannir un membre">Ban a member</span></li><li><span>-timeout</span> <span data-en="Timeout with duration" data-ar="مهلة مع مدة" data-de="Timeout mit Dauer" data-fr="Timeout avec durée">Timeout with duration</span></li><li><span>-untimeout</span> <span data-en="Remove timeout" data-ar="إزالة المهلة" data-de="Timeout entfernen" data-fr="Retirer le timeout">Remove timeout</span></li><li><span>-setlogtimechannel</span> <span data-en="Set timeout log channel" data-ar="تعيين قناة سجل المهلة" data-de="Timeout-Log-Kanal setzen" data-fr="Définir le canal de log timeout">Set timeout log channel</span></li><li><span>-setantispam</span> <span data-en="Toggle anti-spam per channel" data-ar="تبديل مضاد السبام لكل قناة" data-de="Anti-Spam pro Kanal umschalten" data-fr="Activer/désactiver anti-spam par canal">Toggle anti-spam per channel</span></li></ul></div>
+            <div class="cmd-category reveal"><h3>💰 <span data-en="Economy" data-ar="الاقتصاد" data-de="Wirtschaft" data-fr="Économie">Economy</span></h3><ul class="cmd-list"><li><span>-bal</span> <span data-en="View XP, coins, bank" data-ar="عرض XP، عملات، بنك" data-de="XP, Münzen, Bank anzeigen" data-fr="Voir XP, pièces, banque">View XP, coins, bank</span></li><li><span>-deposit</span> <span data-en="Deposit coins to bank" data-ar="إيداع عملات في البنك" data-de="Münzen einzahlen" data-fr="Déposer des pièces">Deposit coins to bank</span></li><li><span>-withdraw</span> <span data-en="Withdraw coins" data-ar="سحب عملات" data-de="Münzen abheben" data-fr="Retirer des pièces">Withdraw coins</span></li><li><span>-rob</span> <span data-en="50/50 rob attempt" data-ar="محاولة سرقة 50/50" data-de="50/50 Raubversuch" data-fr="Tentative de vol 50/50">50/50 rob attempt</span></li><li><span>-raid</span> <span data-en="40% success raid" data-ar="غارة بنجاح 40%" data-de="40% Erfolgs-Raid" data-fr="Raid à 40% de réussite">40% success raid</span></li><li><span>-coinflip</span> <span data-en="PvP coin flip" data-ar="قلب عملة بين لاعبين" data-de="PvP-Münzwurf" data-fr="Coinflip PvP">PvP coin flip</span></li><li><span>-setup</span> <span data-en="Configure tax & XP mode" data-ar="تكوين الضريبة ووضع XP" data-de="Steuer & XP-Modus konfigurieren" data-fr="Configurer taxe & mode XP">Configure tax & XP mode</span></li></ul></div>
+            <div class="cmd-category reveal"><h3>📚 <span data-en="Study Mode" data-ar="وضع الدراسة" data-de="Lernmodus" data-fr="Mode Étude">Study Mode</span></h3><ul class="cmd-list"><li><span>-studymode on</span> <span data-en="Enable quiet zone" data-ar="تفعيل المنطقة الهادئة" data-de="Ruhezone aktivieren" data-fr="Activer la zone silencieuse">Enable quiet zone</span></li><li><span>-studymode off</span> <span data-en="Disable & restore" data-ar="تعطيل واستعادة" data-de="Deaktivieren & wiederherstellen" data-fr="Désactiver & restaurer">Disable & restore</span></li><li><span>-studymode status</span> <span data-en="Check current state" data-ar="التحقق من الحالة" data-de="Status prüfen" data-fr="Vérifier l'état">Check current state</span></li></ul></div>
         </div>
     </section>
 
-    <!-- ── LIVE STATS ── -->
+    <!-- STATS (dynamic) -->
     <section id="stats">
-        <h2 class="section-title" data-en="Live Bot Stats" data-ar="إحصائيات حية" data-de="Live-Statistiken" data-fr="Stats en Direct">Live Bot Stats</h2>
-        <div class="stats-grid" id="statsContainer"></div>
+        <h2 class="section-title reveal" data-en="Live Bot Stats" data-ar="إحصائيات حية" data-de="Live-Statistiken" data-fr="Stats en Direct">Live Bot Stats</h2>
+        <div class="stats-grid reveal" id="statsContainer"></div>
     </section>
 
-    <!-- ── DEVELOPER ── -->
+    <!-- DEVELOPER -->
     <section id="dev">
-        <h2 class="section-title" data-en="Lead Developer" data-ar="المطور الرئيسي" data-de="Hauptentwickler" data-fr="Développeur Principal">Lead Developer</h2>
-        <div class="dev-card">
+        <h2 class="section-title reveal" data-en="Lead Developer" data-ar="المطور الرئيسي" data-de="Hauptentwickler" data-fr="Développeur Principal">Lead Developer</h2>
+        <div class="dev-card reveal">
             <div class="dev-avatar">A</div>
             <div class="dev-info">
                 <h3>AERON</h3>
                 <div class="role" data-en="Core Engineer & Architect" data-ar="مهندس النواة والمصمم" data-de="Kernentwickler & Architekt" data-fr="Ingénieur Principal & Architecte">Core Engineer & Architect</div>
-                <p data-en="Building reliable, high-performance Discord tools for communities that demand excellence. AERODYNE is crafted with precision — every system is designed to scale, perform, and serve." data-ar="نبني أدوات ديسكورد موثوقة وعالية الأداء للمجتمعات التي تتطلب التميز. صُنع AERODYNE بدقة — كل نظام مصمم للتوسع والأداء والخدمة." data-de="Entwicklung zuverlässiger Hochleistungs-Discord-Tools für Communities mit höchsten Ansprüchen. AERODYNE ist präzise gefertigt." data-fr="Création d'outils Discord fiables et performants pour les communautés exigeantes. AERODYNE est fabriqué avec précision.">Building reliable, high-performance Discord tools for communities that demand excellence. AERODYNE is crafted with precision — every system is designed to scale, perform, and serve.</p>
+                <p data-en="Building reliable, high-performance Discord tools for communities that demand excellence. AERODYNE is crafted with precision — every system designed to scale, perform, and serve." data-ar="نبني أدوات ديسكورد موثوقة وعالية الأداء للمجتمعات التي تتطلب التميز. صُنع AERODYNE بدقة — كل نظام مصمم للتوسع والأداء والخدمة." data-de="Entwicklung zuverlässiger Hochleistungs-Discord-Tools für Communities mit höchsten Ansprüchen. AERODYNE ist präzise gefertigt." data-fr="Création d'outils Discord fiables et performants pour les communautés exigeantes. AERODYNE est fabriqué avec précision.">Building reliable, high-performance Discord tools for communities that demand excellence. AERODYNE is crafted with precision — every system designed to scale, perform, and serve.</p>
             </div>
         </div>
     </section>
 
-    <!-- ── FOOTER ── -->
     <footer>
         <p>&copy; 2026 AERODYNE. <span data-en="All rights reserved." data-ar="جميع الحقوق محفوظة." data-de="Alle Rechte vorbehalten." data-fr="Tous droits réservés.">All rights reserved.</span> <a href="https://discord.gg/yourinvite">Discord</a></p>
     </footer>
 
     <script>
         (function() {
-            // ── TRANSLATIONS STORE ──
-            const translations = {
-                en: {},
-                ar: {},
-                de: {},
-                fr: {}
-            };
+            // ── ANIMATED BACKGROUND CANVAS ──
+            const canvas = document.getElementById('bgCanvas');
+            const ctx = canvas.getContext('2d');
+            let particles = [];
+            let w, h;
 
-            // Collect all data attributes
+            function resizeCanvas() {
+                w = canvas.width = window.innerWidth;
+                h = canvas.height = window.innerHeight;
+                initParticles();
+            }
+
+            function initParticles() {
+                particles = [];
+                const count = Math.floor(w * h / 12000);
+                for (let i = 0; i < count; i++) {
+                    particles.push({
+                        x: Math.random() * w,
+                        y: Math.random() * h,
+                        vx: (Math.random() - 0.5) * 0.3,
+                        vy: (Math.random() - 0.5) * 0.3,
+                        radius: Math.random() * 2 + 0.5,
+                        alpha: Math.random() * 0.3 + 0.1,
+                    });
+                }
+            }
+
+            function drawParticles() {
+                ctx.clearRect(0, 0, w, h);
+                particles.forEach(p => {
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    if (p.x < 0) p.x = w;
+                    if (p.x > w) p.x = 0;
+                    if (p.y < 0) p.y = h;
+                    if (p.y > h) p.y = 0;
+
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(79, 70, 229, ${p.alpha})`;
+                    ctx.fill();
+                });
+
+                // Draw connections
+                for (let i = 0; i < particles.length; i++) {
+                    for (let j = i + 1; j < particles.length; j++) {
+                        const dx = particles[i].x - particles[j].x;
+                        const dy = particles[i].y - particles[j].y;
+                        const dist = Math.sqrt(dx * dx + dy * dy);
+                        if (dist < 120) {
+                            ctx.beginPath();
+                            ctx.moveTo(particles[i].x, particles[i].y);
+                            ctx.lineTo(particles[j].x, particles[j].y);
+                            ctx.strokeStyle = `rgba(79, 70, 229, ${0.04 * (1 - dist / 120)})`;
+                            ctx.stroke();
+                        }
+                    }
+                }
+                requestAnimationFrame(drawParticles);
+            }
+
+            window.addEventListener('resize', resizeCanvas);
+            resizeCanvas();
+            drawParticles();
+
+            // ── TRANSLATIONS ──
+            const translations = { en: {}, ar: {}, de: {}, fr: {} };
             document.querySelectorAll('[data-en]').forEach(el => {
                 const key = el.dataset.en;
-                if (!translations.en[key]) translations.en[key] = key;
+                translations.en[key] = key;
                 translations.ar[key] = el.dataset.ar || key;
                 translations.de[key] = el.dataset.de || key;
                 translations.fr[key] = el.dataset.fr || key;
@@ -743,11 +682,11 @@
                 document.documentElement.lang = lang;
                 document.documentElement.dir = (lang === 'ar') ? 'rtl' : 'ltr';
 
-                // Update all translatable elements
                 document.querySelectorAll('[data-key]').forEach(el => {
                     const key = el.dataset.key;
                     if (translations[lang] && translations[lang][key]) {
-                        el.textContent = translations[lang][key];
+                        // Use innerHTML to support inline tags like <span>
+                        el.innerHTML = translations[lang][key];
                     }
                 });
 
@@ -763,22 +702,17 @@
                     btn.classList.toggle('active', btn.dataset.lang === lang);
                 });
 
-                // Save preference
                 localStorage.setItem('aerodyne-lang', lang);
             }
 
-            // Flag click handlers
             document.getElementById('langFlags').addEventListener('click', (e) => {
                 const flag = e.target.closest('.lang-flag');
                 if (!flag) return;
                 switchLanguage(flag.dataset.lang);
             });
 
-            // Load saved language
             const savedLang = localStorage.getItem('aerodyne-lang');
-            if (savedLang && translations[savedLang]) {
-                switchLanguage(savedLang);
-            }
+            if (savedLang && translations[savedLang]) switchLanguage(savedLang);
 
             // ── NAVIGATION ──
             const navLinks = document.querySelectorAll('.nav-links a');
@@ -800,14 +734,12 @@
                 navMenu.classList.toggle('open');
             });
 
-            // Close menu on outside click
             document.addEventListener('click', (e) => {
                 if (!e.target.closest('header') && navMenu.classList.contains('open')) {
                     navMenu.classList.remove('open');
                 }
             });
 
-            // Scroll spy
             let scrollTicking = false;
             window.addEventListener('scroll', () => {
                 if (!scrollTicking) {
@@ -826,27 +758,15 @@
             // ── COMMAND SEARCH ──
             const cmdSearch = document.getElementById('cmdSearch');
             const cmdItems = document.querySelectorAll('.cmd-list li');
-
             cmdSearch.addEventListener('input', () => {
                 const query = cmdSearch.value.toLowerCase().trim();
                 cmdItems.forEach(item => {
                     const text = item.textContent.toLowerCase();
-                    if (query === '') {
-                        item.classList.remove('hidden');
-                    } else if (text.includes(query)) {
-                        item.classList.remove('hidden');
-                    } else {
-                        item.classList.add('hidden');
-                    }
+                    item.classList.toggle('hidden', query !== '' && !text.includes(query));
                 });
-                // Show/hide category headers if all items hidden
                 document.querySelectorAll('.cmd-category').forEach(cat => {
-                    const visibleItems = cat.querySelectorAll('.cmd-list li:not(.hidden)');
-                    if (query !== '' && visibleItems.length === 0) {
-                        cat.style.opacity = '0.4';
-                    } else {
-                        cat.style.opacity = '1';
-                    }
+                    const visible = cat.querySelectorAll('.cmd-list li:not(.hidden)').length;
+                    cat.style.opacity = query !== '' && visible === 0 ? '0.4' : '1';
                 });
             });
 
@@ -864,51 +784,24 @@
                 const container = document.getElementById('statsContainer');
                 container.innerHTML = '';
                 const items = [
-                    { key: 'servers', labelKey: 'Servers', arLabel: 'خادم', deLabel: 'Server',
-                    frLabel: 'Serveurs' },
-                    { key: 'users', labelKey: 'Users', arLabel: 'مستخدم', deLabel: 'Nutzer',
-                    frLabel: 'Utilisateurs' },
-                    { key: 'uptime', labelKey: 'Uptime %', arLabel: 'وقت التشغيل', deLabel: 'Betriebszeit',
-                        frLabel: 'Disponibilité' },
-                    { key: 'commands', labelKey: 'Commands', arLabel: 'أمر', deLabel: 'Befehle',
-                    frLabel: 'Commandes' },
-                    { key: 'tickets', labelKey: 'Tickets', arLabel: 'تذكرة', deLabel: 'Tickets',
-                    frLabel: 'Tickets' },
-                    { key: 'latency', labelKey: 'Latency ms', arLabel: 'سرعة الإستجابة', deLabel: 'Latenz',
-                        frLabel: 'Latence' }
+                    { key:'servers', labelKey:'Servers', ar:'خادم', de:'Server', fr:'Serveurs' },
+                    { key:'users', labelKey:'Users', ar:'مستخدم', de:'Nutzer', fr:'Utilisateurs' },
+                    { key:'uptime', labelKey:'Uptime %', ar:'وقت التشغيل', de:'Betriebszeit', fr:'Disponibilité' },
+                    { key:'commands', labelKey:'Commands', ar:'أمر', de:'Befehle', fr:'Commandes' },
+                    { key:'tickets', labelKey:'Tickets', ar:'تذكرة', de:'Tickets', fr:'Tickets' },
+                    { key:'latency', labelKey:'Latency ms', ar:'سرعة الإستجابة', de:'Latenz', fr:'Latence' }
                 ];
                 items.forEach(item => {
                     const card = document.createElement('div');
                     card.className = 'stat-card';
                     card.innerHTML = `
                         <div class="num" id="num-${item.key}">${statsData[item.key].toLocaleString()}</div>
-                        <div class="lbl" data-key="${item.labelKey}" data-ar="${item.arLabel}" data-de="${item.deLabel}" data-fr="${item.frLabel}">${item.labelKey}</div>
+                        <div class="lbl" data-key="${item.labelKey}" data-ar="${item.ar}" data-de="${item.de}" data-fr="${item.fr}">${item.labelKey}</div>
                     `;
                     container.appendChild(card);
                 });
-                // Re-translate labels
-                reTranslateAll();
-            }
-
-            function updateStats() {
-                statsData.servers += Math.floor(Math.random() * 3) - 1;
-                statsData.users += Math.floor(Math.random() * 12) - 4;
-                statsData.uptime = parseFloat((99.9 + Math.random() * 0.2).toFixed(2));
-                statsData.latency = 22 + Math.floor(Math.random() * 8);
-                statsData.commands += Math.floor(Math.random() * 7);
-                statsData.tickets += Math.floor(Math.random() * 3);
-
-                const el = (id) => document.getElementById('num-' + id);
-                if (el('servers')) el('servers').textContent = statsData.servers.toLocaleString();
-                if (el('users')) el('users').textContent = statsData.users.toLocaleString();
-                if (el('uptime')) el('uptime').textContent = statsData.uptime + '%';
-                if (el('commands')) el('commands').textContent = statsData.commands.toLocaleString();
-                if (el('tickets')) el('tickets').textContent = statsData.tickets.toLocaleString();
-                if (el('latency')) el('latency').textContent = statsData.latency + 'ms';
-            }
-
-            function reTranslateAll() {
-                document.querySelectorAll('[data-key]').forEach(el => {
+                // re-translate new labels
+                document.querySelectorAll('#statsContainer .lbl[data-key]').forEach(el => {
                     const key = el.dataset.key;
                     if (translations[currentLang] && translations[currentLang][key]) {
                         el.textContent = translations[currentLang][key];
@@ -916,29 +809,39 @@
                 });
             }
 
+            function updateStats() {
+                statsData.servers += Math.floor(Math.random()*3)-1;
+                statsData.users += Math.floor(Math.random()*12)-4;
+                statsData.uptime = parseFloat((99.9 + Math.random()*0.2).toFixed(2));
+                statsData.latency = 22 + Math.floor(Math.random()*8);
+                statsData.commands += Math.floor(Math.random()*7);
+                statsData.tickets += Math.floor(Math.random()*3);
+
+                ['servers','users','uptime','commands','tickets','latency'].forEach(key => {
+                    const el = document.getElementById('num-'+key);
+                    if (el) {
+                        if (key === 'uptime') el.textContent = statsData[key] + '%';
+                        else if (key === 'latency') el.textContent = statsData[key] + 'ms';
+                        else el.textContent = statsData[key].toLocaleString();
+                    }
+                });
+            }
+
             buildStats();
             setInterval(updateStats, 3000);
 
-            // ── INTERSECTION OBSERVER ──
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(e => {
-                    if (e.isIntersecting) {
-                        e.target.classList.add('reveal');
-                        e.target.classList.remove('hidden-init');
+            // ── SCROLL REVEAL ──
+            const revealElements = document.querySelectorAll('.reveal');
+            const revealObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
                     }
                 });
-            }, { threshold: 0.1 });
+            }, { threshold: 0.15 });
+            revealElements.forEach(el => revealObserver.observe(el));
 
-            document.querySelectorAll('section, .feature-card, .cmd-category, .stat-card, .dev-card').forEach(el => {
-                el.classList.add('hidden-init');
-                observer.observe(el);
-            });
-
-            // Remove initial body hidden class
-            document.body.classList.remove('hidden-init');
-            document.body.classList.add('reveal');
-
-            console.log('%c🤖 AERODYNE %cProfessional Multilingual Dashboard Ready',
+            console.log('%c🤖 AERODYNE %cLive & Multilingual',
                 'background:#4F46E5;color:white;padding:4px 8px;border-radius:4px;',
                 'color:#94A3B8;');
         })();
