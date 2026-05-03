@@ -22,7 +22,23 @@
             --radius: 14px;
             --shadow: 0 8px 32px rgba(0,0,0,0.4);
             --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --hero-glow: rgba(79,70,229,0.2);
         }
+
+        /* Light mode overrides */
+        body.light-mode {
+            --bg: #F8FAFC;
+            --surface: #FFFFFF;
+            --surface2: #F1F5F9;
+            --text: #0F172A;
+            --text2: #334155;
+            --muted: #64748B;
+            --border: rgba(148, 163, 184, 0.15);
+            --border2: rgba(148, 163, 184, 0.25);
+            --shadow: 0 8px 32px rgba(0,0,0,0.1);
+            --hero-glow: rgba(79,70,229,0.07);
+        }
+
         * { margin:0; padding:0; box-sizing:border-box; }
         html { scroll-behavior:smooth; scroll-padding-top:80px; }
         body {
@@ -33,387 +49,253 @@
             overflow-x: hidden;
             -webkit-font-smoothing: antialiased;
             position: relative;
+            transition: background 0.4s, color 0.4s;
         }
         body[lang="ar"] { font-family: 'Cairo', 'Inter', sans-serif; }
 
-        /* Animated background canvas */
         #bgCanvas {
             position: fixed;
             top: 0; left: 0;
             width: 100vw; height: 100vh;
             z-index: 0;
             pointer-events: none;
-            opacity: 0.5;
+            opacity: 0.45;
+            transition: opacity 0.4s;
         }
+        body.light-mode #bgCanvas { opacity: 0.15; }
 
         /* Header */
         header {
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            background: rgba(11, 14, 20, 0.85);
+            position: sticky; top:0; z-index:100;
+            background: var(--surface);
             backdrop-filter: blur(20px);
             border-bottom: 1px solid var(--border);
+            transition: background 0.4s;
         }
         .header-inner {
-            max-width: 1300px;
-            margin: 0 auto;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 24px;
-            height: 70px;
-            gap: 16px;
+            max-width:1300px; margin:0 auto;
+            display:flex; align-items:center; justify-content:space-between;
+            padding:0 24px; height:70px; gap:16px;
         }
-        .logo {
-            font-weight: 900;
-            font-size: 1.5rem;
-            color: #fff;
-            letter-spacing: -0.5px;
-            white-space: nowrap;
-            position: relative;
-        }
+        .logo { font-weight:900; font-size:1.5rem; color: var(--text); letter-spacing:-0.5px; white-space:nowrap; }
         .logo span { color: var(--primary); }
-        .logo::after {
-            content: '';
-            position: absolute;
-            bottom: -4px; left: 0;
-            width: 100%; height: 2px;
-            background: var(--primary);
-            transform: scaleX(0);
-            transform-origin: left;
-            transition: transform 0.4s ease;
-        }
-        .logo:hover::after { transform: scaleX(1); }
 
-        .nav-links {
-            display: flex;
-            gap: 4px;
-            list-style: none;
-        }
+        .nav-links { display:flex; gap:4px; list-style:none; }
         .nav-links a {
-            text-decoration: none;
-            color: var(--muted);
-            font-weight: 500;
-            font-size: 0.85rem;
-            padding: 8px 16px;
-            border-radius: 8px;
-            transition: all 0.25s;
-            white-space: nowrap;
+            text-decoration:none; color: var(--muted); font-weight:500;
+            font-size:0.85rem; padding:8px 16px; border-radius:8px;
+            transition: all 0.25s; white-space:nowrap;
         }
-        .nav-links a:hover { color: #fff; background: rgba(79,70,229,0.1); }
-        .nav-links a.active {
-            color: var(--primary);
-            background: rgba(79,70,229,0.15);
-            font-weight: 600;
-        }
+        .nav-links a:hover { color: var(--text); background: rgba(79,70,229,0.1); }
+        .nav-links a.active { color: var(--primary); background: rgba(79,70,229,0.15); font-weight:600; }
 
-        .header-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
-        .lang-flags { display: flex; gap: 6px; }
+        .header-right { display:flex; align-items:center; gap:10px; flex-shrink:0; }
+
+        /* Theme toggle */
+        .theme-toggle {
+            background: none; border: 1px solid var(--border2); border-radius: 8px;
+            color: var(--text2); padding: 8px 12px; cursor: pointer;
+            display: flex; align-items: center; gap: 6px;
+            font-size: 0.85rem; font-weight: 500; transition: all var(--transition);
+        }
+        .theme-toggle:hover { border-color: var(--primary); background: rgba(79,70,229,0.1); }
+        .theme-toggle .icon { font-size: 1.1rem; }
+
+        .lang-flags { display:flex; gap:6px; }
         .lang-flag {
-            background: var(--surface2);
-            border: 1px solid var(--border2);
-            border-radius: 8px;
-            padding: 8px;
-            cursor: pointer;
-            transition: all var(--transition);
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            line-height: 1;
+            background: var(--surface2); border:1px solid var(--border2);
+            border-radius:8px; padding:8px; cursor:pointer;
+            transition: all var(--transition); display:flex; align-items:center; gap:6px; line-height:1;
         }
-        .lang-flag:hover {
-            border-color: var(--primary);
-            background: rgba(79,70,229,0.15);
-            transform: translateY(-2px);
-        }
-        .lang-flag.active {
-            border-color: var(--primary);
-            background: rgba(79,70,229,0.2);
-            box-shadow: 0 0 12px rgba(79,70,229,0.25);
-        }
-        .lang-flag svg { width: 20px; height: 14px; border-radius: 2px; }
-        .flag-code { font-size: 0.7rem; font-weight: 600; color: var(--text2); }
+        .lang-flag:hover { border-color: var(--primary); background: rgba(79,70,229,0.15); transform: translateY(-2px); }
+        .lang-flag.active { border-color: var(--primary); background: rgba(79,70,229,0.2); box-shadow: 0 0 12px rgba(79,70,229,0.25); }
+        .lang-flag svg { width:20px; height:14px; border-radius:2px; }
+        .flag-code { font-size:0.7rem; font-weight:600; color: var(--text2); }
 
-        @media (max-width: 900px) {
-            .flag-code { display: none; }
-        }
-
-        .hamburger {
-            display: none;
-            background: none; border: none; color: #fff;
-            font-size: 1.5rem; cursor: pointer; padding: 8px;
-        }
-        @media (max-width: 900px) {
-            .hamburger { display: block; }
+        @media (max-width:900px) {
+            .flag-code { display:none; }
+            .hamburger { display:block; background:none; border:none; color: var(--text); font-size:1.5rem; cursor:pointer; padding:8px; }
             .nav-links {
-                position: absolute;
-                top: 70px; left: 0; right: 0;
-                background: var(--surface);
-                flex-direction: column;
-                padding: 16px;
-                display: none;
-                border-bottom: 1px solid var(--border);
-                z-index: 99;
+                position:absolute; top:70px; left:0; right:0;
+                background: var(--surface); flex-direction:column;
+                padding:16px; display:none; border-bottom:1px solid var(--border); z-index:99;
             }
-            .nav-links.open { display: flex; }
-            .nav-links a { width: 100%; padding: 12px 16px; }
+            .nav-links.open { display:flex; }
+            .nav-links a { width:100%; padding:12px 16px; }
         }
 
         /* Sections */
-        section {
-            position: relative; z-index: 1;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 80px 24px;
-        }
-        .section-title {
-            font-size: clamp(2rem, 4vw, 2.4rem);
-            font-weight: 800;
-            margin-bottom: 8px;
-            letter-spacing: -0.5px;
-            color: #fff;
-        }
-        .section-sub {
-            color: var(--muted);
-            font-size: 1rem;
-            margin-bottom: 40px;
-            max-width: 600px;
-        }
+        section { position:relative; z-index:1; max-width:1200px; margin:0 auto; padding:80px 24px; }
+        .section-title { font-size: clamp(2rem,4vw,2.4rem); font-weight:800; margin-bottom:8px; letter-spacing:-0.5px; color: var(--text); }
+        .section-sub { color: var(--muted); font-size:1rem; margin-bottom:40px; max-width:600px; }
 
         /* Hero */
-        #hero {
-            display: flex;
-            align-items: center;
-            min-height: 85vh;
-            padding-top: 40px;
-        }
-        .hero-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 50px;
-            align-items: center;
-            width: 100%;
-        }
-        .hero-text h1 {
-            font-size: clamp(2.8rem, 5vw, 4.2rem);
-            font-weight: 900;
-            letter-spacing: -2px;
-            line-height: 1.1;
-            margin-bottom: 16px;
-        }
+        #hero { display:flex; align-items:center; min-height:85vh; padding-top:40px; }
+        .hero-grid { display:grid; grid-template-columns:1fr 1fr; gap:50px; align-items:center; width:100%; }
+        .hero-text h1 { font-size: clamp(2.8rem,5vw,4.2rem); font-weight:900; letter-spacing:-2px; line-height:1.1; margin-bottom:16px; }
         .hero-text h1 span { color: var(--primary); }
-        .hero-text p { color: var(--muted); font-size: 1.1rem; margin-bottom: 32px; max-width: 450px; }
-        .hero-badges { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 28px; }
+        .hero-text p { color: var(--muted); font-size:1.1rem; margin-bottom:32px; max-width:450px; }
+        .hero-badges { display:flex; gap:12px; flex-wrap:wrap; margin-bottom:28px; }
         .badge {
-            display: inline-flex; align-items: center; gap: 6px;
-            background: var(--surface2); border: 1px solid var(--border2);
-            border-radius: 20px; padding: 8px 16px;
-            font-size: 0.85rem; color: var(--text2); font-weight: 500;
-            animation: fadeInUp 0.6s ease forwards; opacity: 0;
+            display:inline-flex; align-items:center; gap:6px;
+            background: var(--surface2); border:1px solid var(--border2);
+            border-radius:20px; padding:8px 16px; font-size:0.85rem;
+            color: var(--text2); font-weight:500;
+            animation: fadeInUp 0.6s ease forwards; opacity:0;
         }
-        .badge:nth-child(2) { animation-delay: 0.2s; }
-        .badge:nth-child(3) { animation-delay: 0.4s; }
+        .badge:nth-child(2){ animation-delay:0.2s; }
+        .badge:nth-child(3){ animation-delay:0.4s; }
         @keyframes fadeInUp {
             from { opacity:0; transform: translateY(20px); }
             to { opacity:1; transform: translateY(0); }
         }
-        .badge .dot {
-            width: 8px; height: 8px; border-radius: 50%;
-            background: #22c55e;
-            animation: pulse-dot 2s infinite;
-        }
+        .badge .dot { width:8px; height:8px; border-radius:50%; background: #22c55e; animation: pulse-dot 2s infinite; }
         @keyframes pulse-dot {
             0%,100% { box-shadow:0 0 0 0 rgba(34,197,94,0.6); }
             50% { box-shadow:0 0 0 10px rgba(34,197,94,0); }
         }
         .btn {
-            display: inline-flex; align-items: center; gap: 8px;
-            background: var(--primary); color: #fff;
-            padding: 15px 32px; border-radius: 100px;
-            text-decoration: none; font-weight: 700; font-size: 0.95rem;
+            display:inline-flex; align-items:center; gap:8px;
+            background: var(--primary); color:#fff;
+            padding:15px 32px; border-radius:100px;
+            text-decoration:none; font-weight:700; font-size:0.95rem;
             transition: all var(--transition);
-            box-shadow: 0 6px 24px rgba(79,70,229,0.3);
-            position: relative; overflow: hidden;
+            box-shadow: 0 6px 24px var(--hero-glow);
+            position:relative; overflow:hidden;
         }
         .btn::after {
-            content: ''; position: absolute; top: 0; left: -100%;
-            width: 100%; height: 100%;
+            content:''; position:absolute; top:0; left:-100%;
+            width:100%; height:100%;
             background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
             transition: left 0.5s;
         }
-        .btn:hover::after { left: 100%; }
-        .btn:hover {
-            background: var(--primary-hover);
-            transform: translateY(-3px);
-            box-shadow: 0 10px 32px rgba(79,70,229,0.45);
-        }
-        .hero-image {
-            display: flex; justify-content: center; align-items: center;
-            animation: float 6s ease-in-out infinite;
-        }
-        @keyframes float {
-            0%,100% { transform: translateY(0); }
-            50% { transform: translateY(-15px); }
-        }
-        .hero-image img { max-width: 100%; border-radius: 20px; box-shadow: var(--shadow); }
-
-        @media (max-width: 768px) {
-            .hero-grid { grid-template-columns: 1fr; text-align: center; }
-            .hero-text p { margin-left: auto; margin-right: auto; }
-            .hero-badges { justify-content: center; }
-            .hero-image { order: -1; max-width: 70%; margin: 0 auto; }
+        .btn:hover::after { left:100%; }
+        .btn:hover { background: var(--primary-hover); transform: translateY(-3px); box-shadow: 0 10px 32px rgba(79,70,229,0.45); }
+        .hero-image { display:flex; justify-content:center; align-items:center; animation: float 6s ease-in-out infinite; }
+        @keyframes float { 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(-15px); } }
+        .hero-image img { max-width:100%; border-radius:20px; box-shadow: var(--shadow); }
+        @media (max-width:768px) {
+            .hero-grid { grid-template-columns:1fr; text-align:center; }
+            .hero-text p { margin-left:auto; margin-right:auto; }
+            .hero-badges { justify-content:center; }
+            .hero-image { order:-1; max-width:70%; margin:0 auto; }
         }
 
         /* Features grid */
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
-        }
+        .features-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(280px,1fr)); gap:20px; }
         .feature-card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 28px;
-            transition: all var(--transition);
-            transform: translateY(30px);
-            opacity: 0;
+            background: var(--surface); border:1px solid var(--border);
+            border-radius: var(--radius); padding:28px;
+            transition: all var(--transition); transform: translateY(30px); opacity:0;
         }
-        .feature-card.visible {
-            opacity: 1;
-            transform: translateY(0);
-            transition: opacity 0.6s ease, transform 0.6s ease;
+        .feature-card.visible { opacity:1; transform: translateY(0); transition: opacity 0.6s ease, transform 0.6s ease; }
+        .feature-card:hover { border-color: var(--primary); transform: translateY(-6px)!important; box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
+        .feature-card .icon { font-size:2.2rem; margin-bottom:12px; }
+        .feature-card h3 { font-size:1.2rem; margin-bottom:8px; color: var(--text); }
+        .feature-card p { color: var(--muted); font-size:0.9rem; line-height:1.6; }
+
+        /* Ticket showcase section */
+        .ticket-showcase {
+            background: var(--surface); border:1px solid var(--border);
+            border-radius: var(--radius); padding:36px;
+            max-width:900px; margin:60px auto 0;
         }
-        .feature-card:hover {
-            border-color: var(--primary);
-            transform: translateY(-6px) !important;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-        }
-        .feature-card .icon { font-size: 2.2rem; margin-bottom: 12px; }
-        .feature-card h3 { font-size: 1.2rem; margin-bottom: 8px; color: #fff; }
-        .feature-card p { color: var(--muted); font-size: 0.9rem; line-height: 1.6; }
+        .ticket-showcase h3 { font-size:1.4rem; margin-bottom:20px; color: var(--text); }
+        .ticket-feature-list { display:grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap:16px; }
+        .ticket-feature { padding:12px; border-left:3px solid var(--primary); background: var(--surface2); border-radius:6px; }
+        .ticket-feature strong { display:block; font-size:0.9rem; color: var(--primary); margin-bottom:4px; }
+        .ticket-feature span { font-size:0.8rem; color: var(--muted); }
 
         /* Commands search */
         .cmd-search {
-            width: 100%; max-width: 500px;
-            padding: 12px 18px; border-radius: 100px;
-            border: 1px solid var(--border2);
-            background: var(--surface); color: #fff;
-            font-size: 0.95rem; margin-bottom: 30px;
-            outline: none; transition: border-color var(--transition);
+            width:100%; max-width:500px;
+            padding:12px 18px; border-radius:100px;
+            border:1px solid var(--border2);
+            background: var(--surface); color: var(--text);
+            font-size:0.95rem; margin-bottom:30px;
+            outline:none; transition: border-color var(--transition);
             font-family: inherit;
         }
         .cmd-search:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(79,70,229,0.1); }
-        .cmd-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-        }
+        .cmd-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(300px,1fr)); gap:20px; }
         .cmd-category {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 24px;
+            background: var(--surface); border:1px solid var(--border);
+            border-radius: var(--radius); padding:24px;
             transition: all var(--transition);
         }
         .cmd-category:hover { border-color: var(--primary); }
-        .cmd-category h3 { margin-bottom: 14px; color: #fff; font-size: 1.05rem; display: flex; align-items: center; gap: 8px; }
-        .cmd-list { list-style: none; }
+        .cmd-category h3 { margin-bottom:14px; color: var(--text); font-size:1.05rem; display:flex; align-items:center; gap:8px; }
+        .cmd-list { list-style:none; }
         .cmd-list li {
-            padding: 10px 12px;
-            border-bottom: 1px solid var(--border);
-            font-family: 'Courier New', monospace;
-            font-size: 0.85rem; color: var(--text2);
-            transition: background 0.2s, transform 0.2s;
-            border-radius: 6px; cursor: default;
+            padding:10px 12px; border-bottom:1px solid var(--border);
+            font-family:'Courier New', monospace; font-size:0.85rem;
+            color: var(--text2); transition: background 0.2s, transform 0.2s;
+            border-radius:6px; cursor:default;
         }
         .cmd-list li:hover { background: rgba(79,70,229,0.08); transform: translateX(4px); }
-        .cmd-list li:last-child { border: none; }
-        .cmd-list li span { color: var(--primary); font-weight: 700; margin-right: 6px; }
-        .cmd-list li.hidden { display: none; }
+        .cmd-list li:last-child { border:none; }
+        .cmd-list li span { color: var(--primary); font-weight:700; margin-right:6px; }
+        .cmd-list li.hidden { display:none; }
 
         /* Stats */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 16px; margin-top: 20px;
-        }
+        .stats-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(150px,1fr)); gap:16px; margin-top:20px; }
         .stat-card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 22px 18px;
-            text-align: center;
-            transition: all var(--transition);
+            background: var(--surface); border:1px solid var(--border);
+            border-radius: var(--radius); padding:22px 18px;
+            text-align:center; transition: all var(--transition);
         }
         .stat-card:hover { border-color: var(--primary); transform: scale(1.03); }
         .stat-card .num {
-            font-size: 2rem; font-weight: 900;
-            background: linear-gradient(135deg, #fff, var(--primary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            font-size:2rem; font-weight:900;
+            background: linear-gradient(135deg, var(--text), var(--primary));
+            -webkit-background-clip:text;
+            -webkit-text-fill-color:transparent;
+            background-clip:text;
         }
-        .stat-card .lbl {
-            color: var(--muted); font-size: 0.78rem;
-            text-transform: uppercase; letter-spacing: 0.8px;
-            margin-top: 4px;
-        }
+        .stat-card .lbl { color: var(--muted); font-size:0.78rem; text-transform:uppercase; letter-spacing:0.8px; margin-top:4px; }
 
         /* Developer card */
         .dev-card {
-            display: flex; align-items: center; gap: 30px;
-            background: var(--surface); border: 1px solid var(--border);
-            border-radius: var(--radius); padding: 32px;
-            max-width: 650px; margin: 0 auto;
+            display:flex; align-items:center; gap:30px;
+            background: var(--surface); border:1px solid var(--border);
+            border-radius: var(--radius); padding:32px;
+            max-width:650px; margin:0 auto;
             transition: all var(--transition);
         }
-        .dev-card:hover { border-color: var(--primary); box-shadow: 0 15px 35px rgba(0,0,0,0.5); transform: translateY(-4px); }
+        .dev-card:hover { border-color: var(--primary); box-shadow:0 15px 35px rgba(0,0,0,0.5); transform: translateY(-4px); }
         .dev-avatar {
-            width: 100px; height: 100px;
-            border-radius: 50%;
+            width:100px; height:100px; border-radius:50%;
             background: linear-gradient(135deg, var(--primary), #818cf8);
-            display: flex; align-items: center; justify-content: center;
-            font-weight: 900; font-size: 2.5rem; color: #fff;
-            flex-shrink: 0; position: relative; overflow: hidden;
+            display:flex; align-items:center; justify-content:center;
+            font-weight:900; font-size:2.5rem; color:#fff; flex-shrink:0;
+            position:relative; overflow:hidden;
         }
         .dev-avatar::after {
-            content: ''; position: absolute; top: 0; left: 0;
-            width: 100%; height: 100%;
+            content:''; position:absolute; top:0; left:0;
+            width:100%; height:100%;
             background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.2), transparent 70%);
         }
-        .dev-info h3 { margin-bottom: 6px; font-size: 1.3rem; color: #fff; }
-        .dev-info .role { color: var(--primary); font-weight: 600; font-size: 0.85rem; margin-bottom: 8px; }
-        .dev-info p { color: var(--muted); font-size: 0.9rem; line-height: 1.6; }
+        .dev-info h3 { margin-bottom:6px; font-size:1.3rem; color: var(--text); }
+        .dev-info .role { color: var(--primary); font-weight:600; font-size:0.85rem; margin-bottom:8px; }
+        .dev-info p { color: var(--muted); font-size:0.9rem; line-height:1.6; }
 
         footer {
-            position: relative; z-index: 1;
-            text-align: center; padding: 32px 20px;
-            border-top: 1px solid var(--border);
-            color: var(--muted); font-size: 0.85rem;
+            position:relative; z-index:1;
+            text-align:center; padding:32px 20px;
+            border-top:1px solid var(--border);
+            color: var(--muted); font-size:0.85rem;
             background: var(--surface);
         }
-        footer a { color: var(--primary); text-decoration: none; font-weight: 600; }
+        footer a { color: var(--primary); text-decoration:none; font-weight:600; }
 
-        /* Reveal animations */
-        .reveal {
-            opacity: 0; transform: translateY(40px);
-            transition: opacity 0.8s ease, transform 0.8s ease;
-        }
-        .reveal.visible { opacity: 1; transform: translateY(0); }
+        .reveal { opacity:0; transform: translateY(40px); transition: opacity 0.8s ease, transform 0.8s ease; }
+        .reveal.visible { opacity:1; transform: translateY(0); }
 
-        /* RTL fixes */
         body[dir="rtl"] .cmd-list li:hover { transform: translateX(-4px); }
-        body[dir="rtl"] .cmd-list li span { margin-right: 0; margin-left: 6px; }
-
-        /* Hero title glitch on hover */
         @keyframes glitch {
-            0% { text-shadow: 2px 0 red, -2px 0 blue; }
-            25% { text-shadow: -2px 0 red, 2px 0 cyan; }
-            50% { text-shadow: 2px 0 cyan, -2px 0 red; }
-            75% { text-shadow: -2px 0 red, 2px 0 cyan; }
-            100% { text-shadow: 2px 0 red, -2px 0 blue; }
+            0%{ text-shadow:2px 0 red, -2px 0 blue; } 25%{ text-shadow:-2px 0 red, 2px 0 cyan; }
+            50%{ text-shadow:2px 0 cyan, -2px 0 red; } 75%{ text-shadow:-2px 0 red, 2px 0 cyan; }
+            100%{ text-shadow:2px 0 red, -2px 0 blue; }
         }
         .hero-text h1:hover { animation: glitch 0.5s infinite; }
     </style>
@@ -427,33 +309,25 @@
             <div class="logo">AERO<span>DYNE</span></div>
             <button class="hamburger" aria-label="Toggle menu">☰</button>
             <nav class="nav-links">
-                <a href="#hero" class="active" data-nav="hero" data-en="Home" data-ar="الرئيسية" data-de="Start" data-fr="Accueil">Home</a>
-                <a href="#features" data-nav="features" data-en="Features" data-ar="الميزات" data-de="Funktionen" data-fr="Fonctions">Features</a>
-                <a href="#commands" data-nav="commands" data-en="Commands" data-ar="الأوامر" data-de="Befehle" data-fr="Commandes">Commands</a>
-                <a href="#stats" data-nav="stats" data-en="Stats" data-ar="إحصائيات" data-de="Statistiken" data-fr="Stats">Stats</a>
-                <a href="#dev" data-nav="dev" data-en="Developer" data-ar="المطور" data-de="Entwickler" data-fr="Développeur">Developer</a>
+                <a href="#hero" class="active" data-nav="hero" data-en="Home" data-ar="الرئيسية">Home</a>
+                <a href="#features" data-nav="features" data-en="Features" data-ar="الميزات">Features</a>
+                <a href="#ticketsystem" data-nav="ticketsystem" data-en="Ticket System" data-ar="نظام التذاكر">Ticket System</a>
+                <a href="#commands" data-nav="commands" data-en="Commands" data-ar="الأوامر">Commands</a>
+                <a href="#stats" data-nav="stats" data-en="Stats" data-ar="إحصائيات">Stats</a>
+                <a href="#dev" data-nav="dev" data-en="Developer" data-ar="المطور">Developer</a>
             </nav>
             <div class="header-right">
+                <button class="theme-toggle" id="themeToggle" title="Toggle dark/light mode">
+                    <span class="icon">🌙</span> <span class="label">Dark</span>
+                </button>
                 <div class="lang-flags" id="langFlags">
-                    <!-- US Flag SVG -->
-                    <button class="lang-flag active" data-lang="en" title="English (US)">
+                    <button class="lang-flag active" data-lang="en" title="English">
                         <svg viewBox="0 0 20 14"><rect width="20" height="14" fill="#B22234"/><path d="M0 0h8v7H0z" fill="#3C3B6E"/><g fill="#FFF"><circle cx="1.5" cy="1.5" r="0.4"/><circle cx="3.5" cy="1.5" r="0.4"/><circle cx="5.5" cy="1.5" r="0.4"/><circle cx="6.5" cy="1.5" r="0.4"/><circle cx="2.5" cy="3.5" r="0.4"/><circle cx="4.5" cy="3.5" r="0.4"/><circle cx="1.5" cy="5.5" r="0.4"/><circle cx="3.5" cy="5.5" r="0.4"/></g><rect y="7" width="20" height="1" fill="#FFF"/><rect y="9" width="20" height="1" fill="#FFF"/><rect y="11" width="20" height="1" fill="#FFF"/></svg>
                         <span class="flag-code">US</span>
                     </button>
-                    <!-- Saudi Arabia Flag SVG -->
-                    <button class="lang-flag" data-lang="ar" title="العربية (السعودية)">
+                    <button class="lang-flag" data-lang="ar" title="العربية">
                         <svg viewBox="0 0 20 14"><rect width="20" height="14" fill="#006C35"/><text x="10" y="11" text-anchor="middle" fill="#FFF" font-size="8" font-weight="bold">﷽</text><rect y="0" width="20" height="14" fill="none" stroke="#FFF" stroke-width="0.5"/></svg>
                         <span class="flag-code">SA</span>
-                    </button>
-                    <!-- Germany Flag SVG -->
-                    <button class="lang-flag" data-lang="de" title="Deutsch (Deutschland)">
-                        <svg viewBox="0 0 20 14"><rect width="20" height="4.67" fill="#000"/><rect y="4.67" width="20" height="4.67" fill="#DD0000"/><rect y="9.33" width="20" height="4.67" fill="#FFCE00"/></svg>
-                        <span class="flag-code">DE</span>
-                    </button>
-                    <!-- France Flag SVG -->
-                    <button class="lang-flag" data-lang="fr" title="Français (France)">
-                        <svg viewBox="0 0 20 14"><rect width="6.67" height="14" fill="#002395"/><rect x="6.67" width="6.67" height="14" fill="#FFF"/><rect x="13.33" width="6.67" height="14" fill="#ED2939"/></svg>
-                        <span class="flag-code">FR</span>
                     </button>
                 </div>
             </div>
@@ -464,14 +338,14 @@
     <section id="hero">
         <div class="hero-grid">
             <div class="hero-text">
-                <h1><span data-en="Power Up Your" data-ar="قم بتعزيز" data-de="Verstärke Deinen" data-fr="Boostez Votre">Power Up Your</span> <span style="color:var(--primary);" data-en="Server" data-ar="خادمك" data-de="Server" data-fr="Serveur">Server</span></h1>
-                <p data-en="Advanced Discord bot with dual XP pools, economy, ticket system, moderation & study mode. Built for serious communities." data-ar="بوت ديسكورد متقدم مع نظام XP مزدوج، اقتصاد، تذاكر، إدارة ووضع دراسة. مصمم للمجتمعات الجادة." data-de="Fortschrittlicher Discord-Bot mit dualem XP-System, Wirtschaft, Ticketsystem, Moderation & Lernmodus." data-fr="Bot Discord avancé avec double système XP, économie, tickets, modération & mode étude.">Advanced Discord bot with dual XP pools, economy, ticket system, moderation & study mode. Built for serious communities.</p>
+                <h1><span data-en="Power Up Your" data-ar="قم بتعزيز">Power Up Your</span> <span style="color:var(--primary);" data-en="Server" data-ar="خادمك">Server</span></h1>
+                <p data-en="AERODYNE — Fully automated ticket system, dual XP, economy, moderation, and study mode. Built for serious communities." data-ar="AERODYNE — نظام تذاكر آلي كامل، XP مزدوج، اقتصاد, إدارة، ووضع دراسة. مصمم للمجتمعات الجادة.">AERODYNE — Fully automated ticket system, dual XP, economy, moderation, and study mode. Built for serious communities.</p>
                 <div class="hero-badges">
-                    <div class="badge"><span class="dot"></span> <span data-en="Online 24/7" data-ar="متصل 24/7" data-de="Online 24/7" data-fr="En ligne 24/7">Online 24/7</span></div>
-                    <div class="badge">📊 <span data-en="1.2k+ Servers" data-ar="+١.٢ ألف خادم" data-de="1,2k+ Server" data-fr="1,2k+ Serveurs">1.2k+ Servers</span></div>
-                    <div class="badge">👥 <span data-en="45k+ Users" data-ar="+٤٥ ألف مستخدم" data-de="45k+ Nutzer" data-fr="45k+ Utilisateurs">45k+ Users</span></div>
+                    <div class="badge"><span class="dot"></span> <span data-en="Online 24/7" data-ar="متصل 24/7">Online 24/7</span></div>
+                    <div class="badge">🎫 <span data-en="Ticket System v1.0" data-ar="نظام التذاكر v1.0">Ticket System v1.0</span></div>
+                    <div class="badge">🌍 <span data-en="EN / AR" data-ar="عربي / إنجليزي">EN / AR</span></div>
                 </div>
-                <a href="https://discord.com/oauth2/authorize?client_id=1488701920452546691&permissions=8&integration_type=0&scope=bot" class="btn">➕ <span data-en="Add to Discord" data-ar="أضف إلى ديسكورد" data-de="Zu Discord hinzufügen" data-fr="Ajouter à Discord">Add to Discord</span></a>
+                <a href="https://discord.com/oauth2/authorize?client_id=1488701920452546691&permissions=8&integration_type=0&scope=bot" class="btn">➕ <span data-en="Add to Discord" data-ar="أضف إلى ديسكورد">Add to Discord</span></a>
             </div>
             <div class="hero-image">
                 <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 420 280'%3E%3Crect width='420' height='280' fill='%23151922' rx='18'/%3E%3Ccircle cx='210' cy='110' r='55' fill='%234F46E5'/%3E%3Ctext x='210' y='125' text-anchor='middle' fill='white' font-family='Inter,sans-serif' font-weight='900' font-size='26'%3EA%3C/text%3E%3Crect x='100' y='190' width='220' height='36' rx='10' fill='%231C2030' stroke='%234F46E5' stroke-width='2'/%3E%3Ctext x='210' y='214' text-anchor='middle' fill='%23CBD5E1' font-size='14' font-family='Inter,sans-serif'%3EAERODYNE BOT%3C/text%3E%3Crect x='140' y='240' width='140' height='28' rx='14' fill='%2322c55e' opacity='0.2'/%3E%3Ctext x='210' y='259' text-anchor='middle' fill='%2322c55e' font-size='12' font-family='Inter,sans-serif'%3EONLINE%3C/text%3E%3C/svg%3E" alt="AERODYNE Bot">
@@ -481,53 +355,91 @@
 
     <!-- FEATURES -->
     <section id="features">
-        <h2 class="section-title reveal" data-en="Core Features" data-ar="الميزات الأساسية" data-de="Kernfunktionen" data-fr="Fonctions Principales">Core Features</h2>
-        <p class="section-sub reveal" data-en="Everything your community needs to thrive." data-ar="كل ما يحتاجه مجتمعك للازدهار." data-de="Alles, was deine Community braucht." data-fr="Tout ce dont votre communauté a besoin.">Everything your community needs to thrive.</p>
+        <h2 class="section-title reveal" data-en="Core Features" data-ar="الميزات الأساسية">Core Features</h2>
+        <p class="section-sub reveal" data-en="Everything your community needs to thrive." data-ar="كل ما يحتاجه مجتمعك للازدهار.">Everything your community needs to thrive.</p>
         <div class="features-grid">
-            <div class="feature-card reveal"><div class="icon">📊</div><h3 data-en="Dual XP System" data-ar="نظام XP مزدوج" data-de="Duales XP-System" data-fr="Double Système XP">Dual XP System</h3><p data-en="Separate Text XP & Voice XP pools. Steep exponential curve for dedicated students. 1-min text cooldown, 60-min voice awards. AFK channels excluded." data-ar="مجمعات XP منفصلة للنصوص والصوت. منحنى أسي حاد للطلاب المتفانين. تبريد 1 دقيقة للنصوص، 60 دقيقة للصوت. استثناء قنوات الغياب." data-de="Getrennte Text-XP- und Sprach-XP-Pools. Steile exponentielle Kurve. 1-Min-Cooldown für Text, 60-Min-Belohnung für Sprache." data-fr="Pools XP texte et vocal séparés. Courbe exponentielle raide. Cooldown 1 min texte, 60 min vocal. Canaux AFK exclus.">Separate Text XP & Voice XP pools...</p></div>
-            <div class="feature-card reveal"><div class="icon">🎫</div><h3 data-en="Ticket System" data-ar="نظام التذاكر" data-de="Ticketsystem" data-fr="Système de Tickets">Ticket System</h3><p data-en="Auto claim embeds, claim/unclaim with point tracking, post-ticket rating via DM with 1hr expiry. Bilingual rating messages." data-ar="بطاقات مطالبة تلقائية، مطالبة/إلغاء مع تتبع النقاط، تقييم بعد التذكرة عبر رسالة خاصة مع انتهاء ساعة واحدة. رسائل تقييم ثنائية اللغة." data-de="Auto-Claim-Embeds, Claim/Unclaim mit Punkteverfolgung, Bewertung per DM mit 1h Ablauf. Zweisprachige Bewertungsnachrichten." data-fr="Embeds de réclamation auto, claim/unclaim avec suivi de points, évaluation post-ticket par DM avec expiration 1h. Messages d'évaluation bilingues.">Auto claim embeds...</p></div>
-            <div class="feature-card reveal"><div class="icon">🛡️</div><h3 data-en="Moderation" data-ar="الإدارة" data-de="Moderation" data-fr="Modération">Moderation</h3><p data-en="Kick, ban, timeout with bilingual duration support. Audit log detection, per-channel anti-spam with silent XP freeze. Full embed logging." data-ar="طرد، حظر، مهلة مع دعم المدد ثنائي اللغة. كشف سجل التدقيق، مضاد سبام لكل قناة مع تجميد XP صامت. تسجيل كامل بالبطاقات." data-de="Kick, Bann, Timeout mit zweisprachiger Dauerunterstützung. Audit-Log-Erkennung, Anti-Spam pro Kanal mit stillem XP-Freeze." data-fr="Expulsion, bannissement, timeout avec support de durée bilingue. Détection audit log, anti-spam par canal avec gel XP silencieux.">Kick, ban, timeout...</p></div>
-            <div class="feature-card reveal"><div class="icon">💰</div><h3 data-en="Economy" data-ar="الاقتصاد" data-de="Wirtschaft" data-fr="Économie">Economy</h3><p data-en="Coins, bank, deposit/withdraw, rob, raid with cooldown, PvP coinflip. Automatic wealth tax above threshold. Full setup command." data-ar="عملات، بنك، إيداع/سحب، سرقة، غارة مع تبريد، قلب عملة بين اللاعبين. ضريبة ثروة تلقائية فوق الحد. أمر إعداد كامل." data-de="Münzen, Bank, Ein-/Auszahlung, Raub, Raid mit Cooldown, PvP-Münzwurf. Automatische Vermögenssteuer. Vollständiger Setup-Befehl." data-fr="Pièces, banque, dépôt/retrait, vol, raid avec cooldown, coinflip PvP. Taxe de richesse automatique. Commande setup complète.">Coins, bank...</p></div>
-            <div class="feature-card reveal"><div class="icon">📚</div><h3 data-en="Study Mode" data-ar="وضع الدراسة" data-de="Lernmodus" data-fr="Mode Étude">Study Mode</h3><p data-en="Toggle quiet zone on voice channels. Denies speak for @everyone, renames channel with 📚 prefix. Full restore on disable. Owner detection compatible." data-ar="تبديل المنطقة الهادئة على قنوات الصوت. يمنع التحدث للجميع، يعيد تسمية القناة ببادئة 📚. استعادة كاملة عند التعطيل. كشف المالك متوافق." data-de="Ruhezone für Sprachkanäle. Verweigert Sprechrecht für @everyone, benennt Kanal mit 📚 um. Vollständige Wiederherstellung." data-fr="Zone silencieuse sur canaux vocaux. Refuse la parole pour @everyone, renomme le canal avec 📚. Restauration complète.">Toggle quiet zone...</p></div>
-            <div class="feature-card reveal"><div class="icon">🎨</div><h3 data-en="Level Cards" data-ar="بطاقات المستوى" data-de="Level-Karten" data-fr="Cartes de Niveau">Level Cards</h3><p data-en="900×300px canvas cards with lunar background, tactical HUD overlay, dual progress bars. Milestone color swap every 10 levels. Rank titles displayed." data-ar="بطاقات 900×300 بكسل بخلفية قمرية، غطاء HUD تكتيكي، أشرطة تقدم مزدوجة. تغيير لون عند كل 10 مستويات. عرض ألقاب الرتب." data-de="900×300px Canvas-Karten mit Mondhintergrund, taktischem HUD, dualen Fortschrittsbalken. Farbwechsel alle 10 Level." data-fr="Cartes 900×300px avec fond lunaire, overlay HUD tactique, doubles barres de progression. Changement de couleur tous les 10 niveaux.">900×300px canvas cards...</p></div>
+            <div class="feature-card reveal"><div class="icon">📊</div><h3 data-en="Dual XP System" data-ar="نظام XP مزدوج">Dual XP System</h3><p data-en="Separate Text XP & Voice XP with exponential curves. 1-min text cooldown, 60-min voice awards. AFK channels excluded." data-ar="مجمعات XP منفصلة للنصوص والصوت مع منحنيات أسية. تبريد 1 دقيقة للنصوص، 60 دقيقة للصوت. قنوات الغياب مستثناة.">Separate Text XP & Voice XP...</p></div>
+            <div class="feature-card reveal"><div class="icon">🎫</div><h3 data-en="Ticket System" data-ar="نظام التذاكر">Ticket System</h3><p data-en="Multi‑panel, role‑locked, per‑user limits, auto‑close, transcripts, claims with points, rating DM, staff stats, and live editor." data-ar="لوحات متعددة، قفل بالأدوار، حدود لكل مستخدم، إغلاق تلقائي، نسخ، مطالبات بنقاط، تقييم برسائل خاصة، إحصائيات للموظفين، ومحرر حي.">Multi‑panel, role‑locked, per‑user limits...</p></div>
+            <div class="feature-card reveal"><div class="icon">🛡️</div><h3 data-en="Moderation" data-ar="الإدارة">Moderation</h3><p data-en="Kick, ban, timeout with bilingual duration. Audit log detection, per‑channel anti‑spam with silent XP freeze." data-ar="طرد، حظر، مهلة مع دعم المدد ثنائي اللغة. كشف سجل التدقيق، مضاد سبام لكل قناة مع تجميد XP صامت.">Kick, ban, timeout...</p></div>
+            <div class="feature-card reveal"><div class="icon">💰</div><h3 data-en="Economy" data-ar="الاقتصاد">Economy</h3><p data-en="Coins, bank, rob, raid, PvP coinflip, wealth tax, full setup command." data-ar="عملات، بنك، سرقة، غارة، قلب عملة بين اللاعبين، ضريبة ثروة، أمر إعداد كامل.">Coins, bank, rob, raid...</p></div>
+            <div class="feature-card reveal"><div class="icon">📚</div><h3 data-en="Study Mode" data-ar="وضع الدراسة">Study Mode</h3><p data-en="Quiet zone on voice channels. Denies speak for @everyone, renames channel with 📚 prefix." data-ar="منطقة هادئة على قنوات الصوت. يمنع التحدث للجميع، يعيد تسمية القناة ببادئة 📚.">Quiet zone on voice channels...</p></div>
+            <div class="feature-card reveal"><div class="icon">🎨</div><h3 data-en="Level Cards" data-ar="بطاقات المستوى">Level Cards</h3><p data-en="900×300px canvas with lunar background, HUD overlay, dual progress bars, milestone colors." data-ar="بطاقات 900×300 بكسل بخلفية قمرية، غطاء HUD، أشرطة تقدم مزدوجة، ألوان المراحل.">900×300px canvas cards...</p></div>
+        </div>
+
+        <!-- Ticket System Showcase -->
+        <div id="ticketsystem" class="ticket-showcase reveal">
+            <h3>🎟️ <span data-en="Ticket System — v1.0 Core" data-ar="نظام التذاكر — الإصدار الأول">Ticket System — v1.0 Core</span></h3>
+            <div class="ticket-feature-list">
+                <div class="ticket-feature"><strong>🎛️ <span data-en="Multi‑panel" data-ar="لوحات متعددة">Multi‑panel</span></strong><span data-en="Up to 5 panels with custom name, emoji, description, color." data-ar="حتى 5 لوحات باسم وإيموجي ووصف ولون مخصص.">Up to 5 panels...</span></div>
+                <div class="ticket-feature"><strong>🔒 <span data-en="Role‑locked" data-ar="قفل بالأدوار">Role‑locked</span></strong><span data-en="Only assigned roles see and manage tickets per panel." data-ar="فقط الأدوار المحددة ترى وتدير تذاكر كل لوحة.">Only assigned roles see tickets...</span></div>
+                <div class="ticket-feature"><strong>👥 <span data-en="Per‑user limits" data-ar="حدود لكل مستخدم">Per‑user limits</span></strong><span data-en="1–5 open tickets per user per panel." data-ar="1–5 تذاكر مفتوحة لكل مستخدم في كل لوحة.">1–5 open tickets...</span></div>
+                <div class="ticket-feature"><strong>⏰ <span data-en="Auto‑close" data-ar="إغلاق تلقائي">Auto‑close</span></strong><span data-en="Close inactive tickets after configurable hours." data-ar="إغلاق التذاكر غير النشطة بعد ساعات قابلة للتكوين.">Close inactive tickets...</span></div>
+                <div class="ticket-feature"><strong>📄 <span data-en="Transcripts" data-ar="النسخ">Transcripts</span></strong><span data-en="Clean .txt transcript sent to a dedicated channel." data-ar="نسخة .txt نظيفة ترسل إلى قناة مخصصة.">Clean .txt transcript...</span></div>
+                <div class="ticket-feature"><strong>🎟️ <span data-en="Claim / Unclaim" data-ar="مطالبة / إلغاء">Claim / Unclaim</span></strong><span data-en="Staff can claim tickets, earning points. Logs sent to staff channel." data-ar="الموظفون يطالبون بالتذاكر ويكسبون نقاطاً. السجلات تُرسل إلى قناة الموظفين.">Claim tickets, earn points...</span></div>
+                <div class="ticket-feature"><strong>⭐ <span data-en="Rating" data-ar="تقييم">Rating</span></strong><span data-en="Users rate support via DM; rating logged in dedicated channel." data-ar="المستخدمون يقيمون الدعم عبر رسالة خاصة؛ التقييم يُسجل في قناة مخصصة.">Users rate via DM...</span></div>
+                <div class="ticket-feature"><strong>📊 <span data-en="Staff Stats" data-ar="إحصائيات">Staff Stats</span></strong><span data-en="/ticket stats shows claims & avg response time." data-ar="/ticket stats يعرض عدد المطالبات ومتوسط سرعة الرد.">/ticket stats...</span></div>
+                <div class="ticket-feature"><strong>🛠️ <span data-en="Live Editor" data-ar="محرر حي">Live Editor</span></strong><span data-en="/ticket edit to change panels/channels without resetting." data-ar="/ticket edit لتعديل اللوحات والقنوات دون إعادة التثبيت.">/ticket edit...</span></div>
+                <div class="ticket-feature"><strong>🌍 <span data-en="Bilingual Setup" data-ar="إعداد ثنائي اللغة">Bilingual Setup</span></strong><span data-en="Setup wizard supports English & Arabic." data-ar="معالج الإعداد يدعم العربية والإنجليزية.">EN / AR wizard...</span></div>
+            </div>
         </div>
     </section>
 
     <!-- COMMANDS -->
     <section id="commands">
-        <h2 class="section-title reveal" data-en="Bot Commands" data-ar="أوامر البوت" data-de="Bot-Befehle" data-fr="Commandes du Bot">Bot Commands</h2>
-        <p class="section-sub reveal" data-en="Searchable & filterable. Type to find any command." data-ar="قابلة للبحث والتصفية. اكتب للعثور على أي أمر." data-de="Durchsuchbar & filterbar. Tippe, um Befehle zu finden." data-fr="Recherchable & filtrable. Tapez pour trouver.">Searchable & filterable. Type to find any command.</p>
-        <input type="text" class="cmd-search reveal" id="cmdSearch" placeholder="Search commands..." data-en-placeholder="Search commands..." data-ar-placeholder="ابحث عن أمر..." data-de-placeholder="Befehle suchen..." data-fr-placeholder="Rechercher...">
-        <div class="cmd-grid" id="cmdGrid">
-            <!-- Command categories populated by JS for conciseness -->
-        </div>
+        <h2 class="section-title reveal" data-en="Bot Commands" data-ar="أوامر البوت">Bot Commands</h2>
+        <p class="section-sub reveal" data-en="Searchable list of all slash and prefix commands." data-ar="قائمة قابلة للبحث بجميع أوامر السلاش والبادئة.">Searchable list...</p>
+        <input type="text" class="cmd-search reveal" id="cmdSearch" placeholder="Search commands..." data-en-placeholder="Search commands..." data-ar-placeholder="ابحث عن أمر...">
+        <div class="cmd-grid" id="cmdGrid"></div>
     </section>
 
     <!-- LIVE STATS -->
     <section id="stats">
-        <h2 class="section-title reveal" data-en="Live Bot Stats" data-ar="إحصائيات حية" data-de="Live-Statistiken" data-fr="Stats en Direct">Live Bot Stats</h2>
+        <h2 class="section-title reveal" data-en="Live Bot Stats" data-ar="إحصائيات حية">Live Bot Stats</h2>
         <div class="stats-grid reveal" id="statsContainer"></div>
     </section>
 
     <!-- DEVELOPER -->
     <section id="dev">
-        <h2 class="section-title reveal" data-en="Lead Developer" data-ar="المطور الرئيسي" data-de="Hauptentwickler" data-fr="Développeur Principal">Lead Developer</h2>
+        <h2 class="section-title reveal" data-en="Lead Developer" data-ar="المطور الرئيسي">Lead Developer</h2>
         <div class="dev-card reveal">
             <div class="dev-avatar">A</div>
             <div class="dev-info">
                 <h3>AERON</h3>
-                <div class="role" data-en="Core Engineer & Architect" data-ar="مهندس النواة والمصمم" data-de="Kernentwickler & Architekt" data-fr="Ingénieur Principal & Architecte">Core Engineer & Architect</div>
-                <p data-en="Building reliable, high-performance Discord tools for communities that demand excellence. AERODYNE is crafted with precision — every system designed to scale, perform, and serve." data-ar="نبني أدوات ديسكورد موثوقة وعالية الأداء للمجتمعات التي تتطلب التميز. صُنع AERODYNE بدقة — كل نظام مصمم للتوسع والأداء والخدمة." data-de="Entwicklung zuverlässiger Hochleistungs-Discord-Tools für Communities mit höchsten Ansprüchen. AERODYNE ist präzise gefertigt." data-fr="Création d'outils Discord fiables et performants pour les communautés exigeantes. AERODYNE est fabriqué avec précision.">Building reliable, high-performance Discord tools...</p>
+                <div class="role" data-en="Core Engineer & Architect" data-ar="مهندس النواة والمصمم">Core Engineer & Architect</div>
+                <p data-en="Building reliable, high-performance Discord tools for communities that demand excellence. AERODYNE is crafted with precision — every system designed to scale, perform, and serve." data-ar="نبني أدوات ديسكورد موثوقة وعالية الأداء للمجتمعات التي تتطلب التميز. صُنع AERODYNE بدقة — كل نظام مصمم للتوسع والأداء والخدمة.">Building reliable, high-performance Discord tools...</p>
             </div>
         </div>
     </section>
 
     <footer>
-        <p>&copy; 2026 AERODYNE. <span data-en="All rights reserved." data-ar="جميع الحقوق محفوظة." data-de="Alle Rechte vorbehalten." data-fr="Tous droits réservés.">All rights reserved.</span> <a href="https://discord.gg/yourinvite">Discord</a></p>
+        <p>&copy; 2026 AERODYNE. <span data-en="All rights reserved." data-ar="جميع الحقوق محفوظة.">All rights reserved.</span> <a href="https://discord.gg/yourinvite">Discord</a></p>
     </footer>
 
     <script>
         (function() {
+            // ── Theme toggling ──
+            const themeToggle = document.getElementById('themeToggle');
+            const body = document.body;
+            const icon = themeToggle.querySelector('.icon');
+            const label = themeToggle.querySelector('.label');
+            function setDark() {
+                body.classList.remove('light-mode');
+                icon.textContent = '🌙';
+                label.textContent = 'Dark';
+                localStorage.setItem('aerodyne-theme', 'dark');
+            }
+            function setLight() {
+                body.classList.add('light-mode');
+                icon.textContent = '☀️';
+                label.textContent = 'Light';
+                localStorage.setItem('aerodyne-theme', 'light');
+            }
+            themeToggle.addEventListener('click', () => {
+                body.classList.contains('light-mode') ? setDark() : setLight();
+            });
+            const savedTheme = localStorage.getItem('aerodyne-theme');
+            if (savedTheme === 'light') setLight(); else setDark();
+
             // ── ANIMATED BACKGROUND ──
             const canvas = document.getElementById('bgCanvas');
             const ctx = canvas.getContext('2d');
@@ -562,11 +474,12 @@
             window.addEventListener('resize', resize);
             resize(); draw();
 
-            // ── TRANSLATIONS ──
-            const translations = { en:{}, ar:{}, de:{}, fr:{} };
+            // ── TRANSLATIONS (EN/AR only) ──
+            const translations = { en:{}, ar:{} };
             document.querySelectorAll('[data-en]').forEach(el => {
                 const k = el.dataset.en;
-                translations.en[k] = k; translations.ar[k] = el.dataset.ar || k; translations.de[k] = el.dataset.de || k; translations.fr[k] = el.dataset.fr || k;
+                translations.en[k] = k;
+                translations.ar[k] = el.dataset.ar || k;
                 el.setAttribute('data-key', k);
             });
             let currentLang = 'en';
@@ -576,7 +489,7 @@
                 document.documentElement.dir = lang==='ar'?'rtl':'ltr';
                 document.querySelectorAll('[data-key]').forEach(el => {
                     const key = el.dataset.key;
-                    if(translations[lang][key]) el.innerHTML = translations[lang][key];
+                    if(translations[lang] && translations[lang][key]) el.innerHTML = translations[lang][key];
                 });
                 const search = document.getElementById('cmdSearch');
                 search.placeholder = search.dataset[lang+'-placeholder'] || 'Search...';
@@ -587,8 +500,8 @@
                 const btn = e.target.closest('.lang-flag');
                 if(btn) switchLang(btn.dataset.lang);
             });
-            const saved = localStorage.getItem('aerodyne-lang');
-            if(saved && translations[saved]) switchLang(saved);
+            const savedLang = localStorage.getItem('aerodyne-lang');
+            if(savedLang && translations[savedLang]) switchLang(savedLang);
 
             // ── NAVIGATION ──
             const navs = document.querySelectorAll('.nav-links a');
@@ -611,11 +524,12 @@
                 }
             });
 
-            // ── COMMAND LIST ──
+            // ── COMMANDS DATA (updated with ticket slash commands) ──
             const cmdData = [
                 { cat:'General', icon:'🤖', items:[ ['-prefix','Set custom prefix'], ['-status','Configure bot presence'] ] },
                 { cat:'Level System', icon:'📊', items:[ ['-rank','View your level card'], ['-top voice','Voice XP leaderboard'], ['-top text','Text XP leaderboard'], ['-setxpchannel','Route level-up cards'], ['-setuplevelsystem','Initialize level system'] ] },
-                { cat:'Tickets', icon:'🎫', items:[ ['-ticket','Open a ticket'], ['-close','Close current ticket'] ] },
+                { cat:'Ticket Slash Commands', icon:'🎫', items:[ ['/ticket setup','Run the setup wizard (owner/guild owner)'], ['/ticket edit','Edit panels/channels without reset'], ['/ticket stats','View staff claims & response times'], ['/close','Close current ticket (claimer/admin/owner)'] ] },
+                { cat:'Ticket Prefix Commands', icon:'🔧', items:[ ['-purgetickets','Owner-only full reset of ticket system'], ['-overrideclaim','Owner force-claim, deduct previous'], ['-withpoints','Owner deduct claim points'], ['-addpoints','Owner add claim points'], ['-totalclaims','View claim leaderboard'] ] },
                 { cat:'Moderation', icon:'🛡️', items:[ ['-kick','Kick a member'], ['-ban','Ban a member'], ['-timeout','Timeout with duration'], ['-untimeout','Remove timeout'], ['-setlogtimechannel','Set timeout log channel'], ['-setantispam','Toggle anti-spam per channel'] ] },
                 { cat:'Economy', icon:'💰', items:[ ['-bal','View XP, coins, bank'], ['-deposit','Deposit coins'], ['-withdraw','Withdraw coins'], ['-rob','50/50 rob attempt'], ['-raid','40% success raid'], ['-coinflip','PvP coin flip'], ['-setup','Configure tax & XP mode'] ] },
                 { cat:'Study Mode', icon:'📚', items:[ ['-studymode on','Enable quiet zone'], ['-studymode off','Disable & restore'], ['-studymode status','Check current state'] ] }
@@ -624,13 +538,12 @@
             cmdData.forEach(c => {
                 const div = document.createElement('div');
                 div.className = 'cmd-category reveal';
-                div.innerHTML = `<h3>${c.icon} <span data-en="${c.cat}" data-ar="${c.cat}" data-de="${c.cat}" data-fr="${c.cat}">${c.cat}</span></h3><ul class="cmd-list">${c.items.map(i => `<li><span>${i[0]}</span> <span data-en="${i[1]}" data-ar="${i[1]}" data-de="${i[1]}" data-fr="${i[1]}">${i[1]}</span></li>`).join('')}</ul>`;
+                div.innerHTML = `<h3>${c.icon} <span data-en="${c.cat}" data-ar="${c.cat}">${c.cat}</span></h3><ul class="cmd-list">${c.items.map(i => `<li><span>${i[0]}</span> <span data-en="${i[1]}" data-ar="${i[1]}">${i[1]}</span></li>`).join('')}</ul>`;
                 cmdGrid.appendChild(div);
             });
-            // Refresh translations for new elements
             document.querySelectorAll('#cmdGrid [data-en]').forEach(el => {
                 const k = el.dataset.en;
-                if(!translations.en[k]) { translations.en[k]=k; translations.ar[k]=el.dataset.ar||k; translations.de[k]=el.dataset.de||k; translations.fr[k]=el.dataset.fr||k; el.setAttribute('data-key',k); }
+                if(!translations.en[k]) { translations.en[k]=k; translations.ar[k]=el.dataset.ar||k; el.setAttribute('data-key',k); }
             });
             if(currentLang) switchLang(currentLang);
 
@@ -648,12 +561,12 @@
             // ── LIVE STATS ──
             const statsData = { servers:1247, users:45281, uptime:99.93, commands:8456, latency:24, tickets:3421 };
             const statsItems = [
-                { key:'servers', en:'Servers', ar:'خادم', de:'Server', fr:'Serveurs' },
-                { key:'users', en:'Users', ar:'مستخدم', de:'Nutzer', fr:'Utilisateurs' },
-                { key:'uptime', en:'Uptime %', ar:'وقت التشغيل', de:'Betriebszeit', fr:'Disponibilité' },
-                { key:'commands', en:'Commands', ar:'أمر', de:'Befehle', fr:'Commandes' },
-                { key:'tickets', en:'Tickets', ar:'تذكرة', de:'Tickets', fr:'Tickets' },
-                { key:'latency', en:'Latency ms', ar:'سرعة الإستجابة', de:'Latenz', fr:'Latence' }
+                { key:'servers', en:'Servers', ar:'خادم' },
+                { key:'users', en:'Users', ar:'مستخدم' },
+                { key:'uptime', en:'Uptime %', ar:'وقت التشغيل' },
+                { key:'commands', en:'Commands', ar:'أمر' },
+                { key:'tickets', en:'Tickets', ar:'تذكرة' },
+                { key:'latency', en:'Latency ms', ar:'سرعة الإستجابة' }
             ];
             function buildStats() {
                 const container = document.getElementById('statsContainer');
@@ -662,13 +575,12 @@
                     const card = document.createElement('div');
                     card.className = 'stat-card';
                     card.innerHTML = `<div class="num" id="num-${item.key}">${statsData[item.key].toLocaleString()}</div>
-                        <div class="lbl" data-en="${item.en}" data-ar="${item.ar}" data-de="${item.de}" data-fr="${item.fr}">${item.en}</div>`;
+                        <div class="lbl" data-en="${item.en}" data-ar="${item.ar}">${item.en}</div>`;
                     container.appendChild(card);
                 });
-                // Re-translate
                 document.querySelectorAll('#statsContainer .lbl').forEach(el => {
                     const key = el.dataset.en;
-                    if(!translations.en[key]) { translations.en[key]=key; translations.ar[key]=el.dataset.ar||key; translations.de[key]=el.dataset.de||key; translations.fr[key]=el.dataset.fr||key; el.setAttribute('data-key',key); }
+                    if(!translations.en[key]) { translations.en[key]=key; translations.ar[key]=el.dataset.ar||key; el.setAttribute('data-key',key); }
                     if(currentLang) el.textContent = translations[currentLang][key] || key;
                 });
             }
@@ -697,7 +609,7 @@
             }, { threshold: 0.15 });
             reveals.forEach(el => observer.observe(el));
 
-            console.log('%c🤖 AERODYNE %cUltimate Multilingual Dashboard',
+            console.log('%c🤖 AERODYNE %cv1.0 Ticket System Ready',
                 'background:#4F46E5;color:white;padding:4px 8px;border-radius:4px;',
                 'color:#94A3B8;');
         })();
