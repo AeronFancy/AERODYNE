@@ -3,615 +3,415 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="AERODYNE — Advanced Discord bot with dual XP, economy, tickets, moderation & study mode.">
-    <title>AERODYNE | Discord Bot</title>
+    <title>AERODYNE — Discord Bot</title>
+    <meta name="description" content="AERODYNE — Fully automated ticket system, dual XP, economy, moderation & study mode. Built for serious communities.">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🤖</text></svg>">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800;14..32,900&family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #4F46E5;
-            --primary-hover: #4338CA;
-            --bg: #0B0E14;
-            --surface: #151922;
-            --surface2: #1C2030;
-            --text: #F1F5F9;
-            --text2: #CBD5E1;
-            --muted: #94A3B8;
-            --border: rgba(148, 163, 184, 0.1);
-            --border2: rgba(148, 163, 184, 0.15);
-            --radius: 14px;
-            --shadow: 0 8px 32px rgba(0,0,0,0.4);
-            --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            --hero-glow: rgba(79,70,229,0.2);
+            --c-bg: #0c0f14;
+            --c-surface: #161a22;
+            --c-surface2: #1e2330;
+            --c-border: rgba(255,255,255,0.06);
+            --c-text: #f1f5f9;
+            --c-text2: #cbd5e1;
+            --c-muted: #94a3b8;
+            --c-accent: #6366f1;
+            --c-accent2: #818cf8;
+            --c-soft: rgba(99,102,241,0.08);
+            --c-card-shadow: 0 10px 30px -10px rgba(0,0,0,0.4);
+            --radius: 16px;
+            --transition: 0.25s ease;
         }
-
-        /* Light mode overrides */
-        body.light-mode {
-            --bg: #F8FAFC;
-            --surface: #FFFFFF;
-            --surface2: #F1F5F9;
-            --text: #0F172A;
-            --text2: #334155;
-            --muted: #64748B;
-            --border: rgba(148, 163, 184, 0.15);
-            --border2: rgba(148, 163, 184, 0.25);
-            --shadow: 0 8px 32px rgba(0,0,0,0.1);
-            --hero-glow: rgba(79,70,229,0.07);
+        body.light {
+            --c-bg: #f8fafc;
+            --c-surface: #ffffff;
+            --c-surface2: #f1f5f9;
+            --c-border: rgba(0,0,0,0.08);
+            --c-text: #0f172a;
+            --c-text2: #334155;
+            --c-muted: #64748b;
+            --c-soft: rgba(99,102,241,0.06);
+            --c-card-shadow: 0 10px 30px -10px rgba(0,0,0,0.08);
         }
-
         * { margin:0; padding:0; box-sizing:border-box; }
-        html { scroll-behavior:smooth; scroll-padding-top:80px; }
+        html { scroll-behavior: smooth; scroll-padding-top: 80px; }
         body {
-            background: var(--bg);
-            color: var(--text);
             font-family: 'Inter', sans-serif;
+            background: var(--c-bg);
+            color: var(--c-text);
             line-height: 1.6;
-            overflow-x: hidden;
-            -webkit-font-smoothing: antialiased;
-            position: relative;
-            transition: background 0.4s, color 0.4s;
+            transition: background 0.3s, color 0.3s;
         }
-        body[lang="ar"] { font-family: 'Cairo', 'Inter', sans-serif; }
-
-        #bgCanvas {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100vw; height: 100vh;
-            z-index: 0;
-            pointer-events: none;
-            opacity: 0.45;
-            transition: opacity 0.4s;
-        }
-        body.light-mode #bgCanvas { opacity: 0.15; }
+        body[lang="ar"] { font-family: 'Cairo', sans-serif; }
+        .container { max-width:1200px; margin:0 auto; padding:0 24px; }
 
         /* Header */
         header {
             position: sticky; top:0; z-index:100;
-            background: var(--surface);
-            backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--border);
-            transition: background 0.4s;
+            background: var(--c-surface); border-bottom:1px solid var(--c-border);
+            backdrop-filter: blur(12px); background: color-mix(in srgb, var(--c-surface) 85%, transparent);
         }
         .header-inner {
-            max-width:1300px; margin:0 auto;
             display:flex; align-items:center; justify-content:space-between;
-            padding:0 24px; height:70px; gap:16px;
+            height:70px; gap:20px;
         }
-        .logo { font-weight:900; font-size:1.5rem; color: var(--text); letter-spacing:-0.5px; white-space:nowrap; }
-        .logo span { color: var(--primary); }
-
-        .nav-links { display:flex; gap:4px; list-style:none; }
-        .nav-links a {
-            text-decoration:none; color: var(--muted); font-weight:500;
-            font-size:0.85rem; padding:8px 16px; border-radius:8px;
-            transition: all 0.25s; white-space:nowrap;
+        .logo {
+            font-weight:800; font-size:1.5rem; color:var(--c-text); letter-spacing:-0.5px;
+            display:flex; align-items:center; gap:6px;
         }
-        .nav-links a:hover { color: var(--text); background: rgba(79,70,229,0.1); }
-        .nav-links a.active { color: var(--primary); background: rgba(79,70,229,0.15); font-weight:600; }
-
-        .header-right { display:flex; align-items:center; gap:10px; flex-shrink:0; }
-
-        /* Theme toggle */
-        .theme-toggle {
-            background: none; border: 1px solid var(--border2); border-radius: 8px;
-            color: var(--text2); padding: 8px 12px; cursor: pointer;
-            display: flex; align-items: center; gap: 6px;
-            font-size: 0.85rem; font-weight: 500; transition: all var(--transition);
+        .logo span { color: var(--c-accent); }
+        .nav { display:flex; gap:4px; list-style:none; }
+        .nav a {
+            text-decoration:none; color:var(--c-muted); font-weight:500;
+            padding:8px 14px; border-radius:10px; font-size:0.85rem;
+            transition: all 0.2s; white-space:nowrap;
         }
-        .theme-toggle:hover { border-color: var(--primary); background: rgba(79,70,229,0.1); }
-        .theme-toggle .icon { font-size: 1.1rem; }
-
-        .lang-flags { display:flex; gap:6px; }
-        .lang-flag {
-            background: var(--surface2); border:1px solid var(--border2);
-            border-radius:8px; padding:8px; cursor:pointer;
-            transition: all var(--transition); display:flex; align-items:center; gap:6px; line-height:1;
+        .nav a:hover { background:var(--c-soft); color:var(--c-text); }
+        .nav a.active { background:var(--c-soft); color:var(--c-accent); font-weight:600; }
+        .header-actions { display:flex; align-items:center; gap:10px; }
+        .lang-switch, .theme-switch {
+            background:var(--c-surface2); border:1px solid var(--c-border);
+            border-radius:10px; padding:8px 12px; cursor:pointer;
+            display:flex; align-items:center; gap:6px;
+            font-family:inherit; font-size:0.8rem; font-weight:600;
+            color:var(--c-text2); transition:0.2s;
         }
-        .lang-flag:hover { border-color: var(--primary); background: rgba(79,70,229,0.15); transform: translateY(-2px); }
-        .lang-flag.active { border-color: var(--primary); background: rgba(79,70,229,0.2); box-shadow: 0 0 12px rgba(79,70,229,0.25); }
-        .lang-flag svg { width:20px; height:14px; border-radius:2px; }
-        .flag-code { font-size:0.7rem; font-weight:600; color: var(--text2); }
-
-        @media (max-width:900px) {
-            .flag-code { display:none; }
-            .hamburger { display:block; background:none; border:none; color: var(--text); font-size:1.5rem; cursor:pointer; padding:8px; }
-            .nav-links {
-                position:absolute; top:70px; left:0; right:0;
-                background: var(--surface); flex-direction:column;
-                padding:16px; display:none; border-bottom:1px solid var(--border); z-index:99;
-            }
-            .nav-links.open { display:flex; }
-            .nav-links a { width:100%; padding:12px 16px; }
+        .lang-switch:hover, .theme-switch:hover { background:var(--c-soft); border-color:var(--c-accent); }
+        .lang-switch svg { width:18px; height:12px; border-radius:2px; }
+        .hamburger { display:none; background:none; border:none; color:var(--c-text); font-size:1.6rem; cursor:pointer; }
+        @media(max-width:768px) {
+            .hamburger { display:block; }
+            .nav { display:none; flex-direction:column; position:absolute; top:70px; left:0; right:0; background:var(--c-surface); padding:16px; border-bottom:1px solid var(--c-border); }
+            .nav.open { display:flex; }
+            .nav a { width:100%; }
         }
 
         /* Sections */
-        section { position:relative; z-index:1; max-width:1200px; margin:0 auto; padding:80px 24px; }
-        .section-title { font-size: clamp(2rem,4vw,2.4rem); font-weight:800; margin-bottom:8px; letter-spacing:-0.5px; color: var(--text); }
-        .section-sub { color: var(--muted); font-size:1rem; margin-bottom:40px; max-width:600px; }
+        section { padding:80px 0; }
+        .section-title {
+            font-size: clamp(1.8rem, 4vw, 2.4rem); font-weight:800;
+            letter-spacing:-1px; margin-bottom:12px; color:var(--c-text);
+        }
+        .section-sub { color:var(--c-muted); max-width:600px; font-size:1rem; margin-bottom:40px; }
 
         /* Hero */
-        #hero { display:flex; align-items:center; min-height:85vh; padding-top:40px; }
-        .hero-grid { display:grid; grid-template-columns:1fr 1fr; gap:50px; align-items:center; width:100%; }
-        .hero-text h1 { font-size: clamp(2.8rem,5vw,4.2rem); font-weight:900; letter-spacing:-2px; line-height:1.1; margin-bottom:16px; }
-        .hero-text h1 span { color: var(--primary); }
-        .hero-text p { color: var(--muted); font-size:1.1rem; margin-bottom:32px; max-width:450px; }
-        .hero-badges { display:flex; gap:12px; flex-wrap:wrap; margin-bottom:28px; }
-        .badge {
-            display:inline-flex; align-items:center; gap:6px;
-            background: var(--surface2); border:1px solid var(--border2);
-            border-radius:20px; padding:8px 16px; font-size:0.85rem;
-            color: var(--text2); font-weight:500;
-            animation: fadeInUp 0.6s ease forwards; opacity:0;
-        }
-        .badge:nth-child(2){ animation-delay:0.2s; }
-        .badge:nth-child(3){ animation-delay:0.4s; }
-        @keyframes fadeInUp {
-            from { opacity:0; transform: translateY(20px); }
-            to { opacity:1; transform: translateY(0); }
-        }
-        .badge .dot { width:8px; height:8px; border-radius:50%; background: #22c55e; animation: pulse-dot 2s infinite; }
-        @keyframes pulse-dot {
-            0%,100% { box-shadow:0 0 0 0 rgba(34,197,94,0.6); }
-            50% { box-shadow:0 0 0 10px rgba(34,197,94,0); }
-        }
+        .hero-grid { display:grid; grid-template-columns:1fr 1fr; gap:50px; align-items:center; }
+        .hero-text h1 { font-size: clamp(2.8rem, 6vw, 4rem); font-weight:900; line-height:1.1; }
+        .hero-text h1 span { color:var(--c-accent); }
+        .hero-text p { color:var(--c-muted); font-size:1.1rem; margin:20px 0 30px; }
+        .hero-buttons { display:flex; gap:12px; flex-wrap:wrap; }
         .btn {
             display:inline-flex; align-items:center; gap:8px;
-            background: var(--primary); color:#fff;
-            padding:15px 32px; border-radius:100px;
-            text-decoration:none; font-weight:700; font-size:0.95rem;
-            transition: all var(--transition);
-            box-shadow: 0 6px 24px var(--hero-glow);
-            position:relative; overflow:hidden;
+            padding:14px 28px; border-radius:100px; font-weight:700;
+            text-decoration:none; transition:0.2s; font-size:0.95rem;
         }
-        .btn::after {
-            content:''; position:absolute; top:0; left:-100%;
-            width:100%; height:100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
-            transition: left 0.5s;
+        .btn-primary { background:var(--c-accent); color:#fff; box-shadow:0 8px 24px rgba(99,102,241,0.3); }
+        .btn-primary:hover { background:var(--c-accent2); transform:translateY(-2px); }
+        .btn-secondary { background:var(--c-soft); color:var(--c-text); border:1px solid var(--c-border); }
+        .btn-secondary:hover { background:var(--c-surface2); }
+        .hero-illustration {
+            display:flex; justify-content:center; align-items:center;
+            background:linear-gradient(135deg, var(--c-accent2) 0%, var(--c-accent) 100%);
+            border-radius:24px; padding:40px; color:#fff; font-size:5rem; box-shadow:0 20px 40px rgba(99,102,241,0.25);
         }
-        .btn:hover::after { left:100%; }
-        .btn:hover { background: var(--primary-hover); transform: translateY(-3px); box-shadow: 0 10px 32px rgba(79,70,229,0.45); }
-        .hero-image { display:flex; justify-content:center; align-items:center; animation: float 6s ease-in-out infinite; }
-        @keyframes float { 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(-15px); } }
-        .hero-image img { max-width:100%; border-radius:20px; box-shadow: var(--shadow); }
-        @media (max-width:768px) {
+        @media(max-width:768px) {
             .hero-grid { grid-template-columns:1fr; text-align:center; }
-            .hero-text p { margin-left:auto; margin-right:auto; }
-            .hero-badges { justify-content:center; }
-            .hero-image { order:-1; max-width:70%; margin:0 auto; }
+            .hero-illustration { order:-1; max-width:60%; margin:0 auto; }
+            .hero-buttons { justify-content:center; }
         }
 
-        /* Features grid */
-        .features-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(280px,1fr)); gap:20px; }
+        /* Feature cards */
+        .features-grid {
+            display:grid; grid-template-columns:repeat(auto-fit, minmax(260px,1fr));
+            gap:24px; margin-top:40px;
+        }
         .feature-card {
-            background: var(--surface); border:1px solid var(--border);
-            border-radius: var(--radius); padding:28px;
-            transition: all var(--transition); transform: translateY(30px); opacity:0;
+            background:var(--c-surface); border:1px solid var(--c-border);
+            border-radius:var(--radius); padding:28px; transition:0.25s;
+            box-shadow: var(--c-card-shadow);
         }
-        .feature-card.visible { opacity:1; transform: translateY(0); transition: opacity 0.6s ease, transform 0.6s ease; }
-        .feature-card:hover { border-color: var(--primary); transform: translateY(-6px)!important; box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
-        .feature-card .icon { font-size:2.2rem; margin-bottom:12px; }
-        .feature-card h3 { font-size:1.2rem; margin-bottom:8px; color: var(--text); }
-        .feature-card p { color: var(--muted); font-size:0.9rem; line-height:1.6; }
+        .feature-card:hover { transform:translateY(-6px); border-color:var(--c-accent); }
+        .feature-card .icon { font-size:2rem; margin-bottom:16px; }
+        .feature-card h3 { font-size:1.15rem; margin-bottom:8px; color:var(--c-text); }
+        .feature-card p { color:var(--c-muted); font-size:0.9rem; }
 
-        /* Ticket showcase section */
+        /* Ticket system showcase */
         .ticket-showcase {
-            background: var(--surface); border:1px solid var(--border);
-            border-radius: var(--radius); padding:36px;
-            max-width:900px; margin:60px auto 0;
+            background:var(--c-surface); border:1px solid var(--c-border);
+            border-radius:var(--radius); padding:40px; margin-top:60px;
+            box-shadow: var(--c-card-shadow);
         }
-        .ticket-showcase h3 { font-size:1.4rem; margin-bottom:20px; color: var(--text); }
-        .ticket-feature-list { display:grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap:16px; }
-        .ticket-feature { padding:12px; border-left:3px solid var(--primary); background: var(--surface2); border-radius:6px; }
-        .ticket-feature strong { display:block; font-size:0.9rem; color: var(--primary); margin-bottom:4px; }
-        .ticket-feature span { font-size:0.8rem; color: var(--muted); }
+        .ticket-showcase h2 { font-size:1.8rem; margin-bottom:20px; }
+        .ticket-grid {
+            display:grid; grid-template-columns:repeat(auto-fit, minmax(220px,1fr));
+            gap:16px; margin-top:24px;
+        }
+        .ticket-item { padding:16px; background:var(--c-surface2); border-radius:12px; border-left:4px solid var(--c-accent); }
+        .ticket-item strong { display:block; color:var(--c-accent); margin-bottom:6px; font-size:0.95rem; }
+        .ticket-item span { font-size:0.85rem; color:var(--c-muted); }
 
-        /* Commands search */
+        /* Commands */
         .cmd-search {
-            width:100%; max-width:500px;
-            padding:12px 18px; border-radius:100px;
-            border:1px solid var(--border2);
-            background: var(--surface); color: var(--text);
-            font-size:0.95rem; margin-bottom:30px;
-            outline:none; transition: border-color var(--transition);
-            font-family: inherit;
+            width:100%; max-width:400px; padding:14px 20px; border-radius:100px;
+            border:1px solid var(--c-border); background:var(--c-surface);
+            color:var(--c-text); font-family:inherit; font-size:0.95rem;
+            outline:none; margin-bottom:30px; transition:0.2s;
         }
-        .cmd-search:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(79,70,229,0.1); }
-        .cmd-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(300px,1fr)); gap:20px; }
-        .cmd-category {
-            background: var(--surface); border:1px solid var(--border);
-            border-radius: var(--radius); padding:24px;
-            transition: all var(--transition);
-        }
-        .cmd-category:hover { border-color: var(--primary); }
-        .cmd-category h3 { margin-bottom:14px; color: var(--text); font-size:1.05rem; display:flex; align-items:center; gap:8px; }
-        .cmd-list { list-style:none; }
+        .cmd-search:focus { border-color:var(--c-accent); }
+        .cmd-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(280px,1fr)); gap:20px; }
+        .cmd-category { background:var(--c-surface); border:1px solid var(--c-border); border-radius:var(--radius); padding:24px; }
+        .cmd-category h3 { color:var(--c-text); margin-bottom:16px; }
         .cmd-list li {
-            padding:10px 12px; border-bottom:1px solid var(--border);
+            padding:10px 0; border-bottom:1px solid var(--c-border);
             font-family:'Courier New', monospace; font-size:0.85rem;
-            color: var(--text2); transition: background 0.2s, transform 0.2s;
-            border-radius:6px; cursor:default;
+            color:var(--c-text2); list-style:none; transition:0.2s;
         }
-        .cmd-list li:hover { background: rgba(79,70,229,0.08); transform: translateX(4px); }
-        .cmd-list li:last-child { border:none; }
-        .cmd-list li span { color: var(--primary); font-weight:700; margin-right:6px; }
+        .cmd-list li:hover { color:var(--c-accent); padding-left:6px; }
+        .cmd-list li:last-child { border:0; }
+        .cmd-list li span { margin-right:8px; font-weight:700; color:var(--c-accent); }
         .cmd-list li.hidden { display:none; }
 
         /* Stats */
-        .stats-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(150px,1fr)); gap:16px; margin-top:20px; }
-        .stat-card {
-            background: var(--surface); border:1px solid var(--border);
-            border-radius: var(--radius); padding:22px 18px;
-            text-align:center; transition: all var(--transition);
-        }
-        .stat-card:hover { border-color: var(--primary); transform: scale(1.03); }
-        .stat-card .num {
-            font-size:2rem; font-weight:900;
-            background: linear-gradient(135deg, var(--text), var(--primary));
-            -webkit-background-clip:text;
-            -webkit-text-fill-color:transparent;
-            background-clip:text;
-        }
-        .stat-card .lbl { color: var(--muted); font-size:0.78rem; text-transform:uppercase; letter-spacing:0.8px; margin-top:4px; }
+        .stats-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(140px,1fr)); gap:16px; }
+        .stat-box { background:var(--c-surface); border:1px solid var(--c-border); border-radius:var(--radius); text-align:center; padding:24px 16px; }
+        .stat-box .num { font-size:2.2rem; font-weight:900; color:var(--c-accent); }
+        .stat-box .lbl { font-size:0.8rem; color:var(--c-muted); text-transform:uppercase; margin-top:4px; }
 
-        /* Developer card */
+        /* Dev */
         .dev-card {
-            display:flex; align-items:center; gap:30px;
-            background: var(--surface); border:1px solid var(--border);
-            border-radius: var(--radius); padding:32px;
-            max-width:650px; margin:0 auto;
-            transition: all var(--transition);
+            display:flex; align-items:center; gap:24px; max-width:600px;
+            background:var(--c-surface); border:1px solid var(--c-border);
+            border-radius:var(--radius); padding:32px; margin:30px auto;
         }
-        .dev-card:hover { border-color: var(--primary); box-shadow:0 15px 35px rgba(0,0,0,0.5); transform: translateY(-4px); }
-        .dev-avatar {
-            width:100px; height:100px; border-radius:50%;
-            background: linear-gradient(135deg, var(--primary), #818cf8);
-            display:flex; align-items:center; justify-content:center;
-            font-weight:900; font-size:2.5rem; color:#fff; flex-shrink:0;
-            position:relative; overflow:hidden;
-        }
-        .dev-avatar::after {
-            content:''; position:absolute; top:0; left:0;
-            width:100%; height:100%;
-            background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.2), transparent 70%);
-        }
-        .dev-info h3 { margin-bottom:6px; font-size:1.3rem; color: var(--text); }
-        .dev-info .role { color: var(--primary); font-weight:600; font-size:0.85rem; margin-bottom:8px; }
-        .dev-info p { color: var(--muted); font-size:0.9rem; line-height:1.6; }
+        .dev-avatar { width:80px; height:80px; background:linear-gradient(135deg, var(--c-accent), #818cf8); border-radius:50%; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:900; font-size:2rem; }
+        .dev-info h3 { color:var(--c-text); }
+        .dev-info .role { color:var(--c-accent); font-weight:600; font-size:0.85rem; margin-bottom:8px; }
+        .dev-info p { color:var(--c-muted); }
 
-        footer {
-            position:relative; z-index:1;
-            text-align:center; padding:32px 20px;
-            border-top:1px solid var(--border);
-            color: var(--muted); font-size:0.85rem;
-            background: var(--surface);
-        }
-        footer a { color: var(--primary); text-decoration:none; font-weight:600; }
+        footer { border-top:1px solid var(--c-border); text-align:center; padding:28px; color:var(--c-muted); font-size:0.85rem; }
 
-        .reveal { opacity:0; transform: translateY(40px); transition: opacity 0.8s ease, transform 0.8s ease; }
-        .reveal.visible { opacity:1; transform: translateY(0); }
+        /* Animations */
+        .reveal { opacity:0; transform:translateY(30px); transition:0.6s ease; }
+        .reveal.visible { opacity:1; transform:translateY(0); }
 
-        body[dir="rtl"] .cmd-list li:hover { transform: translateX(-4px); }
-        @keyframes glitch {
-            0%{ text-shadow:2px 0 red, -2px 0 blue; } 25%{ text-shadow:-2px 0 red, 2px 0 cyan; }
-            50%{ text-shadow:2px 0 cyan, -2px 0 red; } 75%{ text-shadow:-2px 0 red, 2px 0 cyan; }
-            100%{ text-shadow:2px 0 red, -2px 0 blue; }
-        }
-        .hero-text h1:hover { animation: glitch 0.5s infinite; }
+        /* RTL */
+        body[dir="rtl"] .cmd-list li:hover { padding-left:0; padding-right:6px; }
+        body[dir="rtl"] .cmd-list li span { margin-right:0; margin-left:8px; }
     </style>
 </head>
-<body>
-    <canvas id="bgCanvas"></canvas>
-
-    <!-- HEADER -->
+<body class="dark">
     <header>
-        <div class="header-inner">
+        <div class="container header-inner">
             <div class="logo">AERO<span>DYNE</span></div>
-            <button class="hamburger" aria-label="Toggle menu">☰</button>
-            <nav class="nav-links">
-                <a href="#hero" class="active" data-nav="hero" data-en="Home" data-ar="الرئيسية">Home</a>
-                <a href="#features" data-nav="features" data-en="Features" data-ar="الميزات">Features</a>
-                <a href="#ticketsystem" data-nav="ticketsystem" data-en="Ticket System" data-ar="نظام التذاكر">Ticket System</a>
-                <a href="#commands" data-nav="commands" data-en="Commands" data-ar="الأوامر">Commands</a>
-                <a href="#stats" data-nav="stats" data-en="Stats" data-ar="إحصائيات">Stats</a>
-                <a href="#dev" data-nav="dev" data-en="Developer" data-ar="المطور">Developer</a>
-            </nav>
-            <div class="header-right">
-                <button class="theme-toggle" id="themeToggle" title="Toggle dark/light mode">
-                    <span class="icon">🌙</span> <span class="label">Dark</span>
+            <button class="hamburger" id="menuBtn">☰</button>
+            <ul class="nav" id="mainNav">
+                <li><a href="#hero" class="active" data-nav="hero" data-en="Home" data-ar="الرئيسية">Home</a></li>
+                <li><a href="#features" data-nav="features" data-en="Features" data-ar="الميزات">Features</a></li>
+                <li><a href="#ticketsystem" data-nav="ticketsystem" data-en="Ticket System" data-ar="نظام التذاكر">Ticket System</a></li>
+                <li><a href="#commands" data-nav="commands" data-en="Commands" data-ar="الأوامر">Commands</a></li>
+                <li><a href="#stats" data-nav="stats" data-en="Stats" data-ar="إحصائيات">Stats</a></li>
+                <li><a href="#dev" data-nav="dev" data-en="Developer" data-ar="المطور">Developer</a></li>
+            </ul>
+            <div class="header-actions">
+                <button class="lang-switch" id="langToggle" title="Switch Language">
+                    <svg id="langFlagUS" viewBox="0 0 20 14" width="20" height="14"><rect width="20" height="14" fill="#B22234"/><path d="M0 0h8v7H0z" fill="#3C3B6E"/><g fill="#FFF"><circle cx="1.5" cy="1.5" r="0.4"/><circle cx="3.5" cy="1.5" r="0.4"/><circle cx="5.5" cy="1.5" r="0.4"/><circle cx="6.5" cy="1.5" r="0.4"/><circle cx="2.5" cy="3.5" r="0.4"/><circle cx="4.5" cy="3.5" r="0.4"/><circle cx="1.5" cy="5.5" r="0.4"/><circle cx="3.5" cy="5.5" r="0.4"/></g><rect y="7" width="20" height="1" fill="#FFF"/><rect y="9" width="20" height="1" fill="#FFF"/><rect y="11" width="20" height="1" fill="#FFF"/></svg>
+                    <svg id="langFlagSA" viewBox="0 0 20 14" width="20" height="14" style="display:none;"><rect width="20" height="14" fill="#006C35"/><text x="10" y="11" text-anchor="middle" fill="#FFF" font-size="8" font-weight="bold">﷽</text></svg>
+                    <span id="langLabel">EN</span>
                 </button>
-                <div class="lang-flags" id="langFlags">
-                    <button class="lang-flag active" data-lang="en" title="English">
-                        <svg viewBox="0 0 20 14"><rect width="20" height="14" fill="#B22234"/><path d="M0 0h8v7H0z" fill="#3C3B6E"/><g fill="#FFF"><circle cx="1.5" cy="1.5" r="0.4"/><circle cx="3.5" cy="1.5" r="0.4"/><circle cx="5.5" cy="1.5" r="0.4"/><circle cx="6.5" cy="1.5" r="0.4"/><circle cx="2.5" cy="3.5" r="0.4"/><circle cx="4.5" cy="3.5" r="0.4"/><circle cx="1.5" cy="5.5" r="0.4"/><circle cx="3.5" cy="5.5" r="0.4"/></g><rect y="7" width="20" height="1" fill="#FFF"/><rect y="9" width="20" height="1" fill="#FFF"/><rect y="11" width="20" height="1" fill="#FFF"/></svg>
-                        <span class="flag-code">US</span>
-                    </button>
-                    <button class="lang-flag" data-lang="ar" title="العربية">
-                        <svg viewBox="0 0 20 14"><rect width="20" height="14" fill="#006C35"/><text x="10" y="11" text-anchor="middle" fill="#FFF" font-size="8" font-weight="bold">﷽</text><rect y="0" width="20" height="14" fill="none" stroke="#FFF" stroke-width="0.5"/></svg>
-                        <span class="flag-code">SA</span>
-                    </button>
-                </div>
+                <button class="theme-switch" id="themeToggle" title="Toggle Theme">
+                    <span id="themeIcon">🌙</span>
+                    <span id="themeLabel">Dark</span>
+                </button>
             </div>
         </div>
     </header>
-
-    <!-- HERO -->
-    <section id="hero">
-        <div class="hero-grid">
-            <div class="hero-text">
-                <h1><span data-en="Power Up Your" data-ar="قم بتعزيز">Power Up Your</span> <span style="color:var(--primary);" data-en="Server" data-ar="خادمك">Server</span></h1>
-                <p data-en="AERODYNE — Fully automated ticket system, dual XP, economy, moderation, and study mode. Built for serious communities." data-ar="AERODYNE — نظام تذاكر آلي كامل، XP مزدوج، اقتصاد, إدارة، ووضع دراسة. مصمم للمجتمعات الجادة.">AERODYNE — Fully automated ticket system, dual XP, economy, moderation, and study mode. Built for serious communities.</p>
-                <div class="hero-badges">
-                    <div class="badge"><span class="dot"></span> <span data-en="Online 24/7" data-ar="متصل 24/7">Online 24/7</span></div>
-                    <div class="badge">🎫 <span data-en="Ticket System v1.0" data-ar="نظام التذاكر v1.0">Ticket System v1.0</span></div>
-                    <div class="badge">🌍 <span data-en="EN / AR" data-ar="عربي / إنجليزي">EN / AR</span></div>
+    <main>
+        <!-- Hero -->
+        <section id="hero" class="container">
+            <div class="hero-grid">
+                <div class="hero-text">
+                    <h1><span data-en="Power Up Your" data-ar="قم بتعزيز">Power Up Your</span> <span style="color:var(--c-accent)">Server</span></h1>
+                    <p data-en="AERODYNE — Fully automated ticket system, dual XP, economy, moderation & study mode. Built for serious communities." data-ar="AERODYNE — نظام تذاكر آلي كامل، XP مزدوج، اقتصاد، إدارة، ووضع دراسة. مصمم للمجتمعات الجادة.">AERODYNE — Fully automated ticket system, dual XP, economy, moderation & study mode. Built for serious communities.</p>
+                    <div class="hero-buttons">
+                        <a href="https://discord.com/oauth2/authorize?client_id=1488701920452546691&permissions=8&integration_type=0&scope=bot" class="btn btn-primary">➕ <span data-en="Add to Discord" data-ar="أضف إلى ديسكورد">Add to Discord</span></a>
+                        <a href="#ticketsystem" class="btn btn-secondary">🎫 <span data-en="Explore Tickets" data-ar="استعرض التذاكر">Explore Tickets</span></a>
+                    </div>
                 </div>
-                <a href="https://discord.com/oauth2/authorize?client_id=1488701920452546691&permissions=8&integration_type=0&scope=bot" class="btn">➕ <span data-en="Add to Discord" data-ar="أضف إلى ديسكورد">Add to Discord</span></a>
+                <div class="hero-illustration">🤖</div>
             </div>
-            <div class="hero-image">
-                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 420 280'%3E%3Crect width='420' height='280' fill='%23151922' rx='18'/%3E%3Ccircle cx='210' cy='110' r='55' fill='%234F46E5'/%3E%3Ctext x='210' y='125' text-anchor='middle' fill='white' font-family='Inter,sans-serif' font-weight='900' font-size='26'%3EA%3C/text%3E%3Crect x='100' y='190' width='220' height='36' rx='10' fill='%231C2030' stroke='%234F46E5' stroke-width='2'/%3E%3Ctext x='210' y='214' text-anchor='middle' fill='%23CBD5E1' font-size='14' font-family='Inter,sans-serif'%3EAERODYNE BOT%3C/text%3E%3Crect x='140' y='240' width='140' height='28' rx='14' fill='%2322c55e' opacity='0.2'/%3E%3Ctext x='210' y='259' text-anchor='middle' fill='%2322c55e' font-size='12' font-family='Inter,sans-serif'%3EONLINE%3C/text%3E%3C/svg%3E" alt="AERODYNE Bot">
+        </section>
+
+        <!-- Features -->
+        <section id="features" class="container">
+            <h2 class="section-title reveal" data-en="Core Features" data-ar="الميزات الأساسية">Core Features</h2>
+            <p class="section-sub reveal" data-en="Everything your community needs to thrive." data-ar="كل ما يحتاجه مجتمعك للازدهار.">Everything your community needs to thrive.</p>
+            <div class="features-grid">
+                <div class="feature-card reveal"><div class="icon">📊</div><h3 data-en="Dual XP" data-ar="نظام XP مزدوج">Dual XP</h3><p data-en="Text & Voice XP pools with exponential curves. 1-min cooldown, 60-min voice awards." data-ar="مجمعات XP للنصوص والصوت مع منحنيات أسية. تبريد 1د للنصوص، 60د للصوت.">Text & Voice XP pools...</p></div>
+                <div class="feature-card reveal"><div class="icon">🎫</div><h3 data-en="Ticket System v1.0" data-ar="نظام التذاكر">Ticket System v1.0</h3><p data-en="Multi‑panel, role‑locked, limits, auto‑close, transcripts, claims, ratings, stats." data-ar="لوحات، قفل بالأدوار، حدود، إغلاق تلقائي، نسخ، مطالبات، تقييم، إحصائيات.">Multi‑panel, role‑locked...</p></div>
+                <div class="feature-card reveal"><div class="icon">🛡️</div><h3 data-en="Moderation" data-ar="الإدارة">Moderation</h3><p data-en="Kick, ban, timeout with bilingual duration. Anti‑spam & audit logging." data-ar="طرد، حظر، مهلة مع دعم المدد. مضاد سبام وتسجيل تدقيق.">Kick, ban, timeout...</p></div>
+                <div class="feature-card reveal"><div class="icon">💰</div><h3 data-en="Economy" data-ar="الاقتصاد">Economy</h3><p data-en="Coins, bank, rob, raid, coinflip, wealth tax. Full setup command." data-ar="عملات، بنك، سرقة، غارة، قلب عملة، ضريبة ثروة. أمر إعداد كامل.">Coins, bank, rob, raid...</p></div>
+                <div class="feature-card reveal"><div class="icon">📚</div><h3 data-en="Study Mode" data-ar="وضع الدراسة">Study Mode</h3><p data-en="Quiet zone on voice channels. Renames channel, mutes @everyone." data-ar="منطقة هادئة على قنوات الصوت. تعيد تسمية القناة، تكتم الجميع.">Quiet zone on voice channels...</p></div>
+                <div class="feature-card reveal"><div class="icon">🎨</div><h3 data-en="Level Cards" data-ar="بطاقات المستوى">Level Cards</h3><p data-en="900×300px canvas cards with lunar background, HUD overlay, dual progress bars." data-ar="بطاقات 900×300 بخلفية قمرية، غطاء HUD، أشرطة تقدم مزدوجة.">900×300px canvas cards...</p></div>
             </div>
-        </div>
-    </section>
 
-    <!-- FEATURES -->
-    <section id="features">
-        <h2 class="section-title reveal" data-en="Core Features" data-ar="الميزات الأساسية">Core Features</h2>
-        <p class="section-sub reveal" data-en="Everything your community needs to thrive." data-ar="كل ما يحتاجه مجتمعك للازدهار.">Everything your community needs to thrive.</p>
-        <div class="features-grid">
-            <div class="feature-card reveal"><div class="icon">📊</div><h3 data-en="Dual XP System" data-ar="نظام XP مزدوج">Dual XP System</h3><p data-en="Separate Text XP & Voice XP with exponential curves. 1-min text cooldown, 60-min voice awards. AFK channels excluded." data-ar="مجمعات XP منفصلة للنصوص والصوت مع منحنيات أسية. تبريد 1 دقيقة للنصوص، 60 دقيقة للصوت. قنوات الغياب مستثناة.">Separate Text XP & Voice XP...</p></div>
-            <div class="feature-card reveal"><div class="icon">🎫</div><h3 data-en="Ticket System" data-ar="نظام التذاكر">Ticket System</h3><p data-en="Multi‑panel, role‑locked, per‑user limits, auto‑close, transcripts, claims with points, rating DM, staff stats, and live editor." data-ar="لوحات متعددة، قفل بالأدوار، حدود لكل مستخدم، إغلاق تلقائي، نسخ، مطالبات بنقاط، تقييم برسائل خاصة، إحصائيات للموظفين، ومحرر حي.">Multi‑panel, role‑locked, per‑user limits...</p></div>
-            <div class="feature-card reveal"><div class="icon">🛡️</div><h3 data-en="Moderation" data-ar="الإدارة">Moderation</h3><p data-en="Kick, ban, timeout with bilingual duration. Audit log detection, per‑channel anti‑spam with silent XP freeze." data-ar="طرد، حظر، مهلة مع دعم المدد ثنائي اللغة. كشف سجل التدقيق، مضاد سبام لكل قناة مع تجميد XP صامت.">Kick, ban, timeout...</p></div>
-            <div class="feature-card reveal"><div class="icon">💰</div><h3 data-en="Economy" data-ar="الاقتصاد">Economy</h3><p data-en="Coins, bank, rob, raid, PvP coinflip, wealth tax, full setup command." data-ar="عملات، بنك، سرقة، غارة، قلب عملة بين اللاعبين، ضريبة ثروة، أمر إعداد كامل.">Coins, bank, rob, raid...</p></div>
-            <div class="feature-card reveal"><div class="icon">📚</div><h3 data-en="Study Mode" data-ar="وضع الدراسة">Study Mode</h3><p data-en="Quiet zone on voice channels. Denies speak for @everyone, renames channel with 📚 prefix." data-ar="منطقة هادئة على قنوات الصوت. يمنع التحدث للجميع، يعيد تسمية القناة ببادئة 📚.">Quiet zone on voice channels...</p></div>
-            <div class="feature-card reveal"><div class="icon">🎨</div><h3 data-en="Level Cards" data-ar="بطاقات المستوى">Level Cards</h3><p data-en="900×300px canvas with lunar background, HUD overlay, dual progress bars, milestone colors." data-ar="بطاقات 900×300 بكسل بخلفية قمرية، غطاء HUD، أشرطة تقدم مزدوجة، ألوان المراحل.">900×300px canvas cards...</p></div>
-        </div>
-
-        <!-- Ticket System Showcase -->
-        <div id="ticketsystem" class="ticket-showcase reveal">
-            <h3>🎟️ <span data-en="Ticket System — v1.0 Core" data-ar="نظام التذاكر — الإصدار الأول">Ticket System — v1.0 Core</span></h3>
-            <div class="ticket-feature-list">
-                <div class="ticket-feature"><strong>🎛️ <span data-en="Multi‑panel" data-ar="لوحات متعددة">Multi‑panel</span></strong><span data-en="Up to 5 panels with custom name, emoji, description, color." data-ar="حتى 5 لوحات باسم وإيموجي ووصف ولون مخصص.">Up to 5 panels...</span></div>
-                <div class="ticket-feature"><strong>🔒 <span data-en="Role‑locked" data-ar="قفل بالأدوار">Role‑locked</span></strong><span data-en="Only assigned roles see and manage tickets per panel." data-ar="فقط الأدوار المحددة ترى وتدير تذاكر كل لوحة.">Only assigned roles see tickets...</span></div>
-                <div class="ticket-feature"><strong>👥 <span data-en="Per‑user limits" data-ar="حدود لكل مستخدم">Per‑user limits</span></strong><span data-en="1–5 open tickets per user per panel." data-ar="1–5 تذاكر مفتوحة لكل مستخدم في كل لوحة.">1–5 open tickets...</span></div>
-                <div class="ticket-feature"><strong>⏰ <span data-en="Auto‑close" data-ar="إغلاق تلقائي">Auto‑close</span></strong><span data-en="Close inactive tickets after configurable hours." data-ar="إغلاق التذاكر غير النشطة بعد ساعات قابلة للتكوين.">Close inactive tickets...</span></div>
-                <div class="ticket-feature"><strong>📄 <span data-en="Transcripts" data-ar="النسخ">Transcripts</span></strong><span data-en="Clean .txt transcript sent to a dedicated channel." data-ar="نسخة .txt نظيفة ترسل إلى قناة مخصصة.">Clean .txt transcript...</span></div>
-                <div class="ticket-feature"><strong>🎟️ <span data-en="Claim / Unclaim" data-ar="مطالبة / إلغاء">Claim / Unclaim</span></strong><span data-en="Staff can claim tickets, earning points. Logs sent to staff channel." data-ar="الموظفون يطالبون بالتذاكر ويكسبون نقاطاً. السجلات تُرسل إلى قناة الموظفين.">Claim tickets, earn points...</span></div>
-                <div class="ticket-feature"><strong>⭐ <span data-en="Rating" data-ar="تقييم">Rating</span></strong><span data-en="Users rate support via DM; rating logged in dedicated channel." data-ar="المستخدمون يقيمون الدعم عبر رسالة خاصة؛ التقييم يُسجل في قناة مخصصة.">Users rate via DM...</span></div>
-                <div class="ticket-feature"><strong>📊 <span data-en="Staff Stats" data-ar="إحصائيات">Staff Stats</span></strong><span data-en="/ticket stats shows claims & avg response time." data-ar="/ticket stats يعرض عدد المطالبات ومتوسط سرعة الرد.">/ticket stats...</span></div>
-                <div class="ticket-feature"><strong>🛠️ <span data-en="Live Editor" data-ar="محرر حي">Live Editor</span></strong><span data-en="/ticket edit to change panels/channels without resetting." data-ar="/ticket edit لتعديل اللوحات والقنوات دون إعادة التثبيت.">/ticket edit...</span></div>
-                <div class="ticket-feature"><strong>🌍 <span data-en="Bilingual Setup" data-ar="إعداد ثنائي اللغة">Bilingual Setup</span></strong><span data-en="Setup wizard supports English & Arabic." data-ar="معالج الإعداد يدعم العربية والإنجليزية.">EN / AR wizard...</span></div>
+            <!-- Ticket System Showcase -->
+            <div id="ticketsystem" class="ticket-showcase reveal">
+                <h2>🎟️ <span data-en="Ticket System — v1.0 Core" data-ar="نظام التذاكر — الإصدار الأول">Ticket System — v1.0 Core</span></h2>
+                <div class="ticket-grid">
+                    <div class="ticket-item"><strong>🎛️ <span data-en="Multi‑panel" data-ar="لوحات متعددة">Multi‑panel</span></strong><span data-en="Up to 5 categories, each with custom name, emoji, color." data-ar="حتى 5 فئات، كل منها باسم وإيموجي ولون.">Up to 5 categories...</span></div>
+                    <div class="ticket-item"><strong>🔒 <span data-en="Role‑locked" data-ar="قفل بالأدوار">Role‑locked</span></strong><span data-en="Only assigned roles can see and manage tickets." data-ar="فقط الأدوار المعينة تستطيع رؤية وإدارة التذاكر.">Only assigned roles see tickets.</span></div>
+                    <div class="ticket-item"><strong>👥 <span data-en="Per‑user limits" data-ar="حدود لكل مستخدم">Per‑user limits</span></strong><span data-en="1–5 open tickets per user per panel." data-ar="1–5 تذاكر مفتوحة لكل مستخدم في اللوحة.">1–5 open tickets per user.</span></div>
+                    <div class="ticket-item"><strong>⏰ <span data-en="Auto‑close" data-ar="إغلاق تلقائي">Auto‑close</span></strong><span data-en="Close inactive tickets after configurable hours." data-ar="إغلاق التذاكر غير النشطة بعد ساعات محددة.">Close inactive tickets after hours.</span></div>
+                    <div class="ticket-item"><strong>📄 <span data-en="Transcripts" data-ar="النسخ">Transcripts</span></strong><span data-en="Clean .txt file sent to a dedicated channel." data-ar="ملف .txt نظيف يُرسل إلى قناة مخصصة.">Clean .txt transcript file.</span></div>
+                    <div class="ticket-item"><strong>🎟️ <span data-en="Claim / Unclaim" data-ar="مطالبة / إلغاء">Claim / Unclaim</span></strong><span data-en="Staff claim tickets, earn points. Logs sent to staff channel." data-ar="الموظفون يطالبون بالتذاكر ويكسبون نقاطاً. السجلات تُرسل.">Claim tickets, earn points.</span></div>
+                    <div class="ticket-item"><strong>⭐ <span data-en="Rating DM" data-ar="رسالة تقييم">Rating DM</span></strong><span data-en="Users rate support via DM; logged in rating channel." data-ar="المستخدمون يقيمون الدعم عبر رسالة، تُسجل في قناة.">Rating via DM, logged.</span></div>
+                    <div class="ticket-item"><strong>📊 <span data-en="Staff Stats" data-ar="إحصائيات">Staff Stats</span></strong><span data-en="/ticket stats shows claims & average response time." data-ar="/ticket stats يعرض عدد المطالبات وسرعة الرد.">/ticket stats for insights.</span></div>
+                    <div class="ticket-item"><strong>🛠️ <span data-en="Live Editor" data-ar="محرر حي">Live Editor</span></strong><span data-en="/ticket edit to change panels/channels without resetting." data-ar="/ticket edit لتعديل اللوحات والقنوات دون إعادة التثبيت.">/ticket edit, no reset.</span></div>
+                    <div class="ticket-item"><strong>🌐 <span data-en="Bilingual Wizard" data-ar="معالج ثنائي اللغة">Bilingual Wizard</span></strong><span data-en="Setup in English or Arabic." data-ar="الإعداد بالعربية أو الإنجليزية.">EN / AR setup wizard.</span></div>
+                </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- COMMANDS -->
-    <section id="commands">
-        <h2 class="section-title reveal" data-en="Bot Commands" data-ar="أوامر البوت">Bot Commands</h2>
-        <p class="section-sub reveal" data-en="Searchable list of all slash and prefix commands." data-ar="قائمة قابلة للبحث بجميع أوامر السلاش والبادئة.">Searchable list...</p>
-        <input type="text" class="cmd-search reveal" id="cmdSearch" placeholder="Search commands..." data-en-placeholder="Search commands..." data-ar-placeholder="ابحث عن أمر...">
-        <div class="cmd-grid" id="cmdGrid"></div>
-    </section>
+        <!-- Commands -->
+        <section id="commands" class="container">
+            <h2 class="section-title reveal" data-en="Commands" data-ar="الأوامر">Commands</h2>
+            <input type="text" class="cmd-search reveal" id="cmdSearch" data-en-placeholder="Search commands..." data-ar-placeholder="ابحث عن أمر..." placeholder="Search commands...">
+            <div class="cmd-grid" id="cmdGrid"></div>
+        </section>
 
-    <!-- LIVE STATS -->
-    <section id="stats">
-        <h2 class="section-title reveal" data-en="Live Bot Stats" data-ar="إحصائيات حية">Live Bot Stats</h2>
-        <div class="stats-grid reveal" id="statsContainer"></div>
-    </section>
+        <!-- Stats -->
+        <section id="stats" class="container">
+            <h2 class="section-title reveal" data-en="Live Stats" data-ar="إحصائيات حية">Live Stats</h2>
+            <div class="stats-grid reveal" id="statsContainer"></div>
+        </section>
 
-    <!-- DEVELOPER -->
-    <section id="dev">
-        <h2 class="section-title reveal" data-en="Lead Developer" data-ar="المطور الرئيسي">Lead Developer</h2>
-        <div class="dev-card reveal">
-            <div class="dev-avatar">A</div>
-            <div class="dev-info">
-                <h3>AERON</h3>
-                <div class="role" data-en="Core Engineer & Architect" data-ar="مهندس النواة والمصمم">Core Engineer & Architect</div>
-                <p data-en="Building reliable, high-performance Discord tools for communities that demand excellence. AERODYNE is crafted with precision — every system designed to scale, perform, and serve." data-ar="نبني أدوات ديسكورد موثوقة وعالية الأداء للمجتمعات التي تتطلب التميز. صُنع AERODYNE بدقة — كل نظام مصمم للتوسع والأداء والخدمة.">Building reliable, high-performance Discord tools...</p>
+        <!-- Developer -->
+        <section id="dev" class="container">
+            <h2 class="section-title reveal" data-en="Lead Developer" data-ar="المطور الرئيسي">Lead Developer</h2>
+            <div class="dev-card reveal">
+                <div class="dev-avatar">A</div>
+                <div class="dev-info">
+                    <h3>AERON</h3>
+                    <div class="role" data-en="Core Engineer & Architect" data-ar="مهندس النواة والمصمم">Core Engineer & Architect</div>
+                    <p data-en="Building reliable, high-performance Discord tools for communities that demand excellence. AERODYNE is crafted with precision — every system designed to scale, perform, and serve." data-ar="نبني أدوات ديسكورد موثوقة وعالية الأداء للمجتمعات التي تتطلب التميز. صُنع AERODYNE بدقة — كل نظام مصمم للتوسع والأداء والخدمة.">Building reliable, high-performance Discord tools...</p>
+                </div>
             </div>
-        </div>
-    </section>
-
+        </section>
+    </main>
     <footer>
-        <p>&copy; 2026 AERODYNE. <span data-en="All rights reserved." data-ar="جميع الحقوق محفوظة.">All rights reserved.</span> <a href="https://discord.gg/yourinvite">Discord</a></p>
+        <p>&copy; 2026 AERODYNE. <span data-en="All rights reserved." data-ar="جميع الحقوق محفوظة.">All rights reserved.</span> <a href="#" style="color:var(--c-accent);">Discord</a></p>
     </footer>
 
     <script>
         (function() {
-            // ── Theme toggling ──
-            const themeToggle = document.getElementById('themeToggle');
+            // ── THEME ──
             const body = document.body;
-            const icon = themeToggle.querySelector('.icon');
-            const label = themeToggle.querySelector('.label');
-            function setDark() {
-                body.classList.remove('light-mode');
-                icon.textContent = '🌙';
-                label.textContent = 'Dark';
-                localStorage.setItem('aerodyne-theme', 'dark');
-            }
-            function setLight() {
-                body.classList.add('light-mode');
-                icon.textContent = '☀️';
-                label.textContent = 'Light';
-                localStorage.setItem('aerodyne-theme', 'light');
-            }
-            themeToggle.addEventListener('click', () => {
-                body.classList.contains('light-mode') ? setDark() : setLight();
-            });
-            const savedTheme = localStorage.getItem('aerodyne-theme');
-            if (savedTheme === 'light') setLight(); else setDark();
+            const themeToggle = document.getElementById('themeToggle');
+            const themeIcon = document.getElementById('themeIcon');
+            const themeLabel = document.getElementById('themeLabel');
+            const setDark = () => { body.classList.remove('light'); body.classList.add('dark'); themeIcon.textContent='🌙'; themeLabel.textContent='Dark'; localStorage.setItem('theme','dark'); };
+            const setLight = () => { body.classList.add('light'); body.classList.remove('dark'); themeIcon.textContent='☀️'; themeLabel.textContent='Light'; localStorage.setItem('theme','light'); };
+            themeToggle.addEventListener('click', ()=> body.classList.contains('light') ? setDark() : setLight());
+            (localStorage.getItem('theme')==='light') ? setLight() : setDark();
 
-            // ── ANIMATED BACKGROUND ──
-            const canvas = document.getElementById('bgCanvas');
-            const ctx = canvas.getContext('2d');
-            let particles = [], w, h;
-            function resize() {
-                w = canvas.width = window.innerWidth;
-                h = canvas.height = window.innerHeight;
-                particles = [];
-                const count = Math.floor(w * h / 12000);
-                for (let i=0; i<count; i++) particles.push({ x: Math.random()*w, y: Math.random()*h, vx: (Math.random()-0.5)*0.3, vy: (Math.random()-0.5)*0.3, r: Math.random()*2+0.5, a: Math.random()*0.3+0.1 });
-            }
-            function draw() {
-                ctx.clearRect(0,0,w,h);
-                particles.forEach(p => {
-                    p.x += p.vx; p.y += p.vy;
-                    if(p.x<0)p.x=w; if(p.x>w)p.x=0; if(p.y<0)p.y=h; if(p.y>h)p.y=0;
-                    ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
-                    ctx.fillStyle = `rgba(79,70,229,${p.a})`; ctx.fill();
-                });
-                for(let i=0;i<particles.length;i++) {
-                    for(let j=i+1;j<particles.length;j++) {
-                        const dx = particles[i].x - particles[j].x, dy = particles[i].y - particles[j].y;
-                        const dist = Math.sqrt(dx*dx+dy*dy);
-                        if(dist<120) {
-                            ctx.beginPath(); ctx.moveTo(particles[i].x, particles[i].y); ctx.lineTo(particles[j].x, particles[j].y);
-                            ctx.strokeStyle = `rgba(79,70,229,${0.04*(1-dist/120)})`; ctx.stroke();
-                        }
-                    }
-                }
-                requestAnimationFrame(draw);
-            }
-            window.addEventListener('resize', resize);
-            resize(); draw();
-
-            // ── TRANSLATIONS (EN/AR only) ──
-            const translations = { en:{}, ar:{} };
+            // ── LANGUAGE ──
+            let lang = localStorage.getItem('lang') || 'en';
+            const translations = {};
             document.querySelectorAll('[data-en]').forEach(el => {
-                const k = el.dataset.en;
-                translations.en[k] = k;
-                translations.ar[k] = el.dataset.ar || k;
-                el.setAttribute('data-key', k);
+                const key = el.dataset.en;
+                translations.en = translations.en || {};
+                translations.ar = translations.ar || {};
+                translations.en[key] = key;
+                translations.ar[key] = el.dataset.ar || key;
+                el.setAttribute('data-key', key);
             });
-            let currentLang = 'en';
-            function switchLang(lang) {
-                currentLang = lang;
-                document.documentElement.lang = lang;
-                document.documentElement.dir = lang==='ar'?'rtl':'ltr';
+            const switchLang = (l) => {
+                lang = l;
+                document.documentElement.lang = l;
+                document.documentElement.dir = l === 'ar' ? 'rtl' : 'ltr';
                 document.querySelectorAll('[data-key]').forEach(el => {
                     const key = el.dataset.key;
-                    if(translations[lang] && translations[lang][key]) el.innerHTML = translations[lang][key];
+                    if (translations[l] && translations[l][key]) el.innerHTML = translations[l][key];
                 });
-                const search = document.getElementById('cmdSearch');
-                search.placeholder = search.dataset[lang+'-placeholder'] || 'Search...';
-                document.querySelectorAll('.lang-flag').forEach(b => b.classList.toggle('active', b.dataset.lang===lang));
-                localStorage.setItem('aerodyne-lang', lang);
-            }
-            document.getElementById('langFlags').addEventListener('click', e => {
-                const btn = e.target.closest('.lang-flag');
-                if(btn) switchLang(btn.dataset.lang);
-            });
-            const savedLang = localStorage.getItem('aerodyne-lang');
-            if(savedLang && translations[savedLang]) switchLang(savedLang);
+                document.getElementById('cmdSearch').placeholder = document.getElementById('cmdSearch').dataset[l+'-placeholder'] || 'Search...';
+                // Toggle flags & label
+                document.getElementById('langFlagUS').style.display = l==='en'?'block':'none';
+                document.getElementById('langFlagSA').style.display = l==='ar'?'block':'none';
+                document.getElementById('langLabel').textContent = l==='en'?'EN':'AR';
+                localStorage.setItem('lang', l);
+            };
+            document.getElementById('langToggle').addEventListener('click', ()=> switchLang(lang==='en'?'ar':'en'));
+            switchLang(lang);
 
-            // ── NAVIGATION ──
-            const navs = document.querySelectorAll('.nav-links a');
-            const hamburger = document.querySelector('.hamburger');
-            const navMenu = document.querySelector('.nav-links');
-            function setActive(id) { navs.forEach(a => a.classList.toggle('active', a.dataset.nav===id)); }
-            navs.forEach(a => a.addEventListener('click', function() { setActive(this.dataset.nav); navMenu.classList.remove('open'); }));
-            hamburger.addEventListener('click', ()=> navMenu.classList.toggle('open'));
-            document.addEventListener('click', e => { if(!e.target.closest('header') && navMenu.classList.contains('open')) navMenu.classList.remove('open'); });
-            let ticking = false;
+            // ── NAV ──
+            const navLinks = document.querySelectorAll('.nav a');
+            const menuBtn = document.getElementById('menuBtn');
+            const navMenu = document.getElementById('mainNav');
+            const setActive = (id) => navLinks.forEach(a => a.classList.toggle('active', a.dataset.nav===id));
+            navLinks.forEach(a => a.addEventListener('click', function(){ setActive(this.dataset.nav); navMenu.classList.remove('open'); }));
+            menuBtn.addEventListener('click', ()=> navMenu.classList.toggle('open'));
             window.addEventListener('scroll', ()=>{
-                if(!ticking) {
-                    requestAnimationFrame(()=>{
-                        let cur = 'hero';
-                        document.querySelectorAll('section').forEach(s => { if(s.getBoundingClientRect().top <= 120) cur = s.id; });
-                        setActive(cur);
-                        ticking = false;
-                    });
-                    ticking = true;
-                }
+                let cur = 'hero';
+                document.querySelectorAll('section').forEach(s => { if(s.getBoundingClientRect().top <= 100) cur = s.id; });
+                setActive(cur);
             });
 
-            // ── COMMANDS DATA (updated with ticket slash commands) ──
+            // ── COMMANDS ──
             const cmdData = [
                 { cat:'General', icon:'🤖', items:[ ['-prefix','Set custom prefix'], ['-status','Configure bot presence'] ] },
-                { cat:'Level System', icon:'📊', items:[ ['-rank','View your level card'], ['-top voice','Voice XP leaderboard'], ['-top text','Text XP leaderboard'], ['-setxpchannel','Route level-up cards'], ['-setuplevelsystem','Initialize level system'] ] },
-                { cat:'Ticket Slash Commands', icon:'🎫', items:[ ['/ticket setup','Run the setup wizard (owner/guild owner)'], ['/ticket edit','Edit panels/channels without reset'], ['/ticket stats','View staff claims & response times'], ['/close','Close current ticket (claimer/admin/owner)'] ] },
-                { cat:'Ticket Prefix Commands', icon:'🔧', items:[ ['-purgetickets','Owner-only full reset of ticket system'], ['-overrideclaim','Owner force-claim, deduct previous'], ['-withpoints','Owner deduct claim points'], ['-addpoints','Owner add claim points'], ['-totalclaims','View claim leaderboard'] ] },
-                { cat:'Moderation', icon:'🛡️', items:[ ['-kick','Kick a member'], ['-ban','Ban a member'], ['-timeout','Timeout with duration'], ['-untimeout','Remove timeout'], ['-setlogtimechannel','Set timeout log channel'], ['-setantispam','Toggle anti-spam per channel'] ] },
-                { cat:'Economy', icon:'💰', items:[ ['-bal','View XP, coins, bank'], ['-deposit','Deposit coins'], ['-withdraw','Withdraw coins'], ['-rob','50/50 rob attempt'], ['-raid','40% success raid'], ['-coinflip','PvP coin flip'], ['-setup','Configure tax & XP mode'] ] },
-                { cat:'Study Mode', icon:'📚', items:[ ['-studymode on','Enable quiet zone'], ['-studymode off','Disable & restore'], ['-studymode status','Check current state'] ] }
+                { cat:'Ticket Slash', icon:'🎫', items:[ ['/ticket setup','Run the setup wizard'], ['/ticket edit','Edit panels/channels'], ['/ticket stats','View staff statistics'], ['/close','Close current ticket'] ] },
+                { cat:'Ticket Prefix', icon:'🔧', items:[ ['-purgetickets','Owner-only full reset of ticket system'], ['-overrideclaim','Owner force-claim, deduct previous'], ['-withpoints','Owner deduct claim points'], ['-addpoints','Owner add claim points'], ['-totalclaims','View claim leaderboard'] ] },
+                { cat:'Moderation', icon:'🛡️', items:[ ['-kick','Kick a member'], ['-ban','Ban a member'], ['-timeout','Timeout with duration'], ['-untimeout','Remove timeout'] ] },
+                { cat:'Economy', icon:'💰', items:[ ['-bal','View coins, bank, XP'], ['-deposit','Deposit coins'], ['-withdraw','Withdraw coins'], ['-rob','Rob a user'], ['-raid','Raid attempt'], ['-coinflip','PvP coin flip'] ] },
+                { cat:'Study Mode', icon:'📚', items:[ ['-studymode on','Enable quiet zone'], ['-studymode off','Disable & restore'], ['-studymode status','Check state'] ] }
             ];
             const cmdGrid = document.getElementById('cmdGrid');
             cmdData.forEach(c => {
                 const div = document.createElement('div');
                 div.className = 'cmd-category reveal';
-                div.innerHTML = `<h3>${c.icon} <span data-en="${c.cat}" data-ar="${c.cat}">${c.cat}</span></h3><ul class="cmd-list">${c.items.map(i => `<li><span>${i[0]}</span> <span data-en="${i[1]}" data-ar="${i[1]}">${i[1]}</span></li>`).join('')}</ul>`;
+                div.innerHTML = `<h3>${c.icon} <span data-en="${c.cat}" data-ar="${c.cat}">${c.cat}</span></h3><ul class="cmd-list">${c.items.map(i => `<li><span>${i[0]}</span> ${i[1]}</li>`).join('')}</ul>`;
                 cmdGrid.appendChild(div);
             });
+            // Re‑translate new elements
             document.querySelectorAll('#cmdGrid [data-en]').forEach(el => {
-                const k = el.dataset.en;
-                if(!translations.en[k]) { translations.en[k]=k; translations.ar[k]=el.dataset.ar||k; el.setAttribute('data-key',k); }
+                const key = el.dataset.en;
+                if(!translations.en[key]) { translations.en[key]=key; translations.ar[key]=el.dataset.ar||key; el.setAttribute('data-key',key); }
+                if(lang) el.innerHTML = translations[lang][key] || key;
             });
-            if(currentLang) switchLang(currentLang);
 
             const cmdSearch = document.getElementById('cmdSearch');
             const cmdItems = document.querySelectorAll('.cmd-list li');
             cmdSearch.addEventListener('input', ()=>{
-                const q = cmdSearch.value.toLowerCase().trim();
+                const q = cmdSearch.value.toLowerCase();
                 cmdItems.forEach(li => li.classList.toggle('hidden', q!=='' && !li.textContent.toLowerCase().includes(q)));
-                document.querySelectorAll('.cmd-category').forEach(cat => {
-                    const visible = cat.querySelectorAll('.cmd-list li:not(.hidden)').length;
-                    cat.style.opacity = q!=='' && visible===0 ? '0.4' : '1';
-                });
             });
 
-            // ── LIVE STATS ──
-            const statsData = { servers:1247, users:45281, uptime:99.93, commands:8456, latency:24, tickets:3421 };
-            const statsItems = [
+            // ── STATS (dummy) ──
+            const stats = { servers:1247, users:45281, uptime:99.93, commands:8456, tickets:3421 };
+            const statLabels = [
                 { key:'servers', en:'Servers', ar:'خادم' },
                 { key:'users', en:'Users', ar:'مستخدم' },
                 { key:'uptime', en:'Uptime %', ar:'وقت التشغيل' },
                 { key:'commands', en:'Commands', ar:'أمر' },
-                { key:'tickets', en:'Tickets', ar:'تذكرة' },
-                { key:'latency', en:'Latency ms', ar:'سرعة الإستجابة' }
+                { key:'tickets', en:'Tickets Handled', ar:'التذاكر المنجزة' }
             ];
-            function buildStats() {
-                const container = document.getElementById('statsContainer');
-                container.innerHTML = '';
-                statsItems.forEach(item => {
-                    const card = document.createElement('div');
-                    card.className = 'stat-card';
-                    card.innerHTML = `<div class="num" id="num-${item.key}">${statsData[item.key].toLocaleString()}</div>
-                        <div class="lbl" data-en="${item.en}" data-ar="${item.ar}">${item.en}</div>`;
-                    container.appendChild(card);
-                });
-                document.querySelectorAll('#statsContainer .lbl').forEach(el => {
-                    const key = el.dataset.en;
-                    if(!translations.en[key]) { translations.en[key]=key; translations.ar[key]=el.dataset.ar||key; el.setAttribute('data-key',key); }
-                    if(currentLang) el.textContent = translations[currentLang][key] || key;
-                });
-            }
-            function updateStats() {
-                statsData.servers += Math.floor(Math.random()*3)-1;
-                statsData.users += Math.floor(Math.random()*12)-4;
-                statsData.uptime = parseFloat((99.9 + Math.random()*0.2).toFixed(2));
-                statsData.latency = 22 + Math.floor(Math.random()*8);
-                statsData.commands += Math.floor(Math.random()*7);
-                statsData.tickets += Math.floor(Math.random()*3);
-                const el = id => document.getElementById('num-'+id);
-                if(el('servers')) el('servers').textContent = statsData.servers.toLocaleString();
-                if(el('users')) el('users').textContent = statsData.users.toLocaleString();
-                if(el('uptime')) el('uptime').textContent = statsData.uptime+'%';
-                if(el('commands')) el('commands').textContent = statsData.commands.toLocaleString();
-                if(el('tickets')) el('tickets').textContent = statsData.tickets.toLocaleString();
-                if(el('latency')) el('latency').textContent = statsData.latency+'ms';
-            }
-            buildStats();
-            setInterval(updateStats, 3000);
+            const container = document.getElementById('statsContainer');
+            statLabels.forEach(s => {
+                const div = document.createElement('div');
+                div.className = 'stat-box';
+                div.innerHTML = `<div class="num">${stats[s.key].toLocaleString()}${s.key==='uptime'?'%':''}</div><div class="lbl" data-en="${s.en}" data-ar="${s.ar}">${s.en}</div>`;
+                container.appendChild(div);
+            });
+            // translate stat labels
+            document.querySelectorAll('#statsContainer .lbl').forEach(el => { if(lang) el.textContent = translations[lang][el.dataset.en] || el.textContent; });
 
             // ── SCROLL REVEAL ──
             const reveals = document.querySelectorAll('.reveal');
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => { if(entry.isIntersecting) entry.target.classList.add('visible'); });
-            }, { threshold: 0.15 });
+            const observer = new IntersectionObserver((entries) => entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); }), { threshold:0.15 });
             reveals.forEach(el => observer.observe(el));
-
-            console.log('%c🤖 AERODYNE %cv1.0 Ticket System Ready',
-                'background:#4F46E5;color:white;padding:4px 8px;border-radius:4px;',
-                'color:#94A3B8;');
         })();
     </script>
 </body>
