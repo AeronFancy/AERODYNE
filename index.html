@@ -1,418 +1,291 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AERODYNE — Discord Bot</title>
-    <meta name="description" content="AERODYNE — Fully automated ticket system, dual XP, economy, moderation & study mode. Built for serious communities.">
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🤖</text></svg>">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800;14..32,900&family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <meta name="description" content="Meet [Bot Name] - The ultimate Discord bot for moderation, fun, and utility. Enhance your server today!">
+    <meta name="theme-color" content="#5865F2">
+    <title>[Bot Name] | Elevate Your Discord Server</title>
+    
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
+        /* --- CSS Variables & Theming --- */
         :root {
-            --c-bg: #0c0f14;
-            --c-surface: #161a22;
-            --c-surface2: #1e2330;
-            --c-border: rgba(255,255,255,0.06);
-            --c-text: #f1f5f9;
-            --c-text2: #cbd5e1;
-            --c-muted: #94a3b8;
-            --c-accent: #6366f1;
-            --c-accent2: #818cf8;
-            --c-soft: rgba(99,102,241,0.08);
-            --c-card-shadow: 0 10px 30px -10px rgba(0,0,0,0.4);
-            --radius: 16px;
-            --transition: 0.25s ease;
+            --bg-primary: #f4f5f7;
+            --bg-secondary: #ffffff;
+            --text-primary: #23272a;
+            --text-secondary: #4f545c;
+            --accent-color: #5865F2; /* Discord Blurple */
+            --accent-hover: #4752C4;
+            --transition-speed: 0.3s;
         }
-        body.light {
-            --c-bg: #f8fafc;
-            --c-surface: #ffffff;
-            --c-surface2: #f1f5f9;
-            --c-border: rgba(0,0,0,0.08);
-            --c-text: #0f172a;
-            --c-text2: #334155;
-            --c-muted: #64748b;
-            --c-soft: rgba(99,102,241,0.06);
-            --c-card-shadow: 0 10px 30px -10px rgba(0,0,0,0.08);
+
+        [data-theme="dark"] {
+            --bg-primary: #23272a;
+            --bg-secondary: #2c2f33;
+            --text-primary: #ffffff;
+            --text-secondary: #b9bbbe;
         }
-        * { margin:0; padding:0; box-sizing:border-box; }
-        html { scroll-behavior: smooth; scroll-padding-top: 80px; }
+
+        /* --- Base Styles --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            scroll-behavior: smooth;
+        }
+
         body {
-            font-family: 'Inter', sans-serif;
-            background: var(--c-bg);
-            color: var(--c-text);
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            transition: background-color var(--transition-speed), color var(--transition-speed);
             line-height: 1.6;
-            transition: background 0.3s, color 0.3s;
         }
-        body[lang="ar"] { font-family: 'Cairo', sans-serif; }
-        .container { max-width:1200px; margin:0 auto; padding:0 24px; }
 
-        /* Header */
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        /* --- Typography --- */
+        h1, h2, h3 { color: var(--text-primary); margin-bottom: 1rem; }
+        p { color: var(--text-secondary); margin-bottom: 1rem; }
+
+        /* --- Navigation --- */
         header {
-            position: sticky; top:0; z-index:100;
-            background: var(--c-surface); border-bottom:1px solid var(--c-border);
-            backdrop-filter: blur(12px); background: color-mix(in srgb, var(--c-surface) 85%, transparent);
-        }
-        .header-inner {
-            display:flex; align-items:center; justify-content:space-between;
-            height:70px; gap:20px;
-        }
-        .logo {
-            font-weight:800; font-size:1.5rem; color:var(--c-text); letter-spacing:-0.5px;
-            display:flex; align-items:center; gap:6px;
-        }
-        .logo span { color: var(--c-accent); }
-        .nav { display:flex; gap:4px; list-style:none; }
-        .nav a {
-            text-decoration:none; color:var(--c-muted); font-weight:500;
-            padding:8px 14px; border-radius:10px; font-size:0.85rem;
-            transition: all 0.2s; white-space:nowrap;
-        }
-        .nav a:hover { background:var(--c-soft); color:var(--c-text); }
-        .nav a.active { background:var(--c-soft); color:var(--c-accent); font-weight:600; }
-        .header-actions { display:flex; align-items:center; gap:10px; }
-        .lang-switch, .theme-switch {
-            background:var(--c-surface2); border:1px solid var(--c-border);
-            border-radius:10px; padding:8px 12px; cursor:pointer;
-            display:flex; align-items:center; gap:6px;
-            font-family:inherit; font-size:0.8rem; font-weight:600;
-            color:var(--c-text2); transition:0.2s;
-        }
-        .lang-switch:hover, .theme-switch:hover { background:var(--c-soft); border-color:var(--c-accent); }
-        .lang-switch svg { width:18px; height:12px; border-radius:2px; }
-        .hamburger { display:none; background:none; border:none; color:var(--c-text); font-size:1.6rem; cursor:pointer; }
-        @media(max-width:768px) {
-            .hamburger { display:block; }
-            .nav { display:none; flex-direction:column; position:absolute; top:70px; left:0; right:0; background:var(--c-surface); padding:16px; border-bottom:1px solid var(--c-border); }
-            .nav.open { display:flex; }
-            .nav a { width:100%; }
+            background-color: var(--bg-secondary);
+            padding: 1rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: background-color var(--transition-speed);
         }
 
-        /* Sections */
-        section { padding:80px 0; }
-        .section-title {
-            font-size: clamp(1.8rem, 4vw, 2.4rem); font-weight:800;
-            letter-spacing:-1px; margin-bottom:12px; color:var(--c-text);
-        }
-        .section-sub { color:var(--c-muted); max-width:600px; font-size:1rem; margin-bottom:40px; }
+        .logo { font-size: 1.5rem; font-weight: bold; display: flex; align-items: center; gap: 0.5rem; }
+        
+        nav ul { display: flex; list-style: none; gap: 2rem; }
+        nav a:hover { color: var(--accent-color); }
 
-        /* Hero */
-        .hero-grid { display:grid; grid-template-columns:1fr 1fr; gap:50px; align-items:center; }
-        .hero-text h1 { font-size: clamp(2.8rem, 6vw, 4rem); font-weight:900; line-height:1.1; }
-        .hero-text h1 span { color:var(--c-accent); }
-        .hero-text p { color:var(--c-muted); font-size:1.1rem; margin:20px 0 30px; }
-        .hero-buttons { display:flex; gap:12px; flex-wrap:wrap; }
+        .theme-toggle {
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: color var(--transition-speed);
+        }
+
+        /* --- Hero Section --- */
+        .hero {
+            text-align: center;
+            padding: 6rem 2rem;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+        }
+
+        .hero h1 { font-size: 3rem; }
+        .hero p { font-size: 1.2rem; max-width: 600px; margin: 0 auto 2rem; }
+
         .btn {
-            display:inline-flex; align-items:center; gap:8px;
-            padding:14px 28px; border-radius:100px; font-weight:700;
-            text-decoration:none; transition:0.2s; font-size:0.95rem;
-        }
-        .btn-primary { background:var(--c-accent); color:#fff; box-shadow:0 8px 24px rgba(99,102,241,0.3); }
-        .btn-primary:hover { background:var(--c-accent2); transform:translateY(-2px); }
-        .btn-secondary { background:var(--c-soft); color:var(--c-text); border:1px solid var(--c-border); }
-        .btn-secondary:hover { background:var(--c-surface2); }
-        .hero-illustration {
-            display:flex; justify-content:center; align-items:center;
-            background:linear-gradient(135deg, var(--c-accent2) 0%, var(--c-accent) 100%);
-            border-radius:24px; padding:40px; color:#fff; font-size:5rem; box-shadow:0 20px 40px rgba(99,102,241,0.25);
-        }
-        @media(max-width:768px) {
-            .hero-grid { grid-template-columns:1fr; text-align:center; }
-            .hero-illustration { order:-1; max-width:60%; margin:0 auto; }
-            .hero-buttons { justify-content:center; }
+            display: inline-block;
+            padding: 0.8rem 2rem;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: background-color var(--transition-speed), transform 0.2s;
+            cursor: pointer;
+            border: none;
         }
 
-        /* Feature cards */
-        .features-grid {
-            display:grid; grid-template-columns:repeat(auto-fit, minmax(260px,1fr));
-            gap:24px; margin-top:40px;
+        .btn-primary {
+            background-color: var(--accent-color);
+            color: white;
         }
-        .feature-card {
-            background:var(--c-surface); border:1px solid var(--c-border);
-            border-radius:var(--radius); padding:28px; transition:0.25s;
-            box-shadow: var(--c-card-shadow);
+
+        .btn-primary:hover {
+            background-color: var(--accent-hover);
+            transform: translateY(-2px);
         }
-        .feature-card:hover { transform:translateY(-6px); border-color:var(--c-accent); }
-        .feature-card .icon { font-size:2rem; margin-bottom:16px; }
-        .feature-card h3 { font-size:1.15rem; margin-bottom:8px; color:var(--c-text); }
-        .feature-card p { color:var(--c-muted); font-size:0.9rem; }
 
-        /* Ticket system showcase */
-        .ticket-showcase {
-            background:var(--c-surface); border:1px solid var(--c-border);
-            border-radius:var(--radius); padding:40px; margin-top:60px;
-            box-shadow: var(--c-card-shadow);
+        .btn-secondary {
+            background-color: transparent;
+            border: 2px solid var(--accent-color);
+            color: var(--accent-color);
+            margin-left: 1rem;
         }
-        .ticket-showcase h2 { font-size:1.8rem; margin-bottom:20px; }
-        .ticket-grid {
-            display:grid; grid-template-columns:repeat(auto-fit, minmax(220px,1fr));
-            gap:16px; margin-top:24px;
+
+        .btn-secondary:hover {
+            background-color: var(--accent-color);
+            color: white;
         }
-        .ticket-item { padding:16px; background:var(--c-surface2); border-radius:12px; border-left:4px solid var(--c-accent); }
-        .ticket-item strong { display:block; color:var(--c-accent); margin-bottom:6px; font-size:0.95rem; }
-        .ticket-item span { font-size:0.85rem; color:var(--c-muted); }
 
-        /* Commands */
-        .cmd-search {
-            width:100%; max-width:400px; padding:14px 20px; border-radius:100px;
-            border:1px solid var(--c-border); background:var(--c-surface);
-            color:var(--c-text); font-family:inherit; font-size:0.95rem;
-            outline:none; margin-bottom:30px; transition:0.2s;
+        /* --- Features Section --- */
+        .features { padding: 4rem 5%; text-align: center; }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
         }
-        .cmd-search:focus { border-color:var(--c-accent); }
-        .cmd-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(280px,1fr)); gap:20px; }
-        .cmd-category { background:var(--c-surface); border:1px solid var(--c-border); border-radius:var(--radius); padding:24px; }
-        .cmd-category h3 { color:var(--c-text); margin-bottom:16px; }
-        .cmd-list li {
-            padding:10px 0; border-bottom:1px solid var(--c-border);
-            font-family:'Courier New', monospace; font-size:0.85rem;
-            color:var(--c-text2); list-style:none; transition:0.2s;
+
+        .card {
+            background-color: var(--bg-secondary);
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            transition: transform 0.3s, background-color var(--transition-speed);
         }
-        .cmd-list li:hover { color:var(--c-accent); padding-left:6px; }
-        .cmd-list li:last-child { border:0; }
-        .cmd-list li span { margin-right:8px; font-weight:700; color:var(--c-accent); }
-        .cmd-list li.hidden { display:none; }
 
-        /* Stats */
-        .stats-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(140px,1fr)); gap:16px; }
-        .stat-box { background:var(--c-surface); border:1px solid var(--c-border); border-radius:var(--radius); text-align:center; padding:24px 16px; }
-        .stat-box .num { font-size:2.2rem; font-weight:900; color:var(--c-accent); }
-        .stat-box .lbl { font-size:0.8rem; color:var(--c-muted); text-transform:uppercase; margin-top:4px; }
+        .card:hover { transform: translateY(-5px); }
+        .card i { font-size: 3rem; color: var(--accent-color); margin-bottom: 1rem; }
 
-        /* Dev */
-        .dev-card {
-            display:flex; align-items:center; gap:24px; max-width:600px;
-            background:var(--c-surface); border:1px solid var(--c-border);
-            border-radius:var(--radius); padding:32px; margin:30px auto;
+        /* --- Commands Section --- */
+        .commands { padding: 4rem 5%; background-color: var(--bg-secondary); }
+        .commands h2 { text-align: center; }
+        .command-list { max-width: 800px; margin: 0 auto; }
+        .command-item {
+            background-color: var(--bg-primary);
+            padding: 1rem;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
-        .dev-avatar { width:80px; height:80px; background:linear-gradient(135deg, var(--c-accent), #818cf8); border-radius:50%; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:900; font-size:2rem; }
-        .dev-info h3 { color:var(--c-text); }
-        .dev-info .role { color:var(--c-accent); font-weight:600; font-size:0.85rem; margin-bottom:8px; }
-        .dev-info p { color:var(--c-muted); }
+        .cmd-name { font-family: monospace; font-weight: bold; color: var(--accent-color); background: rgba(88, 101, 242, 0.1); padding: 0.2rem 0.5rem; border-radius: 3px;}
 
-        footer { border-top:1px solid var(--c-border); text-align:center; padding:28px; color:var(--c-muted); font-size:0.85rem; }
+        /* --- Footer --- */
+        footer {
+            background-color: var(--bg-secondary);
+            text-align: center;
+            padding: 2rem;
+            border-top: 1px solid rgba(0,0,0,0.1);
+        }
 
-        /* Animations */
-        .reveal { opacity:0; transform:translateY(30px); transition:0.6s ease; }
-        .reveal.visible { opacity:1; transform:translateY(0); }
-
-        /* RTL */
-        body[dir="rtl"] .cmd-list li:hover { padding-left:0; padding-right:6px; }
-        body[dir="rtl"] .cmd-list li span { margin-right:0; margin-left:8px; }
+        /* --- Responsive Design --- */
+        @media (max-width: 768px) {
+            nav ul { display: none; /* Can be replaced with a hamburger menu */ }
+            .hero h1 { font-size: 2rem; }
+            .btn-secondary { margin-left: 0; margin-top: 1rem; display: block; width: fit-content; margin: 1rem auto 0;}
+        }
     </style>
 </head>
-<body class="dark">
+<body data-theme="dark">
+
     <header>
-        <div class="container header-inner">
-            <div class="logo">AERO<span>DYNE</span></div>
-            <button class="hamburger" id="menuBtn">☰</button>
-            <ul class="nav" id="mainNav">
-                <li><a href="#hero" class="active" data-nav="hero" data-en="Home" data-ar="الرئيسية">Home</a></li>
-                <li><a href="#features" data-nav="features" data-en="Features" data-ar="الميزات">Features</a></li>
-                <li><a href="#ticketsystem" data-nav="ticketsystem" data-en="Ticket System" data-ar="نظام التذاكر">Ticket System</a></li>
-                <li><a href="#commands" data-nav="commands" data-en="Commands" data-ar="الأوامر">Commands</a></li>
-                <li><a href="#stats" data-nav="stats" data-en="Stats" data-ar="إحصائيات">Stats</a></li>
-                <li><a href="#dev" data-nav="dev" data-en="Developer" data-ar="المطور">Developer</a></li>
-            </ul>
-            <div class="header-actions">
-                <button class="lang-switch" id="langToggle" title="Switch Language">
-                    <svg id="langFlagUS" viewBox="0 0 20 14" width="20" height="14"><rect width="20" height="14" fill="#B22234"/><path d="M0 0h8v7H0z" fill="#3C3B6E"/><g fill="#FFF"><circle cx="1.5" cy="1.5" r="0.4"/><circle cx="3.5" cy="1.5" r="0.4"/><circle cx="5.5" cy="1.5" r="0.4"/><circle cx="6.5" cy="1.5" r="0.4"/><circle cx="2.5" cy="3.5" r="0.4"/><circle cx="4.5" cy="3.5" r="0.4"/><circle cx="1.5" cy="5.5" r="0.4"/><circle cx="3.5" cy="5.5" r="0.4"/></g><rect y="7" width="20" height="1" fill="#FFF"/><rect y="9" width="20" height="1" fill="#FFF"/><rect y="11" width="20" height="1" fill="#FFF"/></svg>
-                    <svg id="langFlagSA" viewBox="0 0 20 14" width="20" height="14" style="display:none;"><rect width="20" height="14" fill="#006C35"/><text x="10" y="11" text-anchor="middle" fill="#FFF" font-size="8" font-weight="bold">﷽</text></svg>
-                    <span id="langLabel">EN</span>
-                </button>
-                <button class="theme-switch" id="themeToggle" title="Toggle Theme">
-                    <span id="themeIcon">🌙</span>
-                    <span id="themeLabel">Dark</span>
-                </button>
-            </div>
+        <div class="logo">
+            <i class="fa-solid fa-robot" style="color: var(--accent-color);"></i>
+            [Bot Name]
         </div>
+        <nav>
+            <ul>
+                <li><a href="#features">Features</a></li>
+                <li><a href="#commands">Commands</a></li>
+                <li><a href="#faq">FAQ</a></li>
+            </ul>
+        </nav>
+        <button class="theme-toggle" id="themeToggle" aria-label="Toggle Dark/Light Mode">
+            <i class="fa-solid fa-sun"></i>
+        </button>
     </header>
+
     <main>
-        <!-- Hero -->
-        <section id="hero" class="container">
-            <div class="hero-grid">
-                <div class="hero-text">
-                    <h1><span data-en="Power Up Your" data-ar="قم بتعزيز">Power Up Your</span> <span style="color:var(--c-accent)">Server</span></h1>
-                    <p data-en="AERODYNE — Fully automated ticket system, dual XP, economy, moderation & study mode. Built for serious communities." data-ar="AERODYNE — نظام تذاكر آلي كامل، XP مزدوج، اقتصاد، إدارة، ووضع دراسة. مصمم للمجتمعات الجادة.">AERODYNE — Fully automated ticket system, dual XP, economy, moderation & study mode. Built for serious communities.</p>
-                    <div class="hero-buttons">
-                        <a href="https://discord.com/oauth2/authorize?client_id=1488701920452546691&permissions=8&integration_type=0&scope=bot" class="btn btn-primary">➕ <span data-en="Add to Discord" data-ar="أضف إلى ديسكورد">Add to Discord</span></a>
-                        <a href="#ticketsystem" class="btn btn-secondary">🎫 <span data-en="Explore Tickets" data-ar="استعرض التذاكر">Explore Tickets</span></a>
-                    </div>
-                </div>
-                <div class="hero-illustration">🤖</div>
+        <section class="hero">
+            <h1>Level up your Discord Community</h1>
+            <p>The all-in-one Discord bot featuring advanced moderation, custom economy, and engaging leveling systems. Trusted by thousands of servers.</p>
+            <div>
+                <!-- Replace with your actual Discord OAuth2 Link -->
+                <a href="https://discord.com/oauth2/authorize?client_id=YOUR_CLIENT_ID&permissions=8&scope=bot" target="_blank" rel="noopener noreferrer" class="btn btn-primary">
+                    <i class="fa-brands fa-discord"></i> Invite Bot
+                </a>
+                <a href="#commands" class="btn btn-secondary">View Commands</a>
             </div>
         </section>
 
-        <!-- Features -->
-        <section id="features" class="container">
-            <h2 class="section-title reveal" data-en="Core Features" data-ar="الميزات الأساسية">Core Features</h2>
-            <p class="section-sub reveal" data-en="Everything your community needs to thrive." data-ar="كل ما يحتاجه مجتمعك للازدهار.">Everything your community needs to thrive.</p>
-            <div class="features-grid">
-                <div class="feature-card reveal"><div class="icon">📊</div><h3 data-en="Dual XP" data-ar="نظام XP مزدوج">Dual XP</h3><p data-en="Text & Voice XP pools with exponential curves. 1-min cooldown, 60-min voice awards." data-ar="مجمعات XP للنصوص والصوت مع منحنيات أسية. تبريد 1د للنصوص، 60د للصوت.">Text & Voice XP pools...</p></div>
-                <div class="feature-card reveal"><div class="icon">🎫</div><h3 data-en="Ticket System v1.0" data-ar="نظام التذاكر">Ticket System v1.0</h3><p data-en="Multi‑panel, role‑locked, limits, auto‑close, transcripts, claims, ratings, stats." data-ar="لوحات، قفل بالأدوار، حدود، إغلاق تلقائي، نسخ، مطالبات، تقييم، إحصائيات.">Multi‑panel, role‑locked...</p></div>
-                <div class="feature-card reveal"><div class="icon">🛡️</div><h3 data-en="Moderation" data-ar="الإدارة">Moderation</h3><p data-en="Kick, ban, timeout with bilingual duration. Anti‑spam & audit logging." data-ar="طرد، حظر، مهلة مع دعم المدد. مضاد سبام وتسجيل تدقيق.">Kick, ban, timeout...</p></div>
-                <div class="feature-card reveal"><div class="icon">💰</div><h3 data-en="Economy" data-ar="الاقتصاد">Economy</h3><p data-en="Coins, bank, rob, raid, coinflip, wealth tax. Full setup command." data-ar="عملات، بنك، سرقة، غارة، قلب عملة، ضريبة ثروة. أمر إعداد كامل.">Coins, bank, rob, raid...</p></div>
-                <div class="feature-card reveal"><div class="icon">📚</div><h3 data-en="Study Mode" data-ar="وضع الدراسة">Study Mode</h3><p data-en="Quiet zone on voice channels. Renames channel, mutes @everyone." data-ar="منطقة هادئة على قنوات الصوت. تعيد تسمية القناة، تكتم الجميع.">Quiet zone on voice channels...</p></div>
-                <div class="feature-card reveal"><div class="icon">🎨</div><h3 data-en="Level Cards" data-ar="بطاقات المستوى">Level Cards</h3><p data-en="900×300px canvas cards with lunar background, HUD overlay, dual progress bars." data-ar="بطاقات 900×300 بخلفية قمرية، غطاء HUD، أشرطة تقدم مزدوجة.">900×300px canvas cards...</p></div>
-            </div>
-
-            <!-- Ticket System Showcase -->
-            <div id="ticketsystem" class="ticket-showcase reveal">
-                <h2>🎟️ <span data-en="Ticket System — v1.0 Core" data-ar="نظام التذاكر — الإصدار الأول">Ticket System — v1.0 Core</span></h2>
-                <div class="ticket-grid">
-                    <div class="ticket-item"><strong>🎛️ <span data-en="Multi‑panel" data-ar="لوحات متعددة">Multi‑panel</span></strong><span data-en="Up to 5 categories, each with custom name, emoji, color." data-ar="حتى 5 فئات، كل منها باسم وإيموجي ولون.">Up to 5 categories...</span></div>
-                    <div class="ticket-item"><strong>🔒 <span data-en="Role‑locked" data-ar="قفل بالأدوار">Role‑locked</span></strong><span data-en="Only assigned roles can see and manage tickets." data-ar="فقط الأدوار المعينة تستطيع رؤية وإدارة التذاكر.">Only assigned roles see tickets.</span></div>
-                    <div class="ticket-item"><strong>👥 <span data-en="Per‑user limits" data-ar="حدود لكل مستخدم">Per‑user limits</span></strong><span data-en="1–5 open tickets per user per panel." data-ar="1–5 تذاكر مفتوحة لكل مستخدم في اللوحة.">1–5 open tickets per user.</span></div>
-                    <div class="ticket-item"><strong>⏰ <span data-en="Auto‑close" data-ar="إغلاق تلقائي">Auto‑close</span></strong><span data-en="Close inactive tickets after configurable hours." data-ar="إغلاق التذاكر غير النشطة بعد ساعات محددة.">Close inactive tickets after hours.</span></div>
-                    <div class="ticket-item"><strong>📄 <span data-en="Transcripts" data-ar="النسخ">Transcripts</span></strong><span data-en="Clean .txt file sent to a dedicated channel." data-ar="ملف .txt نظيف يُرسل إلى قناة مخصصة.">Clean .txt transcript file.</span></div>
-                    <div class="ticket-item"><strong>🎟️ <span data-en="Claim / Unclaim" data-ar="مطالبة / إلغاء">Claim / Unclaim</span></strong><span data-en="Staff claim tickets, earn points. Logs sent to staff channel." data-ar="الموظفون يطالبون بالتذاكر ويكسبون نقاطاً. السجلات تُرسل.">Claim tickets, earn points.</span></div>
-                    <div class="ticket-item"><strong>⭐ <span data-en="Rating DM" data-ar="رسالة تقييم">Rating DM</span></strong><span data-en="Users rate support via DM; logged in rating channel." data-ar="المستخدمون يقيمون الدعم عبر رسالة، تُسجل في قناة.">Rating via DM, logged.</span></div>
-                    <div class="ticket-item"><strong>📊 <span data-en="Staff Stats" data-ar="إحصائيات">Staff Stats</span></strong><span data-en="/ticket stats shows claims & average response time." data-ar="/ticket stats يعرض عدد المطالبات وسرعة الرد.">/ticket stats for insights.</span></div>
-                    <div class="ticket-item"><strong>🛠️ <span data-en="Live Editor" data-ar="محرر حي">Live Editor</span></strong><span data-en="/ticket edit to change panels/channels without resetting." data-ar="/ticket edit لتعديل اللوحات والقنوات دون إعادة التثبيت.">/ticket edit, no reset.</span></div>
-                    <div class="ticket-item"><strong>🌐 <span data-en="Bilingual Wizard" data-ar="معالج ثنائي اللغة">Bilingual Wizard</span></strong><span data-en="Setup in English or Arabic." data-ar="الإعداد بالعربية أو الإنجليزية.">EN / AR setup wizard.</span></div>
+        <section id="features" class="features">
+            <h2>Why Choose [Bot Name]?</h2>
+            <div class="grid">
+                <div class="card">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    <h3>Auto-Moderation</h3>
+                    <p>Keep your server safe with automated filters, anti-spam mechanisms, and robust logging features.</p>
+                </div>
+                <div class="card">
+                    <i class="fa-solid fa-coins"></i>
+                    <h3>Global Economy</h3>
+                    <p>Engage your community with a deeply customizable economy system, daily rewards, and leaderboards.</p>
+                </div>
+                <div class="card">
+                    <i class="fa-solid fa-music"></i>
+                    <h3>High-Quality Music</h3>
+                    <p>Play your favorite tracks with zero lag, featuring support for Spotify, YouTube, and SoundCloud.</p>
                 </div>
             </div>
         </section>
 
-        <!-- Commands -->
-        <section id="commands" class="container">
-            <h2 class="section-title reveal" data-en="Commands" data-ar="الأوامر">Commands</h2>
-            <input type="text" class="cmd-search reveal" id="cmdSearch" data-en-placeholder="Search commands..." data-ar-placeholder="ابحث عن أمر..." placeholder="Search commands...">
-            <div class="cmd-grid" id="cmdGrid"></div>
-        </section>
-
-        <!-- Stats -->
-        <section id="stats" class="container">
-            <h2 class="section-title reveal" data-en="Live Stats" data-ar="إحصائيات حية">Live Stats</h2>
-            <div class="stats-grid reveal" id="statsContainer"></div>
-        </section>
-
-        <!-- Developer -->
-        <section id="dev" class="container">
-            <h2 class="section-title reveal" data-en="Lead Developer" data-ar="المطور الرئيسي">Lead Developer</h2>
-            <div class="dev-card reveal">
-                <div class="dev-avatar">A</div>
-                <div class="dev-info">
-                    <h3>AERON</h3>
-                    <div class="role" data-en="Core Engineer & Architect" data-ar="مهندس النواة والمصمم">Core Engineer & Architect</div>
-                    <p data-en="Building reliable, high-performance Discord tools for communities that demand excellence. AERODYNE is crafted with precision — every system designed to scale, perform, and serve." data-ar="نبني أدوات ديسكورد موثوقة وعالية الأداء للمجتمعات التي تتطلب التميز. صُنع AERODYNE بدقة — كل نظام مصمم للتوسع والأداء والخدمة.">Building reliable, high-performance Discord tools...</p>
+        <section id="commands" class="commands">
+            <h2>Popular Commands</h2>
+            <p style="text-align: center;">A quick look at what [Bot Name] can do. Type <code>/help</code> in Discord for the full list.</p>
+            <div class="command-list">
+                <div class="command-item">
+                    <span class="cmd-name">/ban</span>
+                    <span>Bans a user from the server and logs the reason.</span>
+                </div>
+                <div class="command-item">
+                    <span class="cmd-name">/play</span>
+                    <span>Plays the requested song or adds it to the queue.</span>
+                </div>
+                <div class="command-item">
+                    <span class="cmd-name">/balance</span>
+                    <span>Checks your current economy balance and bank status.</span>
                 </div>
             </div>
         </section>
     </main>
+
     <footer>
-        <p>&copy; 2026 AERODYNE. <span data-en="All rights reserved." data-ar="جميع الحقوق محفوظة.">All rights reserved.</span> <a href="#" style="color:var(--c-accent);">Discord</a></p>
+        <p>&copy; 2026 [Bot Name]. Not affiliated with Discord.</p>
+        <p style="margin-top: 0.5rem; font-size: 0.9rem;">
+            <a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a> | <a href="#">Support Server</a>
+        </p>
     </footer>
 
     <script>
-        (function() {
-            // ── THEME ──
-            const body = document.body;
-            const themeToggle = document.getElementById('themeToggle');
-            const themeIcon = document.getElementById('themeIcon');
-            const themeLabel = document.getElementById('themeLabel');
-            const setDark = () => { body.classList.remove('light'); body.classList.add('dark'); themeIcon.textContent='🌙'; themeLabel.textContent='Dark'; localStorage.setItem('theme','dark'); };
-            const setLight = () => { body.classList.add('light'); body.classList.remove('dark'); themeIcon.textContent='☀️'; themeLabel.textContent='Light'; localStorage.setItem('theme','light'); };
-            themeToggle.addEventListener('click', ()=> body.classList.contains('light') ? setDark() : setLight());
-            (localStorage.getItem('theme')==='light') ? setLight() : setDark();
+        // Theme Toggle Logic
+        const themeToggleBtn = document.getElementById('themeToggle');
+        const body = document.body;
+        const icon = themeToggleBtn.querySelector('i');
 
-            // ── LANGUAGE ──
-            let lang = localStorage.getItem('lang') || 'en';
-            const translations = {};
-            document.querySelectorAll('[data-en]').forEach(el => {
-                const key = el.dataset.en;
-                translations.en = translations.en || {};
-                translations.ar = translations.ar || {};
-                translations.en[key] = key;
-                translations.ar[key] = el.dataset.ar || key;
-                el.setAttribute('data-key', key);
-            });
-            const switchLang = (l) => {
-                lang = l;
-                document.documentElement.lang = l;
-                document.documentElement.dir = l === 'ar' ? 'rtl' : 'ltr';
-                document.querySelectorAll('[data-key]').forEach(el => {
-                    const key = el.dataset.key;
-                    if (translations[l] && translations[l][key]) el.innerHTML = translations[l][key];
-                });
-                document.getElementById('cmdSearch').placeholder = document.getElementById('cmdSearch').dataset[l+'-placeholder'] || 'Search...';
-                // Toggle flags & label
-                document.getElementById('langFlagUS').style.display = l==='en'?'block':'none';
-                document.getElementById('langFlagSA').style.display = l==='ar'?'block':'none';
-                document.getElementById('langLabel').textContent = l==='en'?'EN':'AR';
-                localStorage.setItem('lang', l);
-            };
-            document.getElementById('langToggle').addEventListener('click', ()=> switchLang(lang==='en'?'ar':'en'));
-            switchLang(lang);
+        // Check for saved user preference in localStorage
+        const currentTheme = localStorage.getItem('theme');
+        if (currentTheme) {
+            body.setAttribute('data-theme', currentTheme);
+            updateIcon(currentTheme);
+        }
 
-            // ── NAV ──
-            const navLinks = document.querySelectorAll('.nav a');
-            const menuBtn = document.getElementById('menuBtn');
-            const navMenu = document.getElementById('mainNav');
-            const setActive = (id) => navLinks.forEach(a => a.classList.toggle('active', a.dataset.nav===id));
-            navLinks.forEach(a => a.addEventListener('click', function(){ setActive(this.dataset.nav); navMenu.classList.remove('open'); }));
-            menuBtn.addEventListener('click', ()=> navMenu.classList.toggle('open'));
-            window.addEventListener('scroll', ()=>{
-                let cur = 'hero';
-                document.querySelectorAll('section').forEach(s => { if(s.getBoundingClientRect().top <= 100) cur = s.id; });
-                setActive(cur);
-            });
+        themeToggleBtn.addEventListener('click', () => {
+            let theme = body.getAttribute('data-theme');
+            let newTheme = theme === 'dark' ? 'light' : 'dark';
+            
+            body.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateIcon(newTheme);
+        });
 
-            // ── COMMANDS ──
-            const cmdData = [
-                { cat:'General', icon:'🤖', items:[ ['-prefix','Set custom prefix'], ['-status','Configure bot presence'] ] },
-                { cat:'Ticket Slash', icon:'🎫', items:[ ['/ticket setup','Run the setup wizard'], ['/ticket edit','Edit panels/channels'], ['/ticket stats','View staff statistics'], ['/close','Close current ticket'] ] },
-                { cat:'Ticket Prefix', icon:'🔧', items:[ ['-purgetickets','Owner-only full reset of ticket system'], ['-overrideclaim','Owner force-claim, deduct previous'], ['-withpoints','Owner deduct claim points'], ['-addpoints','Owner add claim points'], ['-totalclaims','View claim leaderboard'] ] },
-                { cat:'Moderation', icon:'🛡️', items:[ ['-kick','Kick a member'], ['-ban','Ban a member'], ['-timeout','Timeout with duration'], ['-untimeout','Remove timeout'] ] },
-                { cat:'Economy', icon:'💰', items:[ ['-bal','View coins, bank, XP'], ['-deposit','Deposit coins'], ['-withdraw','Withdraw coins'], ['-rob','Rob a user'], ['-raid','Raid attempt'], ['-coinflip','PvP coin flip'] ] },
-                { cat:'Study Mode', icon:'📚', items:[ ['-studymode on','Enable quiet zone'], ['-studymode off','Disable & restore'], ['-studymode status','Check state'] ] }
-            ];
-            const cmdGrid = document.getElementById('cmdGrid');
-            cmdData.forEach(c => {
-                const div = document.createElement('div');
-                div.className = 'cmd-category reveal';
-                div.innerHTML = `<h3>${c.icon} <span data-en="${c.cat}" data-ar="${c.cat}">${c.cat}</span></h3><ul class="cmd-list">${c.items.map(i => `<li><span>${i[0]}</span> ${i[1]}</li>`).join('')}</ul>`;
-                cmdGrid.appendChild(div);
-            });
-            // Re‑translate new elements
-            document.querySelectorAll('#cmdGrid [data-en]').forEach(el => {
-                const key = el.dataset.en;
-                if(!translations.en[key]) { translations.en[key]=key; translations.ar[key]=el.dataset.ar||key; el.setAttribute('data-key',key); }
-                if(lang) el.innerHTML = translations[lang][key] || key;
-            });
-
-            const cmdSearch = document.getElementById('cmdSearch');
-            const cmdItems = document.querySelectorAll('.cmd-list li');
-            cmdSearch.addEventListener('input', ()=>{
-                const q = cmdSearch.value.toLowerCase();
-                cmdItems.forEach(li => li.classList.toggle('hidden', q!=='' && !li.textContent.toLowerCase().includes(q)));
-            });
-
-            // ── STATS (dummy) ──
-            const stats = { servers:1247, users:45281, uptime:99.93, commands:8456, tickets:3421 };
-            const statLabels = [
-                { key:'servers', en:'Servers', ar:'خادم' },
-                { key:'users', en:'Users', ar:'مستخدم' },
-                { key:'uptime', en:'Uptime %', ar:'وقت التشغيل' },
-                { key:'commands', en:'Commands', ar:'أمر' },
-                { key:'tickets', en:'Tickets Handled', ar:'التذاكر المنجزة' }
-            ];
-            const container = document.getElementById('statsContainer');
-            statLabels.forEach(s => {
-                const div = document.createElement('div');
-                div.className = 'stat-box';
-                div.innerHTML = `<div class="num">${stats[s.key].toLocaleString()}${s.key==='uptime'?'%':''}</div><div class="lbl" data-en="${s.en}" data-ar="${s.ar}">${s.en}</div>`;
-                container.appendChild(div);
-            });
-            // translate stat labels
-            document.querySelectorAll('#statsContainer .lbl').forEach(el => { if(lang) el.textContent = translations[lang][el.dataset.en] || el.textContent; });
-
-            // ── SCROLL REVEAL ──
-            const reveals = document.querySelectorAll('.reveal');
-            const observer = new IntersectionObserver((entries) => entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); }), { threshold:0.15 });
-            reveals.forEach(el => observer.observe(el));
-        })();
+        function updateIcon(theme) {
+            if (theme === 'dark') {
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
+            } else {
+                icon.classList.remove('fa-sun');
+                icon.classList.add('fa-moon');
+            }
+        }
     </script>
 </body>
 </html>
