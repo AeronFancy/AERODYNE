@@ -1,64 +1,82 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="ltr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="AERODYNE - Advanced Discord Bot with Dual XP, Economy, Tickets & Moderation">
     <meta name="theme-color" content="#22d3ee">
     <title>AERODYNE | Next Generation Discord Bot</title>
-    
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&family=Noto+Sans+Arabic:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    
+
     <style>
         :root {
             --accent: #22d3ee;
-            --accent-dark: #0891b2;
-            --bg: #0a0b0f;
-            --surface: #11131a;
-            --text: #f8fafc;
-            --text-secondary: #94a3b8;
+            --accent-glow: rgba(34,211,238,0.35);
+            --accent-dark: #0e7490;
+            --bg: #070910;
+            --surface: #0f1119;
+            --surface2: #161924;
+            --border: rgba(34,211,238,0.12);
+            --text: #f0f4f8;
+            --text-secondary: #8899b0;
+            --radius: 18px;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        
+
         body {
-            font-family: 'Segoe UI', system-ui, sans-serif;
+            font-family: 'DM Sans', 'Noto Sans Arabic', sans-serif;
             background: var(--bg);
             color: var(--text);
-            line-height: 1.6;
+            line-height: 1.65;
+            overflow-x: hidden;
         }
 
+        /* ─── SCROLLBAR ─── */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg); }
+        ::-webkit-scrollbar-thumb { background: var(--accent-dark); border-radius: 3px; }
+
+        /* ─── HEADER ─── */
         header {
             position: sticky;
             top: 0;
-            background: rgba(17, 19, 26, 0.95);
-            backdrop-filter: blur(12px);
             z-index: 1000;
-            padding: 1rem 5%;
+            padding: 0.9rem 5%;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            border-bottom: 1px solid rgba(34, 211, 238, 0.15);
+            background: rgba(7,9,16,0.85);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border);
         }
 
         .logo {
             display: flex;
             align-items: center;
             gap: 12px;
-            font-size: 1.8rem;
-            font-weight: 700;
+            font-family: 'Syne', sans-serif;
+            font-size: 1.6rem;
+            font-weight: 800;
+            letter-spacing: 0.06em;
+            color: var(--accent);
         }
 
         .logo img {
-            width: 55px;
-            height: 55px;
+            width: 48px;
+            height: 48px;
             border-radius: 50%;
-            border: 3px solid var(--accent);
+            border: 2px solid var(--accent);
+            box-shadow: 0 0 18px var(--accent-glow);
+            object-fit: cover;
         }
 
         nav ul {
             display: flex;
-            gap: 2.5rem;
+            gap: 2.2rem;
             list-style: none;
         }
 
@@ -66,148 +84,526 @@
             color: var(--text-secondary);
             text-decoration: none;
             font-weight: 500;
-            transition: 0.3s;
+            font-size: 0.95rem;
+            transition: color 0.25s;
+            position: relative;
+        }
+
+        nav a::after {
+            content: '';
+            position: absolute;
+            bottom: -3px;
+            left: 0; right: 0;
+            height: 2px;
+            background: var(--accent);
+            transform: scaleX(0);
+            transition: transform 0.25s;
         }
 
         nav a:hover { color: var(--accent); }
+        nav a:hover::after { transform: scaleX(1); }
 
-        .controls {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
+        .controls { display: flex; align-items: center; gap: 0.8rem; }
+
+        .lang-btn {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            padding: 6px 14px;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s;
+            letter-spacing: 0.05em;
         }
 
-        /* Hero */
+        .lang-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .hamburger {
+            display: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text);
+            background: none;
+            border: none;
+            padding: 4px;
+        }
+
+        /* ─── HERO ─── */
         .hero {
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             text-align: center;
-            background: linear-gradient(135deg, #0a0b0f, #1e2937);
             position: relative;
+            overflow: hidden;
+            padding: 6rem 5% 4rem;
         }
 
-        .hero::after {
-            content: '';
+        /* Background layers - pointer-events:none so they never block clicks */
+        .hero-bg {
             position: absolute;
             inset: 0;
-            background: radial-gradient(circle at center, rgba(34,211,238,0.08), transparent);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .hero-bg::before {
+            content: '';
+            position: absolute;
+            top: -20%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 700px;
+            height: 700px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(34,211,238,0.10) 0%, transparent 70%);
+        }
+
+        .hero-grid {
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(34,211,238,0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(34,211,238,0.04) 1px, transparent 1px);
+            background-size: 60px 60px;
+            mask-image: radial-gradient(ellipse at center, black 10%, transparent 75%);
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1; /* above the bg layers */
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(34,211,238,0.1);
+            border: 1px solid rgba(34,211,238,0.3);
+            color: var(--accent);
+            padding: 6px 16px;
+            border-radius: 30px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            margin-bottom: 1.8rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
         }
 
         .hero h1 {
-            font-size: 3.8rem;
-            margin-bottom: 1rem;
-            background: linear-gradient(to right, #67e8f9, #22d3ee);
+            font-family: 'Syne', sans-serif;
+            font-size: clamp(2.4rem, 6vw, 4.2rem);
+            font-weight: 800;
+            line-height: 1.15;
+            margin-bottom: 1.2rem;
+            background: linear-gradient(135deg, #fff 30%, #22d3ee 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .hero p {
-            font-size: 1.35rem;
-            max-width: 700px;
+            font-size: 1.15rem;
+            max-width: 620px;
             margin: 0 auto 2.5rem;
             color: var(--text-secondary);
         }
 
+        .hero-cta {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        /* ─── BUTTONS ─── */
         .btn {
-            padding: 16px 36px;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 32px;
             border-radius: 50px;
             font-weight: 600;
-            transition: all 0.4s ease;
+            font-size: 1rem;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            font-family: inherit;
         }
 
         .btn-primary {
             background: var(--accent);
-            color: #0a0b0f;
+            color: #070910;
         }
 
         .btn-primary:hover {
-            transform: translateY(-5px) scale(1.05);
-            box-shadow: 0 20px 40px rgba(34, 211, 238, 0.4);
+            transform: translateY(-4px);
+            box-shadow: 0 16px 40px var(--accent-glow);
         }
 
-        /* Sections */
-        section {
-            padding: 6rem 5%;
+        .btn-secondary {
+            background: transparent;
+            color: var(--text);
+            border: 1px solid var(--border);
         }
 
-        .section-title {
+        .btn-secondary:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            transform: translateY(-4px);
+        }
+
+        /* ─── STATS BAR ─── */
+        .stats-bar {
+            background: var(--surface);
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+            padding: 2rem 5%;
+        }
+
+        .stats-inner {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+        }
+
+        .stat {
             text-align: center;
-            font-size: 2.6rem;
-            margin-bottom: 4rem;
+        }
+
+        .stat-num {
+            font-family: 'Syne', sans-serif;
+            font-size: 2rem;
+            font-weight: 800;
             color: var(--accent);
         }
 
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+
+        /* ─── SECTIONS ─── */
+        section { padding: 6rem 5%; }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 3.5rem;
+        }
+
+        .section-tag {
+            display: inline-block;
+            color: var(--accent);
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            margin-bottom: 0.6rem;
+        }
+
+        .section-title {
+            font-family: 'Syne', sans-serif;
+            font-size: clamp(1.8rem, 4vw, 2.6rem);
+            font-weight: 800;
+            color: var(--text);
+        }
+
+        /* ─── FEATURE CARDS ─── */
         .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
-            gap: 2rem;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            max-width: 1200px;
+            margin: 0 auto;
         }
 
         .card {
             background: var(--surface);
-            padding: 2.5rem;
-            border-radius: 20px;
-            border: 1px solid rgba(34,211,238,0.1);
+            padding: 2.2rem;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
             transition: all 0.4s ease;
+            opacity: 0;
+            transform: translateY(24px);
+        }
+
+        .card.visible {
+            opacity: 1;
+            transform: translateY(0);
         }
 
         .card:hover {
-            transform: translateY(-15px);
-            border-color: var(--accent);
-            box-shadow: 0 25px 50px -12px rgba(34,211,238,0.25);
+            border-color: rgba(34,211,238,0.4);
+            box-shadow: 0 20px 60px -12px rgba(34,211,238,0.18);
+            transform: translateY(-8px);
         }
 
-        .card i {
-            font-size: 3rem;
-            margin-bottom: 1.5rem;
+        .card-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 14px;
+            background: rgba(34,211,238,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.2rem;
+        }
+
+        .card-icon i {
+            font-size: 1.4rem;
             color: var(--accent);
         }
 
-        /* Commands */
-        .commands-grid {
+        .card h3 {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.15rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .card p {
+            color: var(--text-secondary);
+            font-size: 0.92rem;
+        }
+
+        /* ─── UPDATE CARD ─── */
+        .update-card {
+            max-width: 860px;
+            margin: 0 auto;
+            background: var(--surface);
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            overflow: hidden;
+        }
+
+        .update-header {
+            background: linear-gradient(135deg, rgba(34,211,238,0.12), rgba(34,211,238,0.04));
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .update-header h3 {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.3rem;
+            color: var(--accent);
+        }
+
+        .version-badge {
+            background: var(--accent);
+            color: #070910;
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+        }
+
+        .update-body {
+            padding: 2rem;
+        }
+
+        .update-features {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 0.8rem;
+            margin-top: 1rem;
+        }
+
+        .update-feature {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .update-feature i {
+            color: var(--accent);
+            font-size: 0.85rem;
+        }
+
+        /* ─── COMMANDS ─── */
+        .commands-wrapper {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
             gap: 2rem;
         }
 
+        .cmd-group h3 {
+            font-family: 'Syne', sans-serif;
+            font-size: 1rem;
+            margin-bottom: 0.9rem;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
         .command-item {
-            background: rgba(15, 23, 42, 0.6);
-            padding: 1.4rem 1.8rem;
+            background: var(--surface2);
+            padding: 1rem 1.2rem;
             border-radius: 12px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            transition: 0.3s;
+            margin-bottom: 0.6rem;
+            border: 1px solid transparent;
+            transition: all 0.25s;
         }
 
         .command-item:hover {
-            background: rgba(34, 211, 238, 0.1);
-            transform: translateX(10px);
+            border-color: var(--border);
+            background: rgba(34,211,238,0.06);
+            transform: translateX(6px);
+        }
+
+        [dir="rtl"] .command-item:hover {
+            transform: translateX(-6px);
         }
 
         .cmd-name {
             font-family: monospace;
             color: var(--accent);
-            font-weight: bold;
+            font-weight: 700;
+            font-size: 0.92rem;
         }
 
-        /* Hamburger */
-        .hamburger { display: none; font-size: 1.8rem; cursor: pointer; }
+        .cmd-desc {
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+        }
 
+        /* ─── FAQ ─── */
+        .faq-wrapper {
+            max-width: 760px;
+            margin: 0 auto;
+        }
+
+        .faq-item {
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            margin-bottom: 0.8rem;
+            overflow: hidden;
+            transition: border-color 0.25s;
+        }
+
+        .faq-item.open { border-color: rgba(34,211,238,0.35); }
+
+        .faq-q {
+            width: 100%;
+            background: var(--surface);
+            border: none;
+            color: var(--text);
+            padding: 1.2rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            font-size: 0.97rem;
+            font-weight: 600;
+            font-family: inherit;
+            text-align: start;
+            gap: 1rem;
+        }
+
+        .faq-icon {
+            color: var(--accent);
+            font-size: 1.1rem;
+            transition: transform 0.3s;
+            flex-shrink: 0;
+        }
+
+        .faq-item.open .faq-icon { transform: rotate(45deg); }
+
+        .faq-a {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.35s ease;
+            background: var(--surface);
+        }
+
+        .faq-a-inner {
+            padding: 0 1.5rem 1.2rem;
+            color: var(--text-secondary);
+            font-size: 0.92rem;
+        }
+
+        /* ─── FOOTER ─── */
+        footer {
+            background: var(--surface);
+            border-top: 1px solid var(--border);
+            padding: 3rem 5%;
+            text-align: center;
+        }
+
+        footer .footer-logo {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--accent);
+            margin-bottom: 0.8rem;
+        }
+
+        footer p {
+            color: var(--text-secondary);
+            font-size: 0.88rem;
+        }
+
+        /* ─── MOBILE NAV ─── */
         @media (max-width: 768px) {
-            nav ul { 
-                position: fixed; top: 75px; left: -100%; width: 100%; height: calc(100vh - 75px);
-                background: var(--surface); flex-direction: column; padding: 3rem 0;
-                transition: 0.4s ease;
+            nav ul {
+                position: fixed;
+                top: 68px;
+                left: -100%;
+                width: 100%;
+                height: calc(100vh - 68px);
+                background: var(--surface);
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                gap: 2.5rem;
+                transition: left 0.35s ease;
+                z-index: 999;
             }
+
             nav ul.active { left: 0; }
+
+            nav a { font-size: 1.2rem; }
+
             .hamburger { display: block; }
+
+            .hero h1 { font-size: 2.2rem; }
+
+            .commands-wrapper { grid-template-columns: 1fr; }
         }
+
+        /* ─── RTL ADJUSTMENTS ─── */
+        [dir="rtl"] .command-item { flex-direction: row-reverse; }
+        [dir="rtl"] nav ul { flex-direction: row-reverse; }
+        [dir="rtl"] .update-header { flex-direction: row-reverse; }
+        [dir="rtl"] .update-feature { flex-direction: row-reverse; }
+        [dir="rtl"] .faq-q { flex-direction: row-reverse; }
+        [dir="rtl"] .card-icon { margin-inline-end: 0; }
     </style>
 </head>
-<body data-theme="dark" data-lang="en">
+<body>
 
     <header>
         <div class="logo">
@@ -217,128 +613,406 @@
 
         <nav>
             <ul id="nav-menu">
-                <li><a href="#features">Features</a></li>
-                <li><a href="#updates">Updates</a></li>
-                <li><a href="#commands">Commands</a></li>
-                <li><a href="#faq">FAQ</a></li>
+                <li><a href="#features" data-i18n="nav_features">Features</a></li>
+                <li><a href="#updates" data-i18n="nav_updates">Updates</a></li>
+                <li><a href="#commands" data-i18n="nav_commands">Commands</a></li>
+                <li><a href="#faq" data-i18n="nav_faq">FAQ</a></li>
             </ul>
         </nav>
 
         <div class="controls">
-            <button onclick="switchLang()" style="background:none; border:none; color:white; font-size:1.1rem; cursor:pointer;">
-                <span id="lang-btn">AR</span>
-            </button>
-            <button class="hamburger" id="hamburger">☰</button>
+            <button class="lang-btn" id="lang-btn" onclick="switchLang()">العربية</button>
+            <button class="hamburger" id="hamburger" aria-label="Toggle menu">☰</button>
         </div>
     </header>
 
     <!-- Hero -->
     <section class="hero">
-        <div>
-            <h1 id="hero-title">Level Up Your Server with AERODYNE</h1>
-            <p id="hero-desc">Advanced Dual XP System, Rich Economy, Professional Ticket System, Powerful Moderation and more.</p>
-            <a href="https://discord.com/oauth2/authorize?client_id=1488701920452546691&permissions=8&integration_type=0&scope=bot" 
-               target="_blank" class="btn btn-primary">
-                <i class="fa-brands fa-discord"></i> Invite AERODYNE
-            </a>
+        <!-- bg layers have pointer-events:none via .hero-bg -->
+        <div class="hero-bg">
+            <div class="hero-grid"></div>
+        </div>
+
+        <div class="hero-content">
+            <div class="hero-badge">
+                <i class="fa-solid fa-bolt"></i>
+                <span data-i18n="hero_badge">Now Live — Ticket System v1.0</span>
+            </div>
+            <h1 data-i18n="hero_title">Level Up Your Server<br>with AERODYNE</h1>
+            <p data-i18n="hero_desc">Advanced Dual XP System, Rich Economy, Professional Ticket System, Powerful Moderation and more — all in one bot.</p>
+            <div class="hero-cta">
+                <a href="https://discord.com/oauth2/authorize?client_id=1488701920452546691&permissions=8&integration_type=0&scope=bot"
+                   target="_blank"
+                   rel="noopener noreferrer"
+                   class="btn btn-primary">
+                    <i class="fa-brands fa-discord"></i>
+                    <span data-i18n="hero_invite">Invite AERODYNE</span>
+                </a>
+                <a href="#features" class="btn btn-secondary">
+                    <i class="fa-solid fa-circle-info"></i>
+                    <span data-i18n="hero_learn">Learn More</span>
+                </a>
+            </div>
         </div>
     </section>
+
+    <!-- Stats -->
+    <div class="stats-bar">
+        <div class="stats-inner">
+            <div class="stat">
+                <div class="stat-num">50+</div>
+                <div class="stat-label" data-i18n="stat_commands">Commands</div>
+            </div>
+            <div class="stat">
+                <div class="stat-num">6</div>
+                <div class="stat-label" data-i18n="stat_systems">Core Systems</div>
+            </div>
+            <div class="stat">
+                <div class="stat-num">2</div>
+                <div class="stat-label" data-i18n="stat_langs">Languages</div>
+            </div>
+            <div class="stat">
+                <div class="stat-num">24/7</div>
+                <div class="stat-label" data-i18n="stat_uptime">Uptime</div>
+            </div>
+        </div>
+    </div>
 
     <!-- Features -->
     <section id="features">
-        <h2 class="section-title" id="features-title">Core Systems</h2>
+        <div class="section-header">
+            <div class="section-tag" data-i18n="features_tag">What we offer</div>
+            <h2 class="section-title" data-i18n="features_title">Core Systems</h2>
+        </div>
         <div class="grid">
-            <div class="card"><i class="fa-solid fa-chart-line"></i><h3>Dual XP</h3><p>Text & Voice XP with beautiful level cards</p></div>
-            <div class="card"><i class="fa-solid fa-coins"></i><h3>Economy</h3><p>Full economy with rob, slots, shop, and more</p></div>
-            <div class="card"><i class="fa-solid fa-ticket"></i><h3>Ticket System</h3><p>Professional multi-panel ticket system v1.0</p></div>
-            <div class="card"><i class="fa-solid fa-gavel"></i><h3>Moderation</h3><p>Advanced anti-spam, filters & logging</p></div>
-            <div class="card"><i class="fa-solid fa-book"></i><h3>Study Mode</h3><p>Focus mode for educational servers</p></div>
-            <div class="card"><i class="fa-solid fa-hard-drive"></i><h3>Auto Backup</h3><p>Automatic server data backup system</p></div>
+            <div class="card">
+                <div class="card-icon"><i class="fa-solid fa-chart-line"></i></div>
+                <h3 data-i18n="f1_title">Dual XP System</h3>
+                <p data-i18n="f1_desc">Text & Voice XP with beautiful level cards and a full leaderboard.</p>
+            </div>
+            <div class="card">
+                <div class="card-icon"><i class="fa-solid fa-coins"></i></div>
+                <h3 data-i18n="f2_title">Economy</h3>
+                <p data-i18n="f2_desc">Full economy with rob, slots, daily rewards, shop, and more.</p>
+            </div>
+            <div class="card">
+                <div class="card-icon"><i class="fa-solid fa-ticket"></i></div>
+                <h3 data-i18n="f3_title">Ticket System</h3>
+                <p data-i18n="f3_desc">Professional multi-panel ticket system with transcripts and ratings.</p>
+            </div>
+            <div class="card">
+                <div class="card-icon"><i class="fa-solid fa-gavel"></i></div>
+                <h3 data-i18n="f4_title">Moderation</h3>
+                <p data-i18n="f4_desc">Advanced anti-spam, word filters, logging, and auto-moderation.</p>
+            </div>
+            <div class="card">
+                <div class="card-icon"><i class="fa-solid fa-book"></i></div>
+                <h3 data-i18n="f5_title">Study Mode</h3>
+                <p data-i18n="f5_desc">Focus mode designed for educational and study servers.</p>
+            </div>
+            <div class="card">
+                <div class="card-icon"><i class="fa-solid fa-hard-drive"></i></div>
+                <h3 data-i18n="f6_title">Auto Backup</h3>
+                <p data-i18n="f6_desc">Automatic server data backup to keep your settings safe.</p>
+            </div>
         </div>
     </section>
 
-    <!-- Latest Update -->
+    <!-- Updates -->
     <section id="updates" style="background: var(--surface);">
-        <h2 class="section-title" id="updates-title">Latest Update</h2>
-        <div class="card" style="max-width:900px; margin:0 auto;">
-            <h3 style="color:var(--accent); margin-bottom:1rem;">Ticket System v1.0.0</h3>
-            <p>Full professional ticket system with panels, transcripts, claim system, ratings, and bilingual support.</p>
+        <div class="section-header">
+            <div class="section-tag" data-i18n="updates_tag">Changelog</div>
+            <h2 class="section-title" data-i18n="updates_title">Latest Update</h2>
+        </div>
+        <div class="update-card">
+            <div class="update-header">
+                <h3 data-i18n="update_name">Ticket System</h3>
+                <span class="version-badge">v1.0.0</span>
+            </div>
+            <div class="update-body">
+                <p style="color:var(--text-secondary); font-size:0.95rem;" data-i18n="update_desc">
+                    Full professional ticket system now live with everything you need to manage server support.
+                </p>
+                <div class="update-features">
+                    <div class="update-feature"><i class="fa-solid fa-check"></i><span data-i18n="uf1">Multi-panel setup wizard</span></div>
+                    <div class="update-feature"><i class="fa-solid fa-check"></i><span data-i18n="uf2">Ticket transcripts</span></div>
+                    <div class="update-feature"><i class="fa-solid fa-check"></i><span data-i18n="uf3">Claim & assign system</span></div>
+                    <div class="update-feature"><i class="fa-solid fa-check"></i><span data-i18n="uf4">User ratings</span></div>
+                    <div class="update-feature"><i class="fa-solid fa-check"></i><span data-i18n="uf5">Arabic & English support</span></div>
+                    <div class="update-feature"><i class="fa-solid fa-check"></i><span data-i18n="uf6">Category management</span></div>
+                </div>
+            </div>
         </div>
     </section>
 
     <!-- Commands -->
     <section id="commands">
-        <h2 class="section-title" id="commands-title">Popular Commands</h2>
-        <div class="commands-grid">
-            <div>
-                <h3>🎟️ Tickets</h3>
-                <div class="command-item"><span class="cmd-name">/ticket setup</span><span>Setup wizard</span></div>
-                <div class="command-item"><span class="cmd-name">/ticket edit</span><span>Edit panels</span></div>
-                <div class="command-item"><span class="cmd-name">/close</span><span>Close ticket</span></div>
+        <div class="section-header">
+            <div class="section-tag" data-i18n="commands_tag">Reference</div>
+            <h2 class="section-title" data-i18n="commands_title">Popular Commands</h2>
+        </div>
+        <div class="commands-wrapper">
+            <div class="cmd-group">
+                <h3>🎟️ <span data-i18n="cmd_tickets">Tickets</span></h3>
+                <div class="command-item"><span class="cmd-name">/ticket setup</span><span class="cmd-desc" data-i18n="c_t1">Setup wizard</span></div>
+                <div class="command-item"><span class="cmd-name">/ticket edit</span><span class="cmd-desc" data-i18n="c_t2">Edit panels</span></div>
+                <div class="command-item"><span class="cmd-name">/close</span><span class="cmd-desc" data-i18n="c_t3">Close ticket</span></div>
             </div>
-            <div>
-                <h3>📈 Leveling</h3>
-                <div class="command-item"><span class="cmd-name">/rank</span><span>Show level card</span></div>
-                <div class="command-item"><span class="cmd-name">/top</span><span>Leaderboard</span></div>
+            <div class="cmd-group">
+                <h3>📈 <span data-i18n="cmd_leveling">Leveling</span></h3>
+                <div class="command-item"><span class="cmd-name">/rank</span><span class="cmd-desc" data-i18n="c_l1">Show level card</span></div>
+                <div class="command-item"><span class="cmd-name">/top</span><span class="cmd-desc" data-i18n="c_l2">Leaderboard</span></div>
+                <div class="command-item"><span class="cmd-name">/setxp</span><span class="cmd-desc" data-i18n="c_l3">Set XP manually</span></div>
             </div>
-            <div>
-                <h3>💰 Economy</h3>
-                <div class="command-item"><span class="cmd-name">/bal</span><span>Balance</span></div>
-                <div class="command-item"><span class="cmd-name">/daily</span><span>Daily reward</span></div>
-                <div class="command-item"><span class="cmd-name">/rob</span><span>Rob player</span></div>
-                <div class="command-item"><span class="cmd-name">/slots</span><span>Slot machine</span></div>
+            <div class="cmd-group">
+                <h3>💰 <span data-i18n="cmd_economy">Economy</span></h3>
+                <div class="command-item"><span class="cmd-name">/bal</span><span class="cmd-desc" data-i18n="c_e1">Balance</span></div>
+                <div class="command-item"><span class="cmd-name">/daily</span><span class="cmd-desc" data-i18n="c_e2">Daily reward</span></div>
+                <div class="command-item"><span class="cmd-name">/rob</span><span class="cmd-desc" data-i18n="c_e3">Rob a player</span></div>
+                <div class="command-item"><span class="cmd-name">/slots</span><span class="cmd-desc" data-i18n="c_e4">Slot machine</span></div>
             </div>
-            <div>
-                <h3>🛡️ Moderation</h3>
-                <div class="command-item"><span class="cmd-name">/ban</span><span>Ban user</span></div>
-                <div class="command-item"><span class="cmd-name">/timeout</span><span>Timeout</span></div>
-                <div class="command-item"><span class="cmd-name">/clear</span><span>Clear messages</span></div>
+            <div class="cmd-group">
+                <h3>🛡️ <span data-i18n="cmd_moderation">Moderation</span></h3>
+                <div class="command-item"><span class="cmd-name">/ban</span><span class="cmd-desc" data-i18n="c_m1">Ban user</span></div>
+                <div class="command-item"><span class="cmd-name">/timeout</span><span class="cmd-desc" data-i18n="c_m2">Timeout user</span></div>
+                <div class="command-item"><span class="cmd-name">/clear</span><span class="cmd-desc" data-i18n="c_m3">Clear messages</span></div>
             </div>
         </div>
     </section>
 
-    <footer style="text-align:center; padding:3rem; background:#0a0b0f;">
-        <p>&copy; 2026 AERODYNE • Not affiliated with Discord</p>
+    <!-- FAQ -->
+    <section id="faq" style="background: var(--surface);">
+        <div class="section-header">
+            <div class="section-tag" data-i18n="faq_tag">Help</div>
+            <h2 class="section-title" data-i18n="faq_title">Frequently Asked Questions</h2>
+        </div>
+        <div class="faq-wrapper">
+            <div class="faq-item">
+                <button class="faq-q" onclick="toggleFaq(this)">
+                    <span data-i18n="faq1_q">Is AERODYNE free to use?</span>
+                    <i class="fa-solid fa-plus faq-icon"></i>
+                </button>
+                <div class="faq-a"><div class="faq-a-inner" data-i18n="faq1_a">Yes! AERODYNE is completely free to invite and use in your Discord server with no hidden fees.</div></div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-q" onclick="toggleFaq(this)">
+                    <span data-i18n="faq2_q">How do I set up the ticket system?</span>
+                    <i class="fa-solid fa-plus faq-icon"></i>
+                </button>
+                <div class="faq-a"><div class="faq-a-inner" data-i18n="faq2_a">Simply run /ticket setup in your server and follow the interactive wizard. It will guide you through creating panels, categories, and permissions step by step.</div></div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-q" onclick="toggleFaq(this)">
+                    <span data-i18n="faq3_q">Does the bot support Arabic?</span>
+                    <i class="fa-solid fa-plus faq-icon"></i>
+                </button>
+                <div class="faq-a"><div class="faq-a-inner" data-i18n="faq3_a">Yes! AERODYNE has full bilingual support. You can switch the bot's response language to Arabic or English at any time.</div></div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-q" onclick="toggleFaq(this)">
+                    <span data-i18n="faq4_q">What permissions does AERODYNE need?</span>
+                    <i class="fa-solid fa-plus faq-icon"></i>
+                </button>
+                <div class="faq-a"><div class="faq-a-inner" data-i18n="faq4_a">AERODYNE requests Administrator permissions to function fully. This is needed for managing roles, channels, messages, and all moderation features.</div></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-logo">AERODYNE</div>
+        <p data-i18n="footer_copy">&copy; 2026 AERODYNE — Not affiliated with Discord Inc.</p>
     </footer>
 
     <script>
-        // Hamburger
-        document.getElementById('hamburger').addEventListener('click', () => {
-            document.getElementById('nav-menu').classList.toggle('active');
-        });
-
-        // Language Switch
-        let currentLang = 'en';
-        function switchLang() {
-            currentLang = currentLang === 'en' ? 'ar' : 'en';
-            document.documentElement.setAttribute('lang', currentLang);
-            document.body.setAttribute('data-lang', currentLang);
-            
-            document.getElementById('lang-btn').textContent = currentLang === 'en' ? 'AR' : 'EN';
-            
-            if (currentLang === 'ar') {
-                document.documentElement.dir = 'rtl';
-            } else {
-                document.documentElement.dir = 'ltr';
-            }
+    // ─── TRANSLATIONS ───────────────────────────────────────────────
+    const i18n = {
+        en: {
+            nav_features: "Features",
+            nav_updates: "Updates",
+            nav_commands: "Commands",
+            nav_faq: "FAQ",
+            hero_badge: "Now Live — Ticket System v1.0",
+            hero_title: "Level Up Your Server<br>with AERODYNE",
+            hero_desc: "Advanced Dual XP System, Rich Economy, Professional Ticket System, Powerful Moderation and more — all in one bot.",
+            hero_invite: "Invite AERODYNE",
+            hero_learn: "Learn More",
+            stat_commands: "Commands",
+            stat_systems: "Core Systems",
+            stat_langs: "Languages",
+            stat_uptime: "Uptime",
+            features_tag: "What we offer",
+            features_title: "Core Systems",
+            f1_title: "Dual XP System",
+            f1_desc: "Text & Voice XP with beautiful level cards and a full leaderboard.",
+            f2_title: "Economy",
+            f2_desc: "Full economy with rob, slots, daily rewards, shop, and more.",
+            f3_title: "Ticket System",
+            f3_desc: "Professional multi-panel ticket system with transcripts and ratings.",
+            f4_title: "Moderation",
+            f4_desc: "Advanced anti-spam, word filters, logging, and auto-moderation.",
+            f5_title: "Study Mode",
+            f5_desc: "Focus mode designed for educational and study servers.",
+            f6_title: "Auto Backup",
+            f6_desc: "Automatic server data backup to keep your settings safe.",
+            updates_tag: "Changelog",
+            updates_title: "Latest Update",
+            update_name: "Ticket System",
+            update_desc: "Full professional ticket system now live with everything you need to manage server support.",
+            uf1: "Multi-panel setup wizard",
+            uf2: "Ticket transcripts",
+            uf3: "Claim & assign system",
+            uf4: "User ratings",
+            uf5: "Arabic & English support",
+            uf6: "Category management",
+            commands_tag: "Reference",
+            commands_title: "Popular Commands",
+            cmd_tickets: "Tickets",
+            cmd_leveling: "Leveling",
+            cmd_economy: "Economy",
+            cmd_moderation: "Moderation",
+            c_t1: "Setup wizard", c_t2: "Edit panels", c_t3: "Close ticket",
+            c_l1: "Show level card", c_l2: "Leaderboard", c_l3: "Set XP manually",
+            c_e1: "Balance", c_e2: "Daily reward", c_e3: "Rob a player", c_e4: "Slot machine",
+            c_m1: "Ban user", c_m2: "Timeout user", c_m3: "Clear messages",
+            faq_tag: "Help",
+            faq_title: "Frequently Asked Questions",
+            faq1_q: "Is AERODYNE free to use?",
+            faq1_a: "Yes! AERODYNE is completely free to invite and use in your Discord server with no hidden fees.",
+            faq2_q: "How do I set up the ticket system?",
+            faq2_a: "Simply run /ticket setup in your server and follow the interactive wizard. It will guide you through creating panels, categories, and permissions step by step.",
+            faq3_q: "Does the bot support Arabic?",
+            faq3_a: "Yes! AERODYNE has full bilingual support. You can switch the bot's response language to Arabic or English at any time.",
+            faq4_q: "What permissions does AERODYNE need?",
+            faq4_a: "AERODYNE requests Administrator permissions to function fully. This is needed for managing roles, channels, messages, and all moderation features.",
+            footer_copy: "© 2026 AERODYNE — Not affiliated with Discord Inc."
+        },
+        ar: {
+            nav_features: "المميزات",
+            nav_updates: "التحديثات",
+            nav_commands: "الأوامر",
+            nav_faq: "الأسئلة الشائعة",
+            hero_badge: "متاح الآن — نظام التذاكر v1.0",
+            hero_title: "طوّر سيرفرك<br>مع AERODYNE",
+            hero_desc: "نظام XP مزدوج متطور، اقتصاد غني، نظام تذاكر احترافي، إشراف قوي والمزيد — كل ذلك في بوت واحد.",
+            hero_invite: "أضف AERODYNE",
+            hero_learn: "اعرف المزيد",
+            stat_commands: "أمر",
+            stat_systems: "أنظمة رئيسية",
+            stat_langs: "لغتان",
+            stat_uptime: "وقت التشغيل",
+            features_tag: "ما نقدمه",
+            features_title: "الأنظمة الرئيسية",
+            f1_title: "نظام XP المزدوج",
+            f1_desc: "نقاط خبرة للنصوص والصوت مع بطاقات مستوى جميلة ولوحة قيادة كاملة.",
+            f2_title: "الاقتصاد",
+            f2_desc: "اقتصاد كامل يشمل السرقة، الفتحات، المكافآت اليومية، المتجر والمزيد.",
+            f3_title: "نظام التذاكر",
+            f3_desc: "نظام تذاكر احترافي متعدد الألواح مع النصوص الكاملة والتقييمات.",
+            f4_title: "الإشراف",
+            f4_desc: "مكافحة سبام متقدمة، فلاتر الكلمات، السجلات، والإشراف التلقائي.",
+            f5_title: "وضع الدراسة",
+            f5_desc: "وضع التركيز المصمم خصيصًا للسيرفرات التعليمية والدراسية.",
+            f6_title: "النسخ الاحتياطي",
+            f6_desc: "نسخ احتياطي تلقائي لبيانات السيرفر لحفظ إعداداتك بأمان.",
+            updates_tag: "سجل التغييرات",
+            updates_title: "آخر تحديث",
+            update_name: "نظام التذاكر",
+            update_desc: "نظام التذاكر الاحترافي الكامل متاح الآن بكل ما تحتاجه لإدارة دعم السيرفر.",
+            uf1: "معالج إعداد متعدد الألواح",
+            uf2: "نصوص التذاكر",
+            uf3: "نظام الاستلام والتعيين",
+            uf4: "تقييمات المستخدمين",
+            uf5: "دعم العربية والإنجليزية",
+            uf6: "إدارة الفئات",
+            commands_tag: "مرجع",
+            commands_title: "الأوامر الشائعة",
+            cmd_tickets: "التذاكر",
+            cmd_leveling: "المستويات",
+            cmd_economy: "الاقتصاد",
+            cmd_moderation: "الإشراف",
+            c_t1: "معالج الإعداد", c_t2: "تعديل الألواح", c_t3: "إغلاق التذكرة",
+            c_l1: "عرض بطاقة المستوى", c_l2: "لوحة المتصدرين", c_l3: "تعيين XP يدويًا",
+            c_e1: "الرصيد", c_e2: "المكافأة اليومية", c_e3: "سرقة لاعب", c_e4: "آلة الفتحات",
+            c_m1: "حظر مستخدم", c_m2: "توقيت مستخدم", c_m3: "مسح الرسائل",
+            faq_tag: "مساعدة",
+            faq_title: "الأسئلة الشائعة",
+            faq1_q: "هل AERODYNE مجاني؟",
+            faq1_a: "نعم! AERODYNE مجاني تمامًا للإضافة والاستخدام في سيرفر ديسكورد الخاص بك دون أي رسوم خفية.",
+            faq2_q: "كيف أقوم بإعداد نظام التذاكر؟",
+            faq2_a: "ببساطة شغّل /ticket setup في سيرفرك واتبع المعالج التفاعلي. سيرشدك خطوة بخطوة لإنشاء الألواح والفئات والصلاحيات.",
+            faq3_q: "هل البوت يدعم اللغة العربية؟",
+            faq3_a: "نعم! AERODYNE يدعم اللغتين بشكل كامل. يمكنك تغيير لغة ردود البوت إلى العربية أو الإنجليزية في أي وقت.",
+            faq4_q: "ما الصلاحيات التي يحتاجها AERODYNE؟",
+            faq4_a: "يطلب AERODYNE صلاحية المسؤول للعمل بشكل كامل. هذا ضروري لإدارة الأدوار والقنوات والرسائل وجميع ميزات الإشراف.",
+            footer_copy: "© 2026 AERODYNE — غير تابع لشركة Discord Inc."
         }
+    };
 
-        // Scroll Animations
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach((entry, index) => {
-                if (entry.isIntersecting) {
-                    entry.target.style.opacity = '1';
-                    entry.target.style.transform = 'translateY(0)';
-                }
-            });
-        }, { threshold: 0.1 });
+    // ─── LANGUAGE SWITCH ─────────────────────────────────────────────
+    let currentLang = 'en';
 
-        document.querySelectorAll('.card').forEach(card => {
-            card.style.transition = 'all 0.6s ease';
-            card.style.opacity = '0';
-            card.style.transform = 'translateY(30px)';
-            observer.observe(card);
+    function applyLang(lang) {
+        const t = i18n[lang];
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+            const key = el.getAttribute('data-i18n');
+            if (t[key] !== undefined) {
+                el.innerHTML = t[key];
+            }
         });
+        document.documentElement.lang = lang;
+        document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+        document.getElementById('lang-btn').textContent = lang === 'en' ? 'العربية' : 'English';
+    }
+
+    function switchLang() {
+        currentLang = currentLang === 'en' ? 'ar' : 'en';
+        applyLang(currentLang);
+        // close mobile nav if open
+        document.getElementById('nav-menu').classList.remove('active');
+    }
+
+    // ─── HAMBURGER ───────────────────────────────────────────────────
+    document.getElementById('hamburger').addEventListener('click', () => {
+        document.getElementById('nav-menu').classList.toggle('active');
+    });
+
+    // Close nav on link click
+    document.querySelectorAll('#nav-menu a').forEach(link => {
+        link.addEventListener('click', () => {
+            document.getElementById('nav-menu').classList.remove('active');
+        });
+    });
+
+    // ─── FAQ ACCORDION ───────────────────────────────────────────────
+    function toggleFaq(btn) {
+        const item = btn.parentElement;
+        const answer = item.querySelector('.faq-a');
+        const isOpen = item.classList.contains('open');
+
+        // Close all
+        document.querySelectorAll('.faq-item.open').forEach(i => {
+            i.classList.remove('open');
+            i.querySelector('.faq-a').style.maxHeight = '0';
+        });
+
+        if (!isOpen) {
+            item.classList.add('open');
+            answer.style.maxHeight = answer.scrollHeight + 'px';
+        }
+    }
+
+    // ─── SCROLL ANIMATIONS ───────────────────────────────────────────
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry, i) => {
+            if (entry.isIntersecting) {
+                setTimeout(() => entry.target.classList.add('visible'), i * 80);
+                observer.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.card').forEach(card => observer.observe(card));
     </script>
 </body>
 </html>
