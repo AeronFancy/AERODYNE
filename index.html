@@ -3,77 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="AERODYNE - The ultimate advanced Discord bot with Dual XP, Economy, Tickets & more.">
+    <meta name="description" content="AERODYNE - Advanced Discord Bot with Dual XP, Economy, Tickets & Moderation">
     <meta name="theme-color" content="#22d3ee">
-    <title>AERODYNE | Next-Gen Discord Bot</title>
-   
+    <title>AERODYNE | Next Generation Discord Bot</title>
+    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-   
+    
     <style>
         :root {
             --accent: #22d3ee;
-            --accent-hover: #67e8f9;
-            --bg-primary: #0a0b0f;
-            --bg-secondary: #11131a;
-            --card-bg: rgba(17, 19, 26, 0.85);
-            --text-primary: #f1f5f9;
-            --text-secondary: #cbd5e1;
-            --transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            --accent-dark: #0891b2;
+            --bg: #0a0b0f;
+            --surface: #11131a;
+            --text: #f8fafc;
+            --text-secondary: #94a3b8;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
         body {
             font-family: 'Segoe UI', system-ui, sans-serif;
-            background: var(--bg-primary);
-            color: var(--text-primary);
+            background: var(--bg);
+            color: var(--text);
             line-height: 1.6;
-            overflow-x: hidden;
-        }
-
-        /* Glassmorphism & Glow */
-        .glass {
-            background: var(--card-bg);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(34, 211, 238, 0.15);
         }
 
         header {
-            background: rgba(17, 19, 26, 0.95);
-            backdrop-filter: blur(10px);
             position: sticky;
             top: 0;
+            background: rgba(17, 19, 26, 0.95);
+            backdrop-filter: blur(12px);
             z-index: 1000;
-            padding: 1.1rem 5%;
+            padding: 1rem 5%;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            border-bottom: 1px solid rgba(34, 211, 238, 0.1);
+            border-bottom: 1px solid rgba(34, 211, 238, 0.15);
         }
 
         .logo {
             display: flex;
             align-items: center;
-            gap: 14px;
-            font-size: 1.75rem;
+            gap: 12px;
+            font-size: 1.8rem;
             font-weight: 700;
         }
 
         .logo img {
-            width: 52px;
-            height: 52px;
+            width: 55px;
+            height: 55px;
             border-radius: 50%;
-            border: 2px solid var(--accent);
+            border: 3px solid var(--accent);
         }
 
-        /* Navigation */
         nav ul {
             display: flex;
-            gap: 2.2rem;
+            gap: 2.5rem;
             list-style: none;
         }
 
@@ -81,11 +66,15 @@
             color: var(--text-secondary);
             text-decoration: none;
             font-weight: 500;
-            transition: var(--transition);
+            transition: 0.3s;
         }
 
-        nav a:hover {
-            color: var(--accent);
+        nav a:hover { color: var(--accent); }
+
+        .controls {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
         }
 
         /* Hero */
@@ -93,65 +82,49 @@
             min-height: 100vh;
             display: flex;
             align-items: center;
+            justify-content: center;
             text-align: center;
-            background: linear-gradient(135deg, #0a0b0f 0%, #1e2937 100%);
+            background: linear-gradient(135deg, #0a0b0f, #1e2937);
             position: relative;
-            overflow: hidden;
         }
 
-        .hero::before {
+        .hero::after {
             content: '';
             position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: radial-gradient(circle at 50% 30%, rgba(34, 211, 238, 0.12), transparent 70%);
-            pointer-events: none;
+            inset: 0;
+            background: radial-gradient(circle at center, rgba(34,211,238,0.08), transparent);
         }
 
         .hero h1 {
             font-size: 3.8rem;
-            margin-bottom: 1.2rem;
-            background: linear-gradient(90deg, #e0f2fe, var(--accent));
+            margin-bottom: 1rem;
+            background: linear-gradient(to right, #67e8f9, #22d3ee);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
         .hero p {
             font-size: 1.35rem;
-            max-width: 720px;
+            max-width: 700px;
             margin: 0 auto 2.5rem;
             color: var(--text-secondary);
         }
 
         .btn {
-            padding: 16px 32px;
-            border-radius: 9999px;
+            padding: 16px 36px;
+            border-radius: 50px;
             font-weight: 600;
-            font-size: 1.1rem;
-            transition: var(--transition);
-            display: inline-flex;
-            align-items: center;
-            gap: 12px;
-            text-decoration: none;
+            transition: all 0.4s ease;
         }
 
         .btn-primary {
             background: var(--accent);
-            color: #0f172a;
+            color: #0a0b0f;
         }
 
         .btn-primary:hover {
-            transform: scale(1.05) translateY(-4px);
-            box-shadow: 0 0 30px rgba(34, 211, 238, 0.5);
-        }
-
-        /* Animations */
-        @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(40px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .animate {
-            animation: fadeUp 0.8s backwards;
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 20px 40px rgba(34, 211, 238, 0.4);
         }
 
         /* Sections */
@@ -160,12 +133,10 @@
         }
 
         .section-title {
-            font-size: 2.8rem;
             text-align: center;
+            font-size: 2.6rem;
             margin-bottom: 4rem;
-            background: linear-gradient(90deg, var(--accent), #67e8f9);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            color: var(--accent);
         }
 
         .grid {
@@ -175,63 +146,64 @@
         }
 
         .card {
-            padding: 2.2rem;
+            background: var(--surface);
+            padding: 2.5rem;
             border-radius: 20px;
-            transition: var(--transition);
-            height: 100%;
+            border: 1px solid rgba(34,211,238,0.1);
+            transition: all 0.4s ease;
         }
 
         .card:hover {
-            transform: translateY(-12px);
-            box-shadow: 0 25px 50px -12px rgba(34, 211, 238, 0.25);
+            transform: translateY(-15px);
+            border-color: var(--accent);
+            box-shadow: 0 25px 50px -12px rgba(34,211,238,0.25);
         }
 
         .card i {
-            font-size: 3.2rem;
+            font-size: 3rem;
             margin-bottom: 1.5rem;
-            transition: var(--transition);
-        }
-
-        .card:hover i {
             color: var(--accent);
-            transform: scale(1.15);
         }
 
         /* Commands */
-        .cmd-grid {
+        .commands-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(480px, 1fr));
-            gap: 1.5rem;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 2rem;
         }
 
         .command-item {
-            background: var(--card-bg);
-            padding: 1.3rem 1.6rem;
-            border-radius: 14px;
-            border-left: 4px solid var(--accent);
+            background: rgba(15, 23, 42, 0.6);
+            padding: 1.4rem 1.8rem;
+            border-radius: 12px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            transition: var(--transition);
+            transition: 0.3s;
         }
 
         .command-item:hover {
             background: rgba(34, 211, 238, 0.1);
-            transform: translateX(8px);
+            transform: translateX(10px);
         }
 
         .cmd-name {
-            font-family: 'Consolas', monospace;
+            font-family: monospace;
             color: var(--accent);
             font-weight: bold;
         }
 
-        /* Footer */
-        footer {
-            background: #0a0b0f;
-            padding: 3rem 5%;
-            text-align: center;
-            border-top: 1px solid rgba(34, 211, 238, 0.1);
+        /* Hamburger */
+        .hamburger { display: none; font-size: 1.8rem; cursor: pointer; }
+
+        @media (max-width: 768px) {
+            nav ul { 
+                position: fixed; top: 75px; left: -100%; width: 100%; height: calc(100vh - 75px);
+                background: var(--surface); flex-direction: column; padding: 3rem 0;
+                transition: 0.4s ease;
+            }
+            nav ul.active { left: 0; }
+            .hamburger { display: block; }
         }
     </style>
 </head>
@@ -240,11 +212,11 @@
     <header>
         <div class="logo">
             <img src="https://i.ibb.co/XrkRX7t1/art002e008486orig.jpg" alt="AERODYNE">
-            <span>AERODYNE</span>
+            AERODYNE
         </div>
 
         <nav>
-            <ul>
+            <ul id="nav-menu">
                 <li><a href="#features">Features</a></li>
                 <li><a href="#updates">Updates</a></li>
                 <li><a href="#commands">Commands</a></li>
@@ -252,127 +224,121 @@
             </ul>
         </nav>
 
-        <div style="display:flex; gap:1rem; align-items:center;">
-            <!-- Language & Theme controls here (same as before) -->
-            <button onclick="toggleLanguage()" style="background:none;border:none;color:white;font-size:1.1rem;cursor:pointer;">
-                <span id="lang-text">AR</span>
+        <div class="controls">
+            <button onclick="switchLang()" style="background:none; border:none; color:white; font-size:1.1rem; cursor:pointer;">
+                <span id="lang-btn">AR</span>
             </button>
+            <button class="hamburger" id="hamburger">☰</button>
         </div>
     </header>
 
+    <!-- Hero -->
     <section class="hero">
         <div>
-            <h1>Level Up Your Server with AERODYNE</h1>
-            <p>Advanced Dual XP • Rich Economy • Professional Ticket System • Powerful Moderation</p>
-            <div style="margin-top: 2rem;">
-                <a href="https://discord.com/oauth2/authorize?client_id=1488701920452546691&permissions=8&integration_type=0&scope=bot" 
-                   target="_blank" class="btn btn-primary">
-                    <i class="fa-brands fa-discord"></i> Invite Now
-                </a>
-            </div>
+            <h1 id="hero-title">Level Up Your Server with AERODYNE</h1>
+            <p id="hero-desc">Advanced Dual XP System, Rich Economy, Professional Ticket System, Powerful Moderation and more.</p>
+            <a href="https://discord.com/oauth2/authorize?client_id=1488701920452546691&permissions=8&integration_type=0&scope=bot" 
+               target="_blank" class="btn btn-primary">
+                <i class="fa-brands fa-discord"></i> Invite AERODYNE
+            </a>
         </div>
     </section>
 
     <!-- Features -->
     <section id="features">
-        <h2 class="section-title">Advanced Systems</h2>
+        <h2 class="section-title" id="features-title">Core Systems</h2>
         <div class="grid">
-            <div class="card glass animate" style="animation-delay: 0.1s;">
-                <i class="fa-solid fa-chart-line" style="color:#67e8f9"></i>
-                <h3>Dual XP System</h3>
-                <p>Separate Text & Voice XP • Exponential curves • Beautiful level cards with milestones</p>
-            </div>
-            <div class="card glass animate" style="animation-delay: 0.2s;">
-                <i class="fa-solid fa-coins" style="color:#facc15"></i>
-                <h3>Deep Economy</h3>
-                <p>Rob, Raid, Slots, Crash, Shop, Inventory, Daily, Forge & Admin controls</p>
-            </div>
-            <div class="card glass animate" style="animation-delay: 0.3s;">
-                <i class="fa-solid fa-ticket" style="color:#c026d3"></i>
-                <h3>Professional Tickets v1.0</h3>
-                <p>Multi-panel • Transcripts • Claim system • Ratings • Auto-close • Bilingual</p>
-            </div>
-            <div class="card glass animate" style="animation-delay: 0.4s;">
-                <i class="fa-solid fa-gavel"></i>
-                <h3>Advanced Moderation</h3>
-                <p>Anti-spam • Word filter • Timeout • Full logging • Audit detection</p>
-            </div>
+            <div class="card"><i class="fa-solid fa-chart-line"></i><h3>Dual XP</h3><p>Text & Voice XP with beautiful level cards</p></div>
+            <div class="card"><i class="fa-solid fa-coins"></i><h3>Economy</h3><p>Full economy with rob, slots, shop, and more</p></div>
+            <div class="card"><i class="fa-solid fa-ticket"></i><h3>Ticket System</h3><p>Professional multi-panel ticket system v1.0</p></div>
+            <div class="card"><i class="fa-solid fa-gavel"></i><h3>Moderation</h3><p>Advanced anti-spam, filters & logging</p></div>
+            <div class="card"><i class="fa-solid fa-book"></i><h3>Study Mode</h3><p>Focus mode for educational servers</p></div>
+            <div class="card"><i class="fa-solid fa-hard-drive"></i><h3>Auto Backup</h3><p>Automatic server data backup system</p></div>
         </div>
     </section>
 
     <!-- Latest Update -->
-    <section id="updates" style="background: var(--bg-secondary);">
-        <h2 class="section-title">Latest Update — Ticket System v1.0.0</h2>
-        <div class="glass" style="max-width: 1000px; margin: 0 auto; padding: 3rem; border-radius: 20px;">
-            <ul style="columns: 2; line-height: 2.1; font-size: 1.1rem;">
-                <li>Multi-panel setup with custom design</li>
-                <li>Auto-close + Transcripts</li>
-                <li>Staff Claim & Rating System</li>
-                <li>Bilingual Wizard (EN/AR)</li>
-                <li>Self-healing & Statistics</li>
-            </ul>
+    <section id="updates" style="background: var(--surface);">
+        <h2 class="section-title" id="updates-title">Latest Update</h2>
+        <div class="card" style="max-width:900px; margin:0 auto;">
+            <h3 style="color:var(--accent); margin-bottom:1rem;">Ticket System v1.0.0</h3>
+            <p>Full professional ticket system with panels, transcripts, claim system, ratings, and bilingual support.</p>
         </div>
     </section>
 
     <!-- Commands -->
     <section id="commands">
-        <h2 class="section-title">Popular Commands</h2>
-        <div class="cmd-grid">
-
+        <h2 class="section-title" id="commands-title">Popular Commands</h2>
+        <div class="commands-grid">
             <div>
-                <h3 style="margin-bottom:1rem; color:var(--accent)">🎟️ Ticket System</h3>
-                <div class="command-item"><span class="cmd-name">/ticket setup</span><span>Full setup wizard</span></div>
-                <div class="command-item"><span class="cmd-name">/ticket edit</span><span>Edit panels & settings</span></div>
-                <div class="command-item"><span class="cmd-name">/close</span><span>Close current ticket</span></div>
+                <h3>🎟️ Tickets</h3>
+                <div class="command-item"><span class="cmd-name">/ticket setup</span><span>Setup wizard</span></div>
+                <div class="command-item"><span class="cmd-name">/ticket edit</span><span>Edit panels</span></div>
+                <div class="command-item"><span class="cmd-name">/close</span><span>Close ticket</span></div>
             </div>
-
             <div>
-                <h3 style="margin-bottom:1rem; color:var(--accent)">📊 Leveling</h3>
-                <div class="command-item"><span class="cmd-name">/rank</span><span>View level card</span></div>
-                <div class="command-item"><span class="cmd-name">/top</span><span>XP Leaderboard</span></div>
+                <h3>📈 Leveling</h3>
+                <div class="command-item"><span class="cmd-name">/rank</span><span>Show level card</span></div>
+                <div class="command-item"><span class="cmd-name">/top</span><span>Leaderboard</span></div>
             </div>
-
             <div>
-                <h3 style="margin-bottom:1rem; color:var(--accent)">💰 Economy</h3>
+                <h3>💰 Economy</h3>
                 <div class="command-item"><span class="cmd-name">/bal</span><span>Balance</span></div>
                 <div class="command-item"><span class="cmd-name">/daily</span><span>Daily reward</span></div>
-                <div class="command-item"><span class="cmd-name">/rob</span><span>Rob a user</span></div>
+                <div class="command-item"><span class="cmd-name">/rob</span><span>Rob player</span></div>
                 <div class="command-item"><span class="cmd-name">/slots</span><span>Slot machine</span></div>
             </div>
-
             <div>
-                <h3 style="margin-bottom:1rem; color:var(--accent)">🔨 Moderation</h3>
-                <div class="command-item"><span class="cmd-name">/ban</span><span>Ban member</span></div>
-                <div class="command-item"><span class="cmd-name">/timeout</span><span>Timeout user</span></div>
-                <div class="command-item"><span class="cmd-name">/clear</span><span>Bulk delete messages</span></div>
+                <h3>🛡️ Moderation</h3>
+                <div class="command-item"><span class="cmd-name">/ban</span><span>Ban user</span></div>
+                <div class="command-item"><span class="cmd-name">/timeout</span><span>Timeout</span></div>
+                <div class="command-item"><span class="cmd-name">/clear</span><span>Clear messages</span></div>
             </div>
         </div>
     </section>
 
-    <footer>
+    <footer style="text-align:center; padding:3rem; background:#0a0b0f;">
         <p>&copy; 2026 AERODYNE • Not affiliated with Discord</p>
     </footer>
 
     <script>
-        // Simple scroll animation
+        // Hamburger
+        document.getElementById('hamburger').addEventListener('click', () => {
+            document.getElementById('nav-menu').classList.toggle('active');
+        });
+
+        // Language Switch
+        let currentLang = 'en';
+        function switchLang() {
+            currentLang = currentLang === 'en' ? 'ar' : 'en';
+            document.documentElement.setAttribute('lang', currentLang);
+            document.body.setAttribute('data-lang', currentLang);
+            
+            document.getElementById('lang-btn').textContent = currentLang === 'en' ? 'AR' : 'EN';
+            
+            if (currentLang === 'ar') {
+                document.documentElement.dir = 'rtl';
+            } else {
+                document.documentElement.dir = 'ltr';
+            }
+        }
+
+        // Scroll Animations
         const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
+            entries.forEach((entry, index) => {
                 if (entry.isIntersecting) {
-                    entry.target.classList.add('animate');
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
                 }
             });
         }, { threshold: 0.1 });
 
-        document.querySelectorAll('.card').forEach(card => observer.observe(card));
-
-        // Language toggle (basic for now)
-        let isArabic = false;
-        function toggleLanguage() {
-            isArabic = !isArabic;
-            document.getElementById('lang-text').textContent = isArabic ? "EN" : "AR";
-            // You can expand full translation later
-            alert(isArabic ? "تم تبديل اللغة إلى العربية" : "Language switched to English");
-        }
+        document.querySelectorAll('.card').forEach(card => {
+            card.style.transition = 'all 0.6s ease';
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(30px)';
+            observer.observe(card);
+        });
     </script>
 </body>
 </html>
