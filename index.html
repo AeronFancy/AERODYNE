@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
     <style>
+        /* ── TOKENS ── */
         :root {
             --accent:      #22d3ee;
             --accent-mid:  #0e7490;
@@ -22,7 +23,7 @@
             --border:      rgba(34,211,238,0.11);
             --text:        #eef2f7;
             --text-2:      #8899b0;
-            --text-3:      #536070;
+            --text-3:      #3a4a5a;
             --radius:      18px;
             --card-radius: 16px;
             --dc-bg:       #313338;
@@ -51,7 +52,7 @@
         ::-webkit-scrollbar-track { background: var(--bg); }
         ::-webkit-scrollbar-thumb { background: var(--accent-mid); border-radius: 3px; }
 
-        /* HEADER */
+        /* ── HEADER ── */
         header {
             position: sticky; top: 0; z-index: 800;
             padding: 0 5%; height: 66px;
@@ -106,7 +107,7 @@
             color: var(--text); background: none; border: none; line-height: 1; padding: 4px;
         }
 
-        /* HERO */
+        /* ── HERO ── */
         .hero {
             position: relative; min-height: 100vh;
             display: flex; align-items: center; justify-content: center;
@@ -153,7 +154,7 @@
             background: rgba(34,211,238,0.09); border: 1px solid rgba(34,211,238,0.28);
             color: var(--accent); padding: 5px 15px; border-radius: 30px;
             font-size: 0.76rem; font-weight: 600; letter-spacing: 0.1em;
-            text-transform: uppercase; margin-bottom: 2rem;
+            text-transform: uppercase; margin-bottom: 1.6rem;
         }
 
         .hero-eyebrow .dot {
@@ -166,29 +167,34 @@
             0%,100% { opacity:1; } 50% { opacity:0.4; }
         }
 
+        /* ── HERO TITLE — significantly reduced from previous 5.2rem max ── */
         .hero h1 {
             font-family: 'Syne', sans-serif;
-            font-size: clamp(2.8rem, 7.5vw, 5.2rem);
-            font-weight: 800; line-height: 1.08;
-            letter-spacing: -0.02em; margin-bottom: 1.4rem;
+            font-size: clamp(1.55rem, 3.2vw, 2.5rem);
+            font-weight: 800;
+            line-height: 1.15;
+            letter-spacing: -0.015em;
+            margin-bottom: 1.2rem;
             background: linear-gradient(160deg, #ffffff 0%, #c8f5fa 40%, #22d3ee 75%, #0891b2 100%);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .hero-sub {
-            font-size: clamp(1rem, 2vw, 1.2rem);
-            max-width: 580px; margin: 0 auto 2.8rem;
+            font-size: clamp(0.9rem, 1.5vw, 1.05rem);
+            max-width: 540px; margin: 0 auto 2.4rem;
             color: var(--text-2); font-weight: 400; line-height: 1.7;
         }
 
         .hero-cta { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
 
-        /* BUTTONS */
+        /* ── BUTTONS ── */
         .btn {
             display: inline-flex; align-items: center; gap: 9px;
             padding: 13px 28px; border-radius: 50px; font-weight: 600;
             font-size: 0.95rem; text-decoration: none; cursor: pointer;
-            transition: transform 0.28s ease, box-shadow 0.28s ease, background 0.22s;
+            transition: transform 0.28s ease, box-shadow 0.28s ease;
             border: none; font-family: inherit;
         }
 
@@ -198,7 +204,7 @@
         .btn-outline { background: transparent; color: var(--text); border: 1px solid var(--border); }
         .btn-outline:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-4px); }
 
-        /* STATS */
+        /* ── STATS BAR ── */
         .stats-bar {
             background: var(--surface);
             border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
@@ -219,7 +225,7 @@
 
         .stat-label { font-size: 0.8rem; color: var(--text-2); margin-top: 5px; letter-spacing: 0.04em; }
 
-        /* SECTIONS */
+        /* ── SECTIONS ── */
         section { padding: 5.5rem 5%; }
 
         .section-header { text-align: center; margin-bottom: 3.2rem; }
@@ -236,7 +242,7 @@
             font-weight: 800; color: var(--text); letter-spacing: -0.01em;
         }
 
-        /* CARDS */
+        /* ── FEATURE CARDS ── */
         .grid {
             display: grid; grid-template-columns: repeat(auto-fit, minmax(280px,1fr));
             gap: 1.4rem; max-width: 1180px; margin: 0 auto;
@@ -267,7 +273,7 @@
         .card h3 { font-family:'Syne',sans-serif; font-size:1.08rem; font-weight:700; margin-bottom:0.45rem; }
         .card p  { color: var(--text-2); font-size: 0.88rem; }
 
-        /* UPDATE */
+        /* ── UPDATE ── */
         .update-card {
             max-width: 840px; margin: 0 auto;
             background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); overflow: hidden;
@@ -297,7 +303,7 @@
         .update-feature { display:flex; align-items:center; gap:9px; font-size:0.87rem; color:var(--text-2); }
         .update-feature i { color:var(--accent); font-size:0.8rem; }
 
-        /* COMMANDS */
+        /* ── COMMANDS ── */
         .commands-wrapper {
             max-width: 1080px; margin: 0 auto;
             display: grid; grid-template-columns: repeat(auto-fit, minmax(230px,1fr)); gap: 2rem;
@@ -319,7 +325,7 @@
         .cmd-name { font-family:monospace; color:var(--accent); font-weight:700; font-size:0.88rem; }
         .cmd-desc { font-size:0.78rem; color:var(--text-2); }
 
-        /* FAQ */
+        /* ── FAQ ── */
         .faq-wrapper { max-width: 740px; margin: 0 auto; }
 
         .faq-item {
@@ -342,12 +348,12 @@
         .faq-a { max-height:0; overflow:hidden; transition:max-height 0.32s ease; background:var(--surface); }
         .faq-a-inner { padding:0 1.4rem 1.1rem; color:var(--text-2); font-size:0.88rem; line-height:1.75; }
 
-        /* FOOTER */
+        /* ── FOOTER ── */
         footer { background:var(--surface); border-top:1px solid var(--border); padding:2.8rem 5%; text-align:center; }
         .footer-logo { font-family:'Syne',sans-serif; font-size:1.4rem; font-weight:800; color:var(--accent); margin-bottom:0.7rem; }
         footer p { color:var(--text-2); font-size:0.84rem; }
 
-        /* MOBILE NAV */
+        /* ── MOBILE NAV ── */
         @media (max-width:768px) {
             nav ul {
                 position:fixed; top:66px; left:-100%; width:100%; height:calc(100vh - 66px);
@@ -360,202 +366,271 @@
             .commands-wrapper { grid-template-columns:1fr; }
         }
 
-        /* RTL */
+        /* ── RTL ── */
         [dir="rtl"] nav a::after { transform-origin:right; }
         [dir="rtl"] .update-feature { flex-direction:row-reverse; }
         [dir="rtl"] .faq-q { flex-direction:row-reverse; }
         [dir="rtl"] .command-item { flex-direction:row-reverse; }
 
-        /* ═══════════════════════════════════════
+        /* ═══════════════════════════════════════════════
            DISCORD PROFILE CARD
-        ═══════════════════════════════════════ */
+           – fixed position, no drag, flip only
+        ═══════════════════════════════════════════════ */
         .dc-wrapper {
-            position: fixed; bottom: 24px; right: 24px;
-            z-index: 9000; touch-action: none; user-select: none;
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 9000;
+            /* No touch-action or cursor manipulation — card is static */
         }
 
-        .dc-card { width: 272px; perspective: 1100px; filter: drop-shadow(0 24px 60px rgba(0,0,0,0.62)); }
+        .dc-card {
+            width: 278px;
+            perspective: 1100px;
+            filter: drop-shadow(0 20px 56px rgba(0,0,0,0.65));
+        }
 
+        /* 3-D flip container */
         .dc-inner {
-            position: relative; width: 100%;
+            position: relative;
+            width: 100%;
+            /* Height is explicitly set so back face fills identically */
+            height: 320px;
             transform-style: preserve-3d;
-            transition: transform 0.68s cubic-bezier(0.4,0,0.2,1);
-            cursor: grab;
+            transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .dc-inner:active { cursor: grabbing; }
         .dc-inner.flipped { transform: rotateY(180deg); }
 
+        /* Both faces share these rules */
         .dc-face {
-            width: 100%; border-radius: var(--card-radius);
-            overflow: hidden; backface-visibility: hidden; -webkit-backface-visibility: hidden;
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: var(--card-radius);
+            overflow: hidden;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
         }
 
-        /* FRONT */
-        .dc-front { background: var(--dc-bg); }
+        /* ── FRONT FACE ── */
+        .dc-front {
+            background: var(--dc-bg);
+            display: flex;
+            flex-direction: column;
+        }
 
         .dc-banner {
-            height: 72px; position: relative;
+            flex-shrink: 0;
+            height: 68px;
+            position: relative;
             background: linear-gradient(135deg, #0e4a58 0%, #0e7490 50%, #22d3ee 100%);
         }
 
         .dc-banner::after {
             content:''; position:absolute; inset:0;
             background-image: repeating-linear-gradient(45deg,
-                rgba(255,255,255,0.03) 0px, rgba(255,255,255,0.03) 1px,
+                rgba(255,255,255,0.03) 0, rgba(255,255,255,0.03) 1px,
                 transparent 1px, transparent 14px);
         }
 
         .dc-avatar-row {
-            padding: 0 12px; display: flex; align-items: flex-end;
-            justify-content: space-between; margin-top: -36px; position: relative; z-index: 2;
+            flex-shrink: 0;
+            padding: 0 12px;
+            display: flex; align-items: flex-end; justify-content: space-between;
+            margin-top: -34px; position: relative; z-index: 2;
         }
 
-        .dc-avatar-wrap { position:relative; width:72px; height:72px; }
+        .dc-avatar-wrap { position:relative; width:68px; height:68px; }
 
         .dc-avatar {
-            width:72px; height:72px; border-radius:50%;
+            width:68px; height:68px; border-radius:50%;
             border:4px solid var(--dc-bg); object-fit:cover; background:var(--dc-bg2);
         }
 
         .dc-avatar-fallback {
-            width:72px; height:72px; border-radius:50%; border:4px solid var(--dc-bg);
+            width:68px; height:68px; border-radius:50%; border:4px solid var(--dc-bg);
             background:linear-gradient(135deg,#22d3ee,#0e7490);
             display:none; align-items:center; justify-content:center;
-            font-family:'Syne',sans-serif; font-size:1.9rem; font-weight:800; color:#070910;
+            font-family:'Syne',sans-serif; font-size:1.8rem; font-weight:800; color:#070910;
         }
 
         .dc-status-dot {
-            position:absolute; bottom:4px; right:4px; width:14px; height:14px;
+            position:absolute; bottom:4px; right:4px; width:13px; height:13px;
             border-radius:50%; background:var(--dc-green);
-            border:3px solid var(--dc-bg); box-shadow:0 0 0 1px var(--dc-bg);
+            border:3px solid var(--dc-bg);
         }
 
+        /* Flip trigger button */
         .dc-flip-btn {
-            width:30px; height:30px; border-radius:50%; border:none;
-            background:var(--dc-bg2); color:var(--dc-text-2); font-size:0.78rem;
+            width:28px; height:28px; border-radius:50%; border:none;
+            background:var(--dc-bg2); color:var(--dc-text-2); font-size:0.75rem;
             cursor:pointer; display:flex; align-items:center; justify-content:center;
-            transition:background 0.2s,color 0.2s,transform 0.2s; margin-bottom:6px;
-            position:relative;
+            transition:background 0.2s, color 0.2s, transform 0.22s;
+            margin-bottom:4px; position:relative; flex-shrink:0;
         }
 
-        .dc-flip-btn:hover { background:var(--dc-blue); color:#fff; transform:rotate(20deg); }
+        .dc-flip-btn:hover { background:var(--dc-blue); color:#fff; transform:rotate(22deg); }
 
+        /* Tooltip on flip buttons */
         .dc-flip-btn::after {
             content:attr(data-tip);
             position:absolute; right:calc(100% + 8px); top:50%; transform:translateY(-50%);
-            background:#111; color:#fff; font-size:0.68rem; font-family:'DM Sans',sans-serif;
-            white-space:nowrap; padding:3px 8px; border-radius:5px;
-            pointer-events:none; opacity:0; transition:opacity 0.2s;
+            background:#0a0b0f; color:#fff; font-size:0.65rem;
+            font-family:'DM Sans',sans-serif; white-space:nowrap;
+            padding:3px 8px; border-radius:5px;
+            pointer-events:none; opacity:0; transition:opacity 0.18s;
         }
 
         .dc-flip-btn:hover::after { opacity:1; }
 
-        .dc-body { padding: 8px 14px 14px; }
+        /* ── FRONT BODY ── */
+        .dc-body {
+            flex: 1;
+            padding: 6px 13px 13px;
+            display: flex;
+            flex-direction: column;
+        }
 
         .dc-displayname {
-            font-family:'Syne',sans-serif; font-size:1.1rem; font-weight:800;
+            font-family:'Syne',sans-serif; font-size:1.05rem; font-weight:800;
             color:var(--dc-text); letter-spacing:-0.01em; line-height:1.2;
         }
 
-        .dc-badges { display:flex; flex-wrap:wrap; gap:4px; margin:7px 0 5px; }
+        /* Badge row */
+        .dc-badges { display:flex; flex-wrap:wrap; gap:5px; margin:6px 0 4px; }
 
+        /* Each badge is an anchor wrapping an img */
         .dc-badge {
-            position:relative; width:22px; height:22px;
-            display:flex; align-items:center; justify-content:center;
-            cursor:default; flex-shrink:0;
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 22px;
+            height: 22px;
+            flex-shrink: 0;
+            text-decoration: none;
+            border-radius: 3px;
+            transition: transform 0.18s;
         }
 
-        .dc-badge img, .dc-badge svg {
-            width:22px; height:22px;
-            transition:transform 0.18s;
-            filter:drop-shadow(0 1px 4px rgba(0,0,0,0.4));
+        .dc-badge:hover { transform: scale(1.3); }
+
+        .dc-badge img {
+            width: 22px; height: 22px;
+            object-fit: contain;
+            filter: drop-shadow(0 1px 3px rgba(0,0,0,0.5));
         }
 
-        .dc-badge:hover img, .dc-badge:hover svg { transform:scale(1.28); }
-
+        /* Badge tooltip */
         .dc-badge::after {
-            content:attr(data-tip);
-            position:absolute; bottom:calc(100% + 7px); left:50%; transform:translateX(-50%);
-            background:#111317; border:1px solid rgba(255,255,255,0.1); color:#fff;
-            font-family:'DM Sans',sans-serif; font-size:0.68rem; font-weight:600;
-            white-space:nowrap; padding:4px 9px; border-radius:6px;
-            pointer-events:none; opacity:0; transition:opacity 0.18s; z-index:10;
+            content: attr(data-tip);
+            position: absolute;
+            bottom: calc(100% + 7px);
+            left: 50%; transform: translateX(-50%);
+            background: #0a0b0f;
+            border: 1px solid rgba(255,255,255,0.1);
+            color: #fff;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.65rem; font-weight: 600;
+            white-space: nowrap;
+            padding: 4px 9px; border-radius: 6px;
+            pointer-events: none; opacity: 0; transition: opacity 0.18s;
+            z-index: 20;
         }
 
-        .dc-badge:hover::after { opacity:1; }
+        .dc-badge:hover::after { opacity: 1; }
 
-        .dc-username { font-size:0.83rem; color:var(--dc-text-2); margin-top:1px; }
+        .dc-username { font-size:0.8rem; color:var(--dc-text-2); margin-top:1px; }
 
-        .dc-hr { border:none; border-top:1px solid rgba(255,255,255,0.08); margin:10px 0; }
+        .dc-hr { border:none; border-top:1px solid rgba(255,255,255,0.08); margin:8px 0; }
 
         .dc-section-label {
-            font-size:0.68rem; font-weight:700; letter-spacing:0.08em;
+            font-size:0.63rem; font-weight:700; letter-spacing:0.09em;
             color:var(--dc-text-2); margin-bottom:4px; text-transform:uppercase;
         }
 
-        .dc-about { font-size:0.82rem; color:var(--dc-text); line-height:1.55; }
+        .dc-about { font-size:0.79rem; color:var(--dc-text); line-height:1.5; }
 
-        /* BACK */
+        /* ── BACK FACE ── */
         .dc-back {
-            position:absolute; inset:0;
-            transform:rotateY(180deg);
-            background:var(--dc-bg3);
-            display:flex; flex-direction:column;
+            background: var(--dc-bg3);
+            transform: rotateY(180deg);
+            display: flex;
+            flex-direction: column;
         }
 
         .dc-back-banner {
-            height:50px; background:linear-gradient(90deg,#5865f2,#22d3ee);
-            display:flex; align-items:center; justify-content:space-between; padding:0 12px;
+            flex-shrink: 0;
+            height: 50px;
+            background: linear-gradient(90deg, #5865f2 0%, #22d3ee 100%);
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 12px;
         }
 
-        .dc-back-banner-title { font-family:'Syne',sans-serif; font-size:0.9rem; font-weight:800; color:#fff; letter-spacing:0.08em; }
+        .dc-back-banner-title {
+            font-family:'Syne',sans-serif; font-size:0.88rem; font-weight:800;
+            color:#fff; letter-spacing:0.08em;
+        }
 
         .dc-back-flip-btn {
-            width:28px; height:28px; border-radius:50%; border:none;
-            background:rgba(0,0,0,0.25); color:rgba(255,255,255,0.85); font-size:0.78rem;
+            width:26px; height:26px; border-radius:50%; border:none;
+            background:rgba(0,0,0,0.28); color:rgba(255,255,255,0.85); font-size:0.72rem;
             cursor:pointer; display:flex; align-items:center; justify-content:center;
-            transition:background 0.18s, transform 0.2s;
+            transition:background 0.18s, transform 0.22s; flex-shrink:0;
         }
 
-        .dc-back-flip-btn:hover { background:rgba(0,0,0,0.5); transform:rotate(-20deg); }
+        .dc-back-flip-btn:hover { background:rgba(0,0,0,0.52); transform:rotate(-22deg); }
 
-        .dc-back-body { padding:12px 14px 14px; flex:1; display:flex; flex-direction:column; gap:7px; }
+        /* Back body fills remaining height with no gaps */
+        .dc-back-body {
+            flex: 1;
+            padding: 11px 13px 13px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            overflow: hidden;
+        }
 
         .dc-back-section-label {
-            font-size:0.66rem; font-weight:700; letter-spacing:0.1em;
-            color:var(--dc-text-2); text-transform:uppercase; margin-bottom:2px;
+            font-size:0.62rem; font-weight:700; letter-spacing:0.1em;
+            color:var(--dc-text-2); text-transform:uppercase; flex-shrink:0;
         }
 
-        .dc-feature-row { display:flex; align-items:center; gap:9px; font-size:0.82rem; color:var(--dc-text); }
-        .dc-feature-row i { color:var(--accent); font-size:0.8rem; width:14px; text-align:center; }
+        .dc-feature-row {
+            display:flex; align-items:center; gap:9px;
+            font-size:0.79rem; color:var(--dc-text); flex-shrink:0;
+        }
 
-        .dc-back-hr { border:none; border-top:1px solid rgba(255,255,255,0.07); margin:2px 0; }
+        .dc-feature-row i { color:var(--accent); font-size:0.76rem; width:13px; text-align:center; }
 
+        .dc-back-hr { border:none; border-top:1px solid rgba(255,255,255,0.07); flex-shrink:0; }
+
+        /* Invite button — fills remaining space at bottom naturally */
         .dc-invite-btn {
             display:flex; align-items:center; justify-content:center; gap:8px;
-            margin-top:auto; padding:9px 14px; border-radius:8px;
-            background:var(--dc-blue); color:#fff; text-decoration:none;
-            font-size:0.85rem; font-weight:600; font-family:'DM Sans',sans-serif;
-            transition:background 0.2s, transform 0.2s;
+            padding: 9px 14px; border-radius: 8px;
+            background: var(--dc-blue); color: #fff; text-decoration: none;
+            font-size: 0.82rem; font-weight: 600; font-family:'DM Sans',sans-serif;
+            transition: background 0.2s, transform 0.2s;
+            flex-shrink: 0;
+            margin-top: auto;
         }
 
         .dc-invite-btn:hover { background:#4752c4; transform:translateY(-2px); }
 
-        .dc-drag-hint {
-            text-align:center; margin-top:7px; font-size:0.63rem;
-            letter-spacing:0.1em; color:var(--text-3); text-transform:uppercase; user-select:none;
-        }
-
+        /* ── MOBILE ── */
         @media (max-width:480px) {
             .dc-wrapper { bottom:12px; right:12px; }
-            .dc-card { width:248px; }
+            .dc-card { width:252px; }
+            .dc-inner { height:310px; }
         }
     </style>
 </head>
 <body>
 
-<!-- HEADER -->
+<!-- ══ HEADER ══ -->
 <header>
     <a href="#" class="logo">
         <img src="https://i.ibb.co/XrkRX7t1/art002e008486orig.jpg" alt="AERODYNE">
@@ -575,7 +650,7 @@
     </div>
 </header>
 
-<!-- HERO -->
+<!-- ══ HERO ══ -->
 <section class="hero">
     <div class="hero-atm" aria-hidden="true">
         <div class="hero-glow"></div>
@@ -604,7 +679,7 @@
     </div>
 </section>
 
-<!-- STATS -->
+<!-- ══ STATS ══ -->
 <div class="stats-bar">
     <div class="stats-inner">
         <div class="stat"><div class="stat-num">50+</div><div class="stat-label" data-i18n="stat_commands">Commands</div></div>
@@ -614,7 +689,7 @@
     </div>
 </div>
 
-<!-- FEATURES -->
+<!-- ══ FEATURES ══ -->
 <section id="features">
     <div class="section-header">
         <div class="section-tag" data-i18n="features_tag">What we offer</div>
@@ -630,7 +705,7 @@
     </div>
 </section>
 
-<!-- UPDATES -->
+<!-- ══ UPDATES ══ -->
 <section id="updates" style="background:var(--surface);">
     <div class="section-header">
         <div class="section-tag" data-i18n="updates_tag">Changelog</div>
@@ -655,7 +730,7 @@
     </div>
 </section>
 
-<!-- COMMANDS -->
+<!-- ══ COMMANDS ══ -->
 <section id="commands">
     <div class="section-header">
         <div class="section-tag" data-i18n="commands_tag">Reference</div>
@@ -665,32 +740,32 @@
         <div class="cmd-group">
             <h3>🎟️ <span data-i18n="cmd_tickets">Tickets</span></h3>
             <div class="command-item"><span class="cmd-name">/ticket setup</span><span class="cmd-desc" data-i18n="c_t1">Setup wizard</span></div>
-            <div class="command-item"><span class="cmd-name">/ticket edit</span><span class="cmd-desc" data-i18n="c_t2">Edit panels</span></div>
-            <div class="command-item"><span class="cmd-name">/close</span><span class="cmd-desc" data-i18n="c_t3">Close ticket</span></div>
+            <div class="command-item"><span class="cmd-name">/ticket edit</span><span class="cmd-desc"  data-i18n="c_t2">Edit panels</span></div>
+            <div class="command-item"><span class="cmd-name">/close</span><span class="cmd-desc"        data-i18n="c_t3">Close ticket</span></div>
         </div>
         <div class="cmd-group">
             <h3>📈 <span data-i18n="cmd_leveling">Leveling</span></h3>
-            <div class="command-item"><span class="cmd-name">/rank</span><span class="cmd-desc" data-i18n="c_l1">Show level card</span></div>
-            <div class="command-item"><span class="cmd-name">/top</span><span class="cmd-desc" data-i18n="c_l2">Leaderboard</span></div>
+            <div class="command-item"><span class="cmd-name">/rank</span><span class="cmd-desc"   data-i18n="c_l1">Show level card</span></div>
+            <div class="command-item"><span class="cmd-name">/top</span><span class="cmd-desc"    data-i18n="c_l2">Leaderboard</span></div>
             <div class="command-item"><span class="cmd-name">/setxp</span><span class="cmd-desc" data-i18n="c_l3">Set XP manually</span></div>
         </div>
         <div class="cmd-group">
             <h3>💰 <span data-i18n="cmd_economy">Economy</span></h3>
-            <div class="command-item"><span class="cmd-name">/bal</span><span class="cmd-desc" data-i18n="c_e1">Balance</span></div>
+            <div class="command-item"><span class="cmd-name">/bal</span><span class="cmd-desc"   data-i18n="c_e1">Balance</span></div>
             <div class="command-item"><span class="cmd-name">/daily</span><span class="cmd-desc" data-i18n="c_e2">Daily reward</span></div>
-            <div class="command-item"><span class="cmd-name">/rob</span><span class="cmd-desc" data-i18n="c_e3">Rob a player</span></div>
+            <div class="command-item"><span class="cmd-name">/rob</span><span class="cmd-desc"   data-i18n="c_e3">Rob a player</span></div>
             <div class="command-item"><span class="cmd-name">/slots</span><span class="cmd-desc" data-i18n="c_e4">Slot machine</span></div>
         </div>
         <div class="cmd-group">
             <h3>🛡️ <span data-i18n="cmd_moderation">Moderation</span></h3>
-            <div class="command-item"><span class="cmd-name">/ban</span><span class="cmd-desc" data-i18n="c_m1">Ban user</span></div>
+            <div class="command-item"><span class="cmd-name">/ban</span><span class="cmd-desc"     data-i18n="c_m1">Ban user</span></div>
             <div class="command-item"><span class="cmd-name">/timeout</span><span class="cmd-desc" data-i18n="c_m2">Timeout user</span></div>
-            <div class="command-item"><span class="cmd-name">/clear</span><span class="cmd-desc" data-i18n="c_m3">Clear messages</span></div>
+            <div class="command-item"><span class="cmd-name">/clear</span><span class="cmd-desc"   data-i18n="c_m3">Clear messages</span></div>
         </div>
     </div>
 </section>
 
-<!-- FAQ -->
+<!-- ══ FAQ ══ -->
 <section id="faq" style="background:var(--surface);">
     <div class="section-header">
         <div class="section-tag" data-i18n="faq_tag">Help</div>
@@ -716,51 +791,67 @@
     </div>
 </section>
 
-<!-- FOOTER -->
+<!-- ══ FOOTER ══ -->
 <footer>
     <div class="footer-logo">AERODYNE</div>
     <p data-i18n="footer_copy">© 2026 AERODYNE — Not affiliated with Discord Inc.</p>
 </footer>
 
-<!-- DISCORD PROFILE CARD -->
-<div class="dc-wrapper" id="dc-wrapper">
-    <div class="dc-card">
-        <div class="dc-inner dc-face" id="dc-inner">
 
-            <!-- FRONT -->
-            <div class="dc-front dc-face">
+<!-- ══════════════════════════════════════════
+     DISCORD PROFILE CARD — static, flip-only
+══════════════════════════════════════════ -->
+<div class="dc-wrapper">
+    <div class="dc-card">
+        <div class="dc-inner" id="dc-inner">
+
+            <!-- ─ FRONT ─ -->
+            <div class="dc-face dc-front">
                 <div class="dc-banner"></div>
+
                 <div class="dc-avatar-row">
                     <div class="dc-avatar-wrap">
-                        <img src="https://i.ibb.co/zVfWfhCP/IMG-5553.jpg" alt="Aeron" class="dc-avatar" id="dc-pfp"
-                             onerror="this.style.display='none';document.getElementById('dc-fallback').style.display='flex';">
+                        <img
+                            src="https://i.ibb.co/d4KsK0Xk"
+                            alt="Aeron"
+                            class="dc-avatar"
+                            id="dc-pfp"
+                            onerror="this.style.display='none';document.getElementById('dc-fallback').style.display='flex';"
+                        >
                         <div class="dc-avatar-fallback" id="dc-fallback">A</div>
                         <div class="dc-status-dot" title="Online"></div>
                     </div>
-                    <button class="dc-flip-btn" id="dc-flip-front" data-tip="Bot Info" aria-label="Flip card">
+                    <button class="dc-flip-btn" id="dc-flip-front" data-tip="Bot Info" aria-label="See bot info">
                         <i class="fa-solid fa-rotate"></i>
                     </button>
                 </div>
+
                 <div class="dc-body">
                     <div class="dc-displayname">Aeron</div>
+
+                    <!-- Badges — each is a clickable <a> linking to relevant Discord page -->
                     <div class="dc-badges" id="dc-badges"></div>
+
                     <div class="dc-username">unaeron</div>
                     <hr class="dc-hr">
                     <div class="dc-section-label" data-i18n="dc_about">ABOUT ME</div>
-                    <div class="dc-about" data-i18n="dc_about_text">Creator of AERODYNE 🤖<br>Discord developer &amp; bot enthusiast.</div>
+                    <div class="dc-about" data-i18n="dc_about_text">
+                        Creator of AERODYNE 🤖<br>Discord developer &amp; bot enthusiast.
+                    </div>
                 </div>
             </div>
 
-            <!-- BACK -->
-            <div class="dc-back dc-face">
+            <!-- ─ BACK ─ -->
+            <div class="dc-face dc-back">
                 <div class="dc-back-banner">
                     <span class="dc-back-banner-title">AERODYNE</span>
-                    <button class="dc-back-flip-btn" id="dc-flip-back" aria-label="Flip back">
+                    <button class="dc-back-flip-btn" id="dc-flip-back" aria-label="Flip back to profile">
                         <i class="fa-solid fa-rotate-left"></i>
                     </button>
                 </div>
+
                 <div class="dc-back-body">
-                    <div class="dc-back-section-label" data-i18n="dc_systems">Systems</div>
+                    <div class="dc-back-section-label" data-i18n="dc_systems">Bot Systems</div>
                     <div class="dc-feature-row"><i class="fa-solid fa-chart-line"></i><span data-i18n="dc_f1">Dual XP — Text &amp; Voice</span></div>
                     <div class="dc-feature-row"><i class="fa-solid fa-coins"></i><span data-i18n="dc_f2">Full Economy System</span></div>
                     <div class="dc-feature-row"><i class="fa-solid fa-ticket"></i><span data-i18n="dc_f3">Ticket System v1.0</span></div>
@@ -768,88 +859,95 @@
                     <div class="dc-feature-row"><i class="fa-solid fa-book"></i><span data-i18n="dc_f5">Study Mode</span></div>
                     <hr class="dc-back-hr">
                     <a href="https://discord.com/oauth2/authorize?client_id=1488701920452546691&permissions=8&integration_type=0&scope=bot"
-                       target="_blank" rel="noopener noreferrer" class="dc-invite-btn" data-i18n="dc_invite">
+                       target="_blank" rel="noopener noreferrer"
+                       class="dc-invite-btn" data-i18n="dc_invite">
                         <i class="fa-brands fa-discord"></i> Add to Your Server
                     </a>
                 </div>
             </div>
 
-        </div>
+        </div><!-- /dc-inner -->
     </div>
-    <div class="dc-drag-hint">⠿ drag me</div>
 </div>
 
+
 <script>
-/* ── i18n ── */
+/* ══ i18n ════════════════════════════════════════════════════════ */
 const i18n = {
     en: {
-        nav_features:'Features',nav_updates:'Updates',nav_commands:'Commands',nav_faq:'FAQ',
+        nav_features:'Features', nav_updates:'Updates', nav_commands:'Commands', nav_faq:'FAQ',
         hero_badge:'Now Live — Ticket System v1.0',
         hero_title:'Level Up Your Server<br>with AERODYNE',
         hero_desc:'Advanced Dual XP System, Rich Economy, Professional Ticket System, and Powerful Moderation — all in one bot.',
-        hero_invite:'Invite AERODYNE',hero_learn:'Explore Features',
-        stat_commands:'Commands',stat_systems:'Core Systems',stat_langs:'Languages',stat_uptime:'Uptime',
-        features_tag:'What we offer',features_title:'Core Systems',
-        f1_title:'Dual XP System',f1_desc:'Text & Voice XP with beautiful level cards and full leaderboard tracking.',
-        f2_title:'Economy',f2_desc:'Full economy with rob, slots, daily rewards, shop, and so much more.',
-        f3_title:'Ticket System',f3_desc:'Professional multi-panel ticket system with transcripts and ratings.',
-        f4_title:'Moderation',f4_desc:'Advanced anti-spam, word filters, logging, and auto-moderation rules.',
-        f5_title:'Study Mode',f5_desc:'Focus mode designed specifically for educational and study servers.',
-        f6_title:'Auto Backup',f6_desc:'Automatic server data backup to keep all your settings safe.',
-        updates_tag:'Changelog',updates_title:'Latest Update',update_name:'Ticket System',
+        hero_invite:'Invite AERODYNE', hero_learn:'Explore Features',
+        stat_commands:'Commands', stat_systems:'Core Systems', stat_langs:'Languages', stat_uptime:'Uptime',
+        features_tag:'What we offer', features_title:'Core Systems',
+        f1_title:'Dual XP System',  f1_desc:'Text & Voice XP with beautiful level cards and full leaderboard tracking.',
+        f2_title:'Economy',         f2_desc:'Full economy with rob, slots, daily rewards, shop, and so much more.',
+        f3_title:'Ticket System',   f3_desc:'Professional multi-panel ticket system with transcripts and ratings.',
+        f4_title:'Moderation',      f4_desc:'Advanced anti-spam, word filters, logging, and auto-moderation rules.',
+        f5_title:'Study Mode',      f5_desc:'Focus mode designed specifically for educational and study servers.',
+        f6_title:'Auto Backup',     f6_desc:'Automatic server data backup to keep all your settings safe.',
+        updates_tag:'Changelog', updates_title:'Latest Update',
+        update_name:'Ticket System',
         update_desc:'Full professional ticket system now live with everything you need to manage server support.',
-        uf1:'Multi-panel setup wizard',uf2:'Ticket transcripts',uf3:'Claim & assign system',
-        uf4:'User ratings',uf5:'Arabic & English support',uf6:'Category management',
-        commands_tag:'Reference',commands_title:'Popular Commands',
-        cmd_tickets:'Tickets',cmd_leveling:'Leveling',cmd_economy:'Economy',cmd_moderation:'Moderation',
-        c_t1:'Setup wizard',c_t2:'Edit panels',c_t3:'Close ticket',
-        c_l1:'Show level card',c_l2:'Leaderboard',c_l3:'Set XP manually',
-        c_e1:'Balance',c_e2:'Daily reward',c_e3:'Rob a player',c_e4:'Slot machine',
-        c_m1:'Ban user',c_m2:'Timeout user',c_m3:'Clear messages',
-        faq_tag:'Help',faq_title:'Frequently Asked Questions',
-        faq1_q:'Is AERODYNE free to use?',faq1_a:'Yes! AERODYNE is completely free to invite and use with no hidden fees.',
-        faq2_q:'How do I set up the ticket system?',faq2_a:'Run /ticket setup in your server and follow the interactive wizard step by step.',
-        faq3_q:'Does the bot support Arabic?',faq3_a:'Yes! AERODYNE has full bilingual support. Switch between Arabic and English at any time.',
-        faq4_q:'What permissions does AERODYNE need?',faq4_a:'Administrator permissions are needed to fully manage roles, channels, messages, and moderation.',
+        uf1:'Multi-panel setup wizard', uf2:'Ticket transcripts', uf3:'Claim & assign system',
+        uf4:'User ratings',             uf5:'Arabic & English support', uf6:'Category management',
+        commands_tag:'Reference', commands_title:'Popular Commands',
+        cmd_tickets:'Tickets', cmd_leveling:'Leveling', cmd_economy:'Economy', cmd_moderation:'Moderation',
+        c_t1:'Setup wizard',    c_t2:'Edit panels',   c_t3:'Close ticket',
+        c_l1:'Show level card', c_l2:'Leaderboard',   c_l3:'Set XP manually',
+        c_e1:'Balance',         c_e2:'Daily reward',  c_e3:'Rob a player', c_e4:'Slot machine',
+        c_m1:'Ban user',        c_m2:'Timeout user',  c_m3:'Clear messages',
+        faq_tag:'Help', faq_title:'Frequently Asked Questions',
+        faq1_q:'Is AERODYNE free to use?',           faq1_a:'Yes! AERODYNE is completely free to invite and use with no hidden fees.',
+        faq2_q:'How do I set up the ticket system?', faq2_a:'Run /ticket setup in your server and follow the interactive wizard step by step.',
+        faq3_q:'Does the bot support Arabic?',       faq3_a:'Yes! AERODYNE has full bilingual support. Switch between Arabic and English at any time.',
+        faq4_q:'What permissions does AERODYNE need?', faq4_a:'Administrator permissions are needed to fully manage roles, channels, messages, and moderation.',
         footer_copy:'© 2026 AERODYNE — Not affiliated with Discord Inc.',
-        dc_about:'ABOUT ME',dc_about_text:'Creator of AERODYNE 🤖<br>Discord developer &amp; bot enthusiast.',
-        dc_systems:'Systems',dc_f1:'Dual XP — Text & Voice',dc_f2:'Full Economy System',
-        dc_f3:'Ticket System v1.0',dc_f4:'Advanced Moderation',dc_f5:'Study Mode',
+        dc_about:'ABOUT ME',
+        dc_about_text:'Creator of AERODYNE 🤖<br>Discord developer &amp; bot enthusiast.',
+        dc_systems:'Bot Systems',
+        dc_f1:'Dual XP — Text & Voice', dc_f2:'Full Economy System',
+        dc_f3:'Ticket System v1.0',      dc_f4:'Advanced Moderation', dc_f5:'Study Mode',
         dc_invite:'Add to Your Server'
     },
     ar: {
-        nav_features:'المميزات',nav_updates:'التحديثات',nav_commands:'الأوامر',nav_faq:'الأسئلة الشائعة',
+        nav_features:'المميزات', nav_updates:'التحديثات', nav_commands:'الأوامر', nav_faq:'الأسئلة الشائعة',
         hero_badge:'متاح الآن — نظام التذاكر v1.0',
         hero_title:'طوّر سيرفرك<br>مع AERODYNE',
         hero_desc:'نظام XP مزدوج متطور، اقتصاد غني، نظام تذاكر احترافي، وإشراف قوي — كل ذلك في بوت واحد.',
-        hero_invite:'أضف AERODYNE',hero_learn:'اكتشف المميزات',
-        stat_commands:'أمر',stat_systems:'أنظمة رئيسية',stat_langs:'لغتان',stat_uptime:'وقت التشغيل',
-        features_tag:'ما نقدمه',features_title:'الأنظمة الرئيسية',
-        f1_title:'نظام XP المزدوج',f1_desc:'نقاط خبرة للنصوص والصوت مع بطاقات مستوى جميلة.',
-        f2_title:'الاقتصاد',f2_desc:'اقتصاد كامل يشمل السرقة والفتحات والمكافآت اليومية والمتجر.',
-        f3_title:'نظام التذاكر',f3_desc:'نظام تذاكر احترافي متعدد الألواح مع النصوص والتقييمات.',
-        f4_title:'الإشراف',f4_desc:'مكافحة سبام متقدمة وفلاتر كلمات وسجلات وإشراف تلقائي.',
-        f5_title:'وضع الدراسة',f5_desc:'وضع التركيز المصمم للسيرفرات التعليمية والدراسية.',
-        f6_title:'النسخ الاحتياطي',f6_desc:'نسخ احتياطي تلقائي لبيانات السيرفر لحفظ إعداداتك.',
-        updates_tag:'سجل التغييرات',updates_title:'آخر تحديث',update_name:'نظام التذاكر',
+        hero_invite:'أضف AERODYNE', hero_learn:'اكتشف المميزات',
+        stat_commands:'أمر', stat_systems:'أنظمة رئيسية', stat_langs:'لغتان', stat_uptime:'وقت التشغيل',
+        features_tag:'ما نقدمه', features_title:'الأنظمة الرئيسية',
+        f1_title:'نظام XP المزدوج', f1_desc:'نقاط خبرة للنصوص والصوت مع بطاقات مستوى جميلة.',
+        f2_title:'الاقتصاد',        f2_desc:'اقتصاد كامل يشمل السرقة والفتحات والمكافآت اليومية والمتجر.',
+        f3_title:'نظام التذاكر',    f3_desc:'نظام تذاكر احترافي متعدد الألواح مع النصوص الكاملة والتقييمات.',
+        f4_title:'الإشراف',         f4_desc:'مكافحة سبام متقدمة وفلاتر كلمات وسجلات وإشراف تلقائي.',
+        f5_title:'وضع الدراسة',     f5_desc:'وضع التركيز المصمم للسيرفرات التعليمية والدراسية.',
+        f6_title:'النسخ الاحتياطي', f6_desc:'نسخ احتياطي تلقائي لبيانات السيرفر لحفظ إعداداتك.',
+        updates_tag:'سجل التغييرات', updates_title:'آخر تحديث',
+        update_name:'نظام التذاكر',
         update_desc:'نظام التذاكر الاحترافي الكامل متاح الآن بكل ما تحتاجه لإدارة دعم السيرفر.',
-        uf1:'معالج إعداد متعدد الألواح',uf2:'نصوص التذاكر',uf3:'نظام الاستلام والتعيين',
-        uf4:'تقييمات المستخدمين',uf5:'دعم العربية والإنجليزية',uf6:'إدارة الفئات',
-        commands_tag:'مرجع',commands_title:'الأوامر الشائعة',
-        cmd_tickets:'التذاكر',cmd_leveling:'المستويات',cmd_economy:'الاقتصاد',cmd_moderation:'الإشراف',
-        c_t1:'معالج الإعداد',c_t2:'تعديل الألواح',c_t3:'إغلاق التذكرة',
-        c_l1:'عرض بطاقة المستوى',c_l2:'لوحة المتصدرين',c_l3:'تعيين XP يدويًا',
-        c_e1:'الرصيد',c_e2:'المكافأة اليومية',c_e3:'سرقة لاعب',c_e4:'آلة الفتحات',
-        c_m1:'حظر مستخدم',c_m2:'توقيت مستخدم',c_m3:'مسح الرسائل',
-        faq_tag:'مساعدة',faq_title:'الأسئلة الشائعة',
-        faq1_q:'هل AERODYNE مجاني؟',faq1_a:'نعم! AERODYNE مجاني تمامًا للإضافة والاستخدام دون أي رسوم خفية.',
-        faq2_q:'كيف أقوم بإعداد نظام التذاكر؟',faq2_a:'شغّل /ticket setup في سيرفرك واتبع المعالج التفاعلي خطوة بخطوة.',
-        faq3_q:'هل البوت يدعم اللغة العربية؟',faq3_a:'نعم! AERODYNE يدعم اللغتين بشكل كامل. يمكنك التبديل في أي وقت.',
-        faq4_q:'ما الصلاحيات التي يحتاجها AERODYNE؟',faq4_a:'يطلب AERODYNE صلاحية المسؤول لإدارة الأدوار والقنوات والرسائل وميزات الإشراف.',
+        uf1:'معالج إعداد متعدد الألواح', uf2:'نصوص التذاكر', uf3:'نظام الاستلام والتعيين',
+        uf4:'تقييمات المستخدمين',         uf5:'دعم العربية والإنجليزية', uf6:'إدارة الفئات',
+        commands_tag:'مرجع', commands_title:'الأوامر الشائعة',
+        cmd_tickets:'التذاكر', cmd_leveling:'المستويات', cmd_economy:'الاقتصاد', cmd_moderation:'الإشراف',
+        c_t1:'معالج الإعداد', c_t2:'تعديل الألواح', c_t3:'إغلاق التذكرة',
+        c_l1:'عرض بطاقة المستوى', c_l2:'لوحة المتصدرين', c_l3:'تعيين XP يدويًا',
+        c_e1:'الرصيد', c_e2:'المكافأة اليومية', c_e3:'سرقة لاعب', c_e4:'آلة الفتحات',
+        c_m1:'حظر مستخدم', c_m2:'توقيت مستخدم', c_m3:'مسح الرسائل',
+        faq_tag:'مساعدة', faq_title:'الأسئلة الشائعة',
+        faq1_q:'هل AERODYNE مجاني؟',              faq1_a:'نعم! AERODYNE مجاني تمامًا للإضافة والاستخدام دون أي رسوم خفية.',
+        faq2_q:'كيف أقوم بإعداد نظام التذاكر؟',  faq2_a:'شغّل /ticket setup في سيرفرك واتبع المعالج التفاعلي خطوة بخطوة.',
+        faq3_q:'هل البوت يدعم اللغة العربية؟',    faq3_a:'نعم! AERODYNE يدعم اللغتين بشكل كامل. يمكنك التبديل في أي وقت.',
+        faq4_q:'ما الصلاحيات التي يحتاجها AERODYNE؟', faq4_a:'يطلب AERODYNE صلاحية المسؤول لإدارة الأدوار والقنوات والرسائل وميزات الإشراف.',
         footer_copy:'© 2026 AERODYNE — غير تابع لشركة Discord Inc.',
-        dc_about:'عني',dc_about_text:'مطوّر AERODYNE 🤖<br>مطوّر بوتات ديسكورد.',
-        dc_systems:'الأنظمة',dc_f1:'نظام XP للنصوص والصوت',dc_f2:'نظام الاقتصاد الكامل',
-        dc_f3:'نظام التذاكر v1.0',dc_f4:'الإشراف المتقدم',dc_f5:'وضع الدراسة',
+        dc_about:'عني',
+        dc_about_text:'مطوّر AERODYNE 🤖<br>مطوّر بوتات ديسكورد.',
+        dc_systems:'أنظمة البوت',
+        dc_f1:'نظام XP للنصوص والصوت', dc_f2:'نظام الاقتصاد الكامل',
+        dc_f3:'نظام التذاكر v1.0',      dc_f4:'الإشراف المتقدم', dc_f5:'وضع الدراسة',
         dc_invite:'أضف إلى سيرفرك'
     }
 };
@@ -863,7 +961,7 @@ function applyLang(lang) {
         if (t[key] !== undefined) el.innerHTML = t[key];
     });
     document.documentElement.lang = lang;
-    document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+    document.documentElement.dir  = lang === 'ar' ? 'rtl' : 'ltr';
     document.getElementById('lang-btn').textContent = lang === 'en' ? 'العربية' : 'English';
 }
 
@@ -873,7 +971,7 @@ function switchLang() {
     document.getElementById('nav-menu').classList.remove('active');
 }
 
-/* Hamburger */
+/* ── Hamburger ── */
 document.getElementById('hamburger').addEventListener('click', () => {
     document.getElementById('nav-menu').classList.toggle('active');
 });
@@ -881,18 +979,22 @@ document.querySelectorAll('#nav-menu a').forEach(a => {
     a.addEventListener('click', () => document.getElementById('nav-menu').classList.remove('active'));
 });
 
-/* FAQ */
+/* ── FAQ ── */
 function toggleFaq(btn) {
-    const item = btn.parentElement;
+    const item   = btn.parentElement;
     const answer = item.querySelector('.faq-a');
     const isOpen = item.classList.contains('open');
     document.querySelectorAll('.faq-item.open').forEach(i => {
-        i.classList.remove('open'); i.querySelector('.faq-a').style.maxHeight = '0';
+        i.classList.remove('open');
+        i.querySelector('.faq-a').style.maxHeight = '0';
     });
-    if (!isOpen) { item.classList.add('open'); answer.style.maxHeight = answer.scrollHeight + 'px'; }
+    if (!isOpen) {
+        item.classList.add('open');
+        answer.style.maxHeight = answer.scrollHeight + 'px';
+    }
 }
 
-/* Scroll animations */
+/* ── Scroll card animation ── */
 const cardObserver = new IntersectionObserver((entries) => {
     entries.forEach((entry, i) => {
         if (entry.isIntersecting) {
@@ -903,132 +1005,98 @@ const cardObserver = new IntersectionObserver((entries) => {
 }, { threshold: 0.08 });
 document.querySelectorAll('.card').forEach(c => cardObserver.observe(c));
 
-/* ── DISCORD BADGES ── */
-const svgLeaf = `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-  <circle cx="12" cy="12" r="12" fill="#1a6b32"/>
-  <path d="M12 4C12 4 7 8.5 7 13a5 5 0 0010 0c0-4.5-5-9-5-9z" fill="#3ecc71"/>
-  <path d="M12 13 Q11 11 9.5 10.5" stroke="#a8f5c3" stroke-width="0.8" fill="none" stroke-linecap="round"/>
-  <line x1="12" y1="13" x2="12" y2="18" stroke="#a8f5c3" stroke-width="1" stroke-linecap="round"/>
-</svg>`;
-
-const svgOrb = `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-  <defs>
-    <radialGradient id="og" cx="38%" cy="35%">
-      <stop offset="0%" stop-color="#b4a8ff"/>
-      <stop offset="55%" stop-color="#5865f2"/>
-      <stop offset="100%" stop-color="#2c31a8"/>
-    </radialGradient>
-    <radialGradient id="sh" cx="50%" cy="50%">
-      <stop offset="0%" stop-color="rgba(255,255,255,0)"/>
-      <stop offset="100%" stop-color="rgba(0,0,80,0.5)"/>
-    </radialGradient>
-  </defs>
-  <circle cx="12" cy="12" r="11" fill="url(#og)"/>
-  <circle cx="12" cy="12" r="11" fill="url(#sh)"/>
-  <ellipse cx="9" cy="8.5" rx="3" ry="2" fill="rgba(255,255,255,0.28)" transform="rotate(-20,9,8.5)"/>
-  <circle cx="16.5" cy="16" r="1" fill="rgba(255,255,255,0.12)"/>
-</svg>`;
-
+/* ══ DISCORD BADGES ════════════════════════════════════════════
+   Each badge has:
+     img  — direct ibb image URL (provided by user)
+     tip  — tooltip label
+     href — clickable destination (relevant Discord page)
+══════════════════════════════════════════════════════════════ */
 const BADGES = [
-    { tip:'Nitro Subscriber',        img:'https://cdn.discordapp.com/badge-icons/premium.png' },
-    { tip:'HypeSquad Bravery',        img:'https://cdn.discordapp.com/badge-icons/hypesquad_bravery.png' },
-    { tip:'Originally Known As',      img:'https://cdn.discordapp.com/badge-icons/change_username.png' },
-    { tip:'Completed a Quest',        img:'https://cdn.discordapp.com/badge-icons/quest_completed.png' },
-    { tip:'Last Meadow Online',       svg: svgLeaf },
-    { tip:'Orbs Apprentice',          svg: svgOrb },
-    { tip:'Discord Bug Hunter',       img:'https://cdn.discordapp.com/badge-icons/bug_hunter_level_1.png' }
+    {
+        img:  'https://i.ibb.co/SDqy4fwY/99180-nitro-silver.png',
+        tip:  'Discord Nitro',
+        href: 'https://discord.com/nitro'
+    },
+    {
+        img:  'https://i.ibb.co/rRS0GbRC/14043-hypesquad-bravery.png',
+        tip:  'HypeSquad Bravery',
+        href: 'https://discord.com/settings/hypesquad-online'
+    },
+    {
+        img:  'https://i.ibb.co/xtkqyKdZ/69014-server-booster.png',
+        tip:  'Server Booster',
+        href: 'https://discord.com/nitro'
+    },
+    {
+        img:  'https://i.ibb.co/hF36FRdR/81799-legacy-badge.png',
+        tip:  'Legacy Username',
+        href: 'https://discord.com/blog'
+    },
+    {
+        img:  'https://i.ibb.co/jvzFBfWc/30647-completed-quest.png',
+        tip:  'Completed a Quest',
+        href: 'https://discord.com/quests'
+    },
+    {
+        img:  'https://i.ibb.co/CKxBDw0c/172841-last-meadow-badge.png',
+        tip:  'Last Meadow Online',
+        href: 'https://discord.com/discovery'
+    },
+    {
+        img:  'https://i.ibb.co/DHcPvgrM/961317-discord-orbs.png',
+        tip:  'Orbs Apprentice',
+        href: 'https://discord.com/discovery'
+    },
+    {
+        img:  'https://i.ibb.co/ZzrNjxr6/9595-badge-bughunter.png',
+        tip:  'Discord Bug Hunter',
+        href: 'https://discord.com/bugreport'
+    },
+    {
+        img:  'https://i.ibb.co/vRNFZcH/5847-active-developer-badge.png',
+        tip:  'Active Developer',
+        href: 'https://discord.com/developers/active-developer'
+    }
 ];
 
 function renderBadges() {
     const container = document.getElementById('dc-badges');
     container.innerHTML = '';
     BADGES.forEach(badge => {
-        const wrap = document.createElement('div');
-        wrap.className = 'dc-badge';
-        wrap.setAttribute('data-tip', badge.tip);
-        if (badge.svg) {
-            wrap.innerHTML = badge.svg;
-        } else {
-            const img = document.createElement('img');
-            img.src = badge.img; img.alt = badge.tip; img.loading = 'lazy';
-            img.onerror = () => img.style.opacity = '0.3';
-            wrap.appendChild(img);
-        }
-        container.appendChild(wrap);
+        /* Wrap in <a> so the whole badge is clickable */
+        const link = document.createElement('a');
+        link.className       = 'dc-badge';
+        link.href            = badge.href;
+        link.target          = '_blank';
+        link.rel             = 'noopener noreferrer';
+        link.setAttribute('data-tip', badge.tip);
+        link.setAttribute('aria-label', badge.tip);
+
+        const img    = document.createElement('img');
+        img.src      = badge.img;
+        img.alt      = badge.tip;
+        img.loading  = 'lazy';
+        img.onerror  = () => { img.style.opacity = '0.25'; };
+
+        link.appendChild(img);
+        container.appendChild(link);
     });
 }
+
 renderBadges();
 
-/* ── FLIP ── */
+/* ══ CARD FLIP — no drag at all ════════════════════════════════ */
 const dcInner = document.getElementById('dc-inner');
 
 document.getElementById('dc-flip-front').addEventListener('click', e => {
-    e.stopPropagation(); dcInner.classList.add('flipped');
+    e.stopPropagation();
+    dcInner.classList.add('flipped');
 });
+
 document.getElementById('dc-flip-back').addEventListener('click', e => {
-    e.stopPropagation(); dcInner.classList.remove('flipped');
+    e.stopPropagation();
+    dcInner.classList.remove('flipped');
 });
-
-/* ── DRAG ── */
-const dcWrapper = document.getElementById('dc-wrapper');
-let dragging = false, moved = false;
-let startX, startY, initLeft, initTop;
-
-function pinToTopLeft() {
-    const r = dcWrapper.getBoundingClientRect();
-    dcWrapper.style.right  = 'auto';
-    dcWrapper.style.bottom = 'auto';
-    dcWrapper.style.left   = r.left + 'px';
-    dcWrapper.style.top    = r.top  + 'px';
-}
-
-function clamp(v, mn, mx) { return Math.min(Math.max(v, mn), mx); }
-
-dcWrapper.addEventListener('mousedown', e => {
-    if (e.target.closest('a,button')) return;
-    pinToTopLeft();
-    startX = e.clientX; startY = e.clientY;
-    initLeft = parseFloat(dcWrapper.style.left);
-    initTop  = parseFloat(dcWrapper.style.top);
-    moved = false;
-    document.addEventListener('mousemove', onMouseMove);
-    document.addEventListener('mouseup',   onMouseUp, { once:true });
-    e.preventDefault();
-});
-
-function onMouseMove(e) {
-    const dx = e.clientX - startX, dy = e.clientY - startY;
-    if (!moved && (Math.abs(dx) > 4 || Math.abs(dy) > 4)) { moved = true; dragging = true; }
-    if (dragging) {
-        dcWrapper.style.left = clamp(initLeft+dx, 0, window.innerWidth  - dcWrapper.offsetWidth)  + 'px';
-        dcWrapper.style.top  = clamp(initTop +dy, 0, window.innerHeight - dcWrapper.offsetHeight) + 'px';
-    }
-}
-
-function onMouseUp() { document.removeEventListener('mousemove', onMouseMove); dragging = false; }
-
-dcWrapper.addEventListener('touchstart', e => {
-    if (e.target.closest('a,button')) return;
-    const t = e.touches[0];
-    pinToTopLeft();
-    startX = t.clientX; startY = t.clientY;
-    initLeft = parseFloat(dcWrapper.style.left);
-    initTop  = parseFloat(dcWrapper.style.top);
-    moved = false;
-}, { passive:true });
-
-dcWrapper.addEventListener('touchmove', e => {
-    const t = e.touches[0];
-    const dx = t.clientX - startX, dy = t.clientY - startY;
-    if (!moved && (Math.abs(dx) > 6 || Math.abs(dy) > 6)) moved = true;
-    if (moved) {
-        dcWrapper.style.left = clamp(initLeft+dx, 0, window.innerWidth  - dcWrapper.offsetWidth)  + 'px';
-        dcWrapper.style.top  = clamp(initTop +dy, 0, window.innerHeight - dcWrapper.offsetHeight) + 'px';
-        e.preventDefault();
-    }
-}, { passive:false });
-
-dcWrapper.addEventListener('touchend', () => { moved = false; });
 </script>
 </body>
 </html>
