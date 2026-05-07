@@ -511,11 +511,15 @@
             height: 22px;
             flex-shrink: 0;
             text-decoration: none;
+            cursor: pointer;
             border-radius: 3px;
             transition: transform 0.18s;
         }
 
-        .dc-badge:hover { transform: scale(1.3); }
+        .dc-badge:hover { 
+            transform: scale(1.3);
+            
+         }
 
         .dc-badge img {
             width: 22px; height: 22px;
@@ -524,21 +528,30 @@
         }
 
         /* Badge tooltip */
-        .dc-badge::after {
-            content: attr(data-tip);
-            position: absolute;
-            bottom: calc(100% + 7px);
-            left: 50%; transform: translateX(-50%);
-            background: #0a0b0f;
-            border: 1px solid rgba(255,255,255,0.1);
-            color: #fff;
-            font-family: 'DM Sans', sans-serif;
-            font-size: 0.65rem; font-weight: 600;
-            white-space: nowrap;
-            padding: 4px 9px; border-radius: 6px;
-            pointer-events: none; opacity: 0; transition: opacity 0.18s;
-            z-index: 20;
-        }
+.dc-badge::after {
+    content: attr(data-tip);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%) translateY(10px);
+    background: #0f1320;
+    border: 1px solid var(--accent);
+    color: #fff;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 600;
+    padding: 8px 14px;
+    border-radius: 10px;
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 9999;           /* أعلى زيندكس */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+    text-align: center;
+    min-width: 140px;
+}
 
         .dc-badge:hover::after { opacity: 1; }
 
@@ -626,6 +639,67 @@
             .dc-card { width:252px; }
             .dc-inner { height:310px; }
         }
+        /* Badge Modal */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 10000;
+    left: 0; top: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.85);
+    backdrop-filter: blur(8px);
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background: var(--surface);
+    border: 1px solid var(--accent);
+    border-radius: 16px;
+    width: 90%;
+    max-width: 380px;
+    padding: 2rem 1.5rem;
+    text-align: center;
+    position: relative;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+}
+
+.modal-close {
+    position: absolute;
+    top: 12px;
+    right: 16px;
+    font-size: 28px;
+    background: none;
+    border: none;
+    color: var(--text-2);
+    cursor: pointer;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-close:hover { color: var(--accent); }
+
+#modal-badge-img {
+    width: 90px;
+    height: 90px;
+    margin-bottom: 1rem;
+    filter: drop-shadow(0 4px 12px rgba(34,211,238,0.3));
+}
+
+#modal-badge-title {
+    color: var(--accent);
+    font-family: 'Syne', sans-serif;
+    margin-bottom: 0.8rem;
+}
+
+#modal-badge-desc {
+    color: var(--text-2);
+    line-height: 1.6;
+    font-size: 0.92rem;
+}
     </style>
 </head>
 <body>
@@ -686,6 +760,18 @@
         <div class="stat"><div class="stat-num">6</div><div class="stat-label" data-i18n="stat_systems">Core Systems</div></div>
         <div class="stat"><div class="stat-num">2</div><div class="stat-label" data-i18n="stat_langs">Languages</div></div>
         <div class="stat"><div class="stat-num">24/7</div><div class="stat-label" data-i18n="stat_uptime">Uptime</div></div>
+    </div>
+</div>
+
+<!-- Badge Modal -->
+<div id="badge-modal" class="modal">
+    <div class="modal-content">
+        <button class="modal-close">&times;</button>
+        <div class="modal-body">
+            <img id="modal-badge-img" src="" alt="">
+            <h3 id="modal-badge-title"></h3>
+            <p id="modal-badge-desc"></p>
+        </div>
     </div>
 </div>
 
@@ -892,7 +978,7 @@ const i18n = {
         update_name:'Ticket System',
         update_desc:'Full professional ticket system now live with everything you need to manage server support.',
         uf1:'Multi-panel setup wizard', uf2:'Ticket transcripts', uf3:'Claim & assign system',
-        uf4:'User ratings',             uf5:'Arabic & English support', uf6:'Category management',
+        uf4:'User ratings', uf5:'Arabic & English support', uf6:'Category management',
         commands_tag:'Reference', commands_title:'Popular Commands',
         cmd_tickets:'Tickets', cmd_leveling:'Leveling', cmd_economy:'Economy', cmd_moderation:'Moderation',
         c_t1:'Setup wizard',    c_t2:'Edit panels',   c_t3:'Close ticket',
@@ -909,10 +995,31 @@ const i18n = {
         dc_about_text:'Creator of AERODYNE 🤖<br>Discord developer &amp; bot enthusiast.',
         dc_systems:'Bot Systems',
         dc_f1:'Dual XP — Text & Voice', dc_f2:'Full Economy System',
-        dc_f3:'Ticket System v1.0',      dc_f4:'Advanced Moderation', dc_f5:'Study Mode',
-        dc_invite:'Add to Your Server'
+        dc_f3:'Ticket System v1.0', dc_f4:'Advanced Moderation', dc_f5:'Study Mode',
+        dc_invite:'Add to Your Server',
+
+        // Badge Translations
+        badge_nitro_title: 'Discord Nitro',
+        badge_nitro_desc: 'Active Discord Nitro subscriber. Unlocks custom emojis, higher quality audio & video, larger file uploads, and more.',
+        badge_bravery_title: 'HypeSquad Bravery',
+        badge_bravery_desc: 'Member of the HypeSquad House of Bravery. Represents Discord at events and helps grow the community.',
+        badge_booster_title: 'Server Booster',
+        badge_booster_desc: 'Boosted this server. Helps improve the server level and receives exclusive perks.',
+        badge_legacy_title: 'Legacy Username',
+        badge_legacy_desc: 'Owned a classic Discord username before the 2023 update.',
+        badge_quest_title: 'Completed a Quest',
+        badge_quest_desc: 'Successfully completed a Discord Quest.',
+        badge_meadow_title: 'Last Meadow',
+        badge_meadow_desc: 'Participant in the exclusive Discord event "Last Meadow".',
+        badge_orbs_title: 'Orbs Apprentice',
+        badge_orbs_desc: 'Earned progress in Discord\'s Orbs system.',
+        badge_bughunter_title: 'Bug Hunter',
+        badge_bughunter_desc: 'Discord Bug Hunter. Recognized for reporting bugs.',
+        badge_developer_title: 'Active Developer',
+        badge_developer_desc: 'Recognized Discord developer for creating and maintaining bots.'
     },
     ar: {
+        // ... (ابقِ الترجمة العربية كما هي كاملة) ...
         nav_features:'المميزات', nav_updates:'التحديثات', nav_commands:'الأوامر', nav_faq:'الأسئلة الشائعة',
         hero_badge:'متاح الآن — نظام التذاكر v1.0',
         hero_title:'طوّر سيرفرك<br>مع AERODYNE',
@@ -930,7 +1037,7 @@ const i18n = {
         update_name:'نظام التذاكر',
         update_desc:'نظام التذاكر الاحترافي الكامل متاح الآن بكل ما تحتاجه لإدارة دعم السيرفر.',
         uf1:'معالج إعداد متعدد الألواح', uf2:'نصوص التذاكر', uf3:'نظام الاستلام والتعيين',
-        uf4:'تقييمات المستخدمين',         uf5:'دعم العربية والإنجليزية', uf6:'إدارة الفئات',
+        uf4:'تقييمات المستخدمين', uf5:'دعم العربية والإنجليزية', uf6:'إدارة الفئات',
         commands_tag:'مرجع', commands_title:'الأوامر الشائعة',
         cmd_tickets:'التذاكر', cmd_leveling:'المستويات', cmd_economy:'الاقتصاد', cmd_moderation:'الإشراف',
         c_t1:'معالج الإعداد', c_t2:'تعديل الألواح', c_t3:'إغلاق التذكرة',
@@ -938,17 +1045,36 @@ const i18n = {
         c_e1:'الرصيد', c_e2:'المكافأة اليومية', c_e3:'سرقة لاعب', c_e4:'آلة الفتحات',
         c_m1:'حظر مستخدم', c_m2:'توقيت مستخدم', c_m3:'مسح الرسائل',
         faq_tag:'مساعدة', faq_title:'الأسئلة الشائعة',
-        faq1_q:'هل AERODYNE مجاني؟',              faq1_a:'نعم! AERODYNE مجاني تمامًا للإضافة والاستخدام دون أي رسوم خفية.',
-        faq2_q:'كيف أقوم بإعداد نظام التذاكر؟',  faq2_a:'شغّل /ticket setup في سيرفرك واتبع المعالج التفاعلي خطوة بخطوة.',
-        faq3_q:'هل البوت يدعم اللغة العربية؟',    faq3_a:'نعم! AERODYNE يدعم اللغتين بشكل كامل. يمكنك التبديل في أي وقت.',
+        faq1_q:'هل AERODYNE مجاني؟', faq1_a:'نعم! AERODYNE مجاني تمامًا للإضافة والاستخدام دون أي رسوم خفية.',
+        faq2_q:'كيف أقوم بإعداد نظام التذاكر؟', faq2_a:'شغّل /ticket setup في سيرفرك واتبع المعالج التفاعلي خطوة بخطوة.',
+        faq3_q:'هل البوت يدعم اللغة العربية؟', faq3_a:'نعم! AERODYNE يدعم اللغتين بشكل كامل. يمكنك التبديل في أي وقت.',
         faq4_q:'ما الصلاحيات التي يحتاجها AERODYNE؟', faq4_a:'يطلب AERODYNE صلاحية المسؤول لإدارة الأدوار والقنوات والرسائل وميزات الإشراف.',
         footer_copy:'© 2026 AERODYNE — غير تابع لشركة Discord Inc.',
         dc_about:'عني',
         dc_about_text:'مطوّر AERODYNE 🤖<br>مطوّر بوتات ديسكورد.',
         dc_systems:'أنظمة البوت',
         dc_f1:'نظام XP للنصوص والصوت', dc_f2:'نظام الاقتصاد الكامل',
-        dc_f3:'نظام التذاكر v1.0',      dc_f4:'الإشراف المتقدم', dc_f5:'وضع الدراسة',
-        dc_invite:'أضف إلى سيرفرك'
+        dc_f3:'نظام التذاكر v1.0', dc_f4:'الإشراف المتقدم', dc_f5:'وضع الدراسة',
+        dc_invite:'أضف إلى سيرفرك',
+
+        badge_nitro_title: 'ديسكورد نيترو',
+        badge_nitro_desc: 'مشترك نشط في Discord Nitro. يتيح إيموجي مخصصة وجودة أعلى ورفع ملفات أكبر.',
+        badge_bravery_title: 'HypeSquad Bravery',
+        badge_bravery_desc: 'عضو في فريق HypeSquad House of Bravery.',
+        badge_booster_title: 'بوستر السيرفر',
+        badge_booster_desc: 'قام بـ Boosting هذا السيرفر ويساهم في رفعه.',
+        badge_legacy_title: 'اسم مستخدم قديم',
+        badge_legacy_desc: 'كان يملك اسم مستخدم كلاسيكي قبل 2023.',
+        badge_quest_title: 'أكمل مهمة',
+        badge_quest_desc: 'أكمل مهمة Discord Quest.',
+        badge_meadow_title: 'Last Meadow',
+        badge_meadow_desc: 'شارك في حدث Discord الحصري "Last Meadow".',
+        badge_orbs_title: 'Orbs Apprentice',
+        badge_orbs_desc: 'حقق تقدم في نظام Orbs.',
+        badge_bughunter_title: 'صياد الأخطاء',
+        badge_bughunter_desc: 'Discord Bug Hunter.',
+        badge_developer_title: 'مطور نشط',
+        badge_developer_desc: 'مطور معترف به من Discord.'
     }
 };
 
@@ -963,6 +1089,9 @@ function applyLang(lang) {
     document.documentElement.lang = lang;
     document.documentElement.dir  = lang === 'ar' ? 'rtl' : 'ltr';
     document.getElementById('lang-btn').textContent = lang === 'en' ? 'العربية' : 'English';
+    
+    // Re-render badges when language changes
+    if (typeof renderBadges === 'function') renderBadges();
 }
 
 function switchLang() {
@@ -971,7 +1100,7 @@ function switchLang() {
     document.getElementById('nav-menu').classList.remove('active');
 }
 
-/* ── Hamburger ── */
+/* ── Hamburger & FAQ & Cards (ابقِها كما هي) ── */
 document.getElementById('hamburger').addEventListener('click', () => {
     document.getElementById('nav-menu').classList.toggle('active');
 });
@@ -979,7 +1108,6 @@ document.querySelectorAll('#nav-menu a').forEach(a => {
     a.addEventListener('click', () => document.getElementById('nav-menu').classList.remove('active'));
 });
 
-/* ── FAQ ── */
 function toggleFaq(btn) {
     const item   = btn.parentElement;
     const answer = item.querySelector('.faq-a');
@@ -994,7 +1122,6 @@ function toggleFaq(btn) {
     }
 }
 
-/* ── Scroll card animation ── */
 const cardObserver = new IntersectionObserver((entries) => {
     entries.forEach((entry, i) => {
         if (entry.isIntersecting) {
@@ -1005,92 +1132,85 @@ const cardObserver = new IntersectionObserver((entries) => {
 }, { threshold: 0.08 });
 document.querySelectorAll('.card').forEach(c => cardObserver.observe(c));
 
-/* ══ DISCORD BADGES ════════════════════════════════════════════
-   Each badge has:
-     img  — direct ibb image URL (provided by user)
-     tip  — tooltip label
-     href — clickable destination (relevant Discord page)
-══════════════════════════════════════════════════════════════ */
+/* ══ DISCORD BADGES + MODAL ═══════════════════════════════════════════ */
 const BADGES = [
-    {
-        img:  'https://i.ibb.co/SDqy4fwY/99180-nitro-silver.png',
-        tip:  'Discord Nitro',
-        
-    },
-    {
-        img:  'https://i.ibb.co/rRS0GbRC/14043-hypesquad-bravery.png',
-        tip:  'HypeSquad Bravery',
-        
-    },
-    {
-        img:  'https://i.ibb.co/xtkqyKdZ/69014-server-booster.png',
-        tip:  'Server Booster',
-    },
-    {
-        img:  'https://i.ibb.co/hF36FRdR/81799-legacy-badge.png',
-        tip:  'Legacy Username',
-    },
-    {
-        img:  'https://i.ibb.co/jvzFBfWc/30647-completed-quest.png',
-        tip:  'Completed a Quest',
-        
-    },
-    {
-        img:  'https://i.ibb.co/CKxBDw0c/172841-last-meadow-badge.png',
-        tip:  'Last Meadow Online',
-        
-    },
-    {
-        img:  'https://i.ibb.co/DHcPvgrM/961317-discord-orbs.png',
-        tip:  'Orbs Apprentice',
-        
-    },
-    {
-        img:  'https://i.ibb.co/ZzrNjxr6/9595-badge-bughunter.png',
-        tip:  'Discord Bug Hunter',
-        
-    },
-    {
-        img:  'https://i.ibb.co/vRNFZcH/5847-active-developer-badge.png',
-        tip:  'Active Developer',
-        
-    }
+    { key: 'nitro' }, { key: 'bravery' }, { key: 'booster' }, { key: 'legacy' },
+    { key: 'quest' }, { key: 'meadow' }, { key: 'orbs' }, { key: 'bughunter' }, { key: 'developer' }
 ];
+
+function getBadgeData(key) {
+    return {
+        img: {
+            nitro:'https://i.ibb.co/SDqy4fwY/99180-nitro-silver.png',
+            bravery:'https://i.ibb.co/rRS0GbRC/14043-hypesquad-bravery.png',
+            booster:'https://i.ibb.co/xtkqyKdZ/69014-server-booster.png',
+            legacy:'https://i.ibb.co/hF36FRdR/81799-legacy-badge.png',
+            quest:'https://i.ibb.co/jvzFBfWc/30647-completed-quest.png',
+            meadow:'https://i.ibb.co/CKxBDw0c/172841-last-meadow-badge.png',
+            orbs:'https://i.ibb.co/DHcPvgrM/961317-discord-orbs.png',
+            bughunter:'https://i.ibb.co/ZzrNjxr6/9595-badge-bughunter.png',
+            developer:'https://i.ibb.co/vRNFZcH/5847-active-developer-badge.png'
+        }[key],
+        title: i18n[currentLang][`badge_${key}_title`],
+        desc:  i18n[currentLang][`badge_${key}_desc`]
+    };
+}
 
 function renderBadges() {
     const container = document.getElementById('dc-badges');
+    if (!container) return;
     container.innerHTML = '';
-    BADGES.forEach(badge => {
-        /* Wrap in <a> so the whole badge is clickable */
-        const link = document.createElement('a');
-        link.className       = 'dc-badge';
-        link.href            = badge.href;
-        link.target          = '_blank';
-        link.rel             = 'noopener noreferrer';
-        link.setAttribute('data-tip', badge.tip);
-        link.setAttribute('aria-label', badge.tip);
 
-        const img    = document.createElement('img');
-        img.src      = badge.img;
-        img.alt      = badge.tip;
-        img.loading  = 'lazy';
-        img.onerror  = () => { img.style.opacity = '0.25'; };
+    BADGES.forEach(b => {
+        const data = getBadgeData(b.key);
+        const link = document.createElement('a');
+        link.className = 'dc-badge';
+        link.setAttribute('data-tip', data.title);
+
+        const img = document.createElement('img');
+        img.src = data.img;
+        img.alt = data.title;
+        img.loading = 'lazy';
 
         link.appendChild(img);
         container.appendChild(link);
+
+        link.addEventListener('click', e => {
+            e.preventDefault();
+            showBadgeModal(data);
+        });
     });
 }
 
-renderBadges();
+function showBadgeModal(badge) {
+    document.getElementById('modal-badge-img').src = badge.img;
+    document.getElementById('modal-badge-title').textContent = badge.title;
+    document.getElementById('modal-badge-desc').textContent = badge.desc;
+    document.getElementById('badge-modal').style.display = 'flex';
+}
 
-/* ══ CARD FLIP — no drag at all ════════════════════════════════ */
+function closeModal() {
+    document.getElementById('badge-modal').style.display = 'none';
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    renderBadges();
+    
+    const modal = document.getElementById('badge-modal');
+    if (modal) {
+        modal.addEventListener('click', e => {
+            if (e.target === modal) closeModal();
+        });
+        document.querySelector('.modal-close')?.addEventListener('click', closeModal);
+    }
+});
+
+/* ══ CARD FLIP ════════════════════════════════ */
 const dcInner = document.getElementById('dc-inner');
-
 document.getElementById('dc-flip-front').addEventListener('click', e => {
     e.stopPropagation();
     dcInner.classList.add('flipped');
 });
-
 document.getElementById('dc-flip-back').addEventListener('click', e => {
     e.stopPropagation();
     dcInner.classList.remove('flipped');
